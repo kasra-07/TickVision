@@ -432,5 +432,9 @@ public class SignupActivity extends AppCompatActivity implements UserSignup.User
         eCPass = findViewById(R.id.edt_c_pass);
         link = findViewById(R.id.signup_link);
         shared = new Shared(this);
+        lUsername.setDefaultHintTextColor(ColorStateList.valueOf(getColor(R.color.gray)));
+        lMail.setDefaultHintTextColor(ColorStateList.valueOf(getColor(R.color.gray)));
+        lPass.setDefaultHintTextColor(ColorStateList.valueOf(getColor(R.color.gray)));
+        lCPass.setDefaultHintTextColor(ColorStateList.valueOf(getColor(R.color.gray)));
     }
 }

@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.res.ColorStateList;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -13,14 +14,10 @@ import android.view.View;
 import android.widget.CheckBox;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
-
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
-
 import java.util.List;
 import java.util.Objects;
-
 import ir.mahchegroup.tickvision.classes.Animations;
 import ir.mahchegroup.tickvision.classes.KeyboardManager;
 import ir.mahchegroup.tickvision.classes.SetInputLayoutColors;
@@ -223,6 +220,8 @@ public class LoginActivity extends AppCompatActivity implements UserLogin.OnUser
         chRemember = findViewById(R.id.ch_remember);
         shared = new Shared(this);
         isRememberChecked = shared.getShared().getBoolean(UserItems.IS_REMEMBER_CHECKED, false);
+        lUserMail.setDefaultHintTextColor(ColorStateList.valueOf(getColor(R.color.gray)));
+        lPass.setDefaultHintTextColor(ColorStateList.valueOf(getColor(R.color.gray)));
     }
 
     @Override
