@@ -1,3 +1,18 @@
 <resources>
     <string name="app_name">TickVision</string>
+    <string name="reset_text">صفر کردن مقادیر</string>
+    <string name="export_text">گرفتن خروجی از مقادیر</string>
+    <string name="setting_text">تنظیمات برنامه</string>
+    <string name="contact_text">ارتباط با ما</string>
+    <string name="mail_text">ارسال ایمیل</string>
+    <string name="whatsapp_text">از طریق واتساپ</string>
+    <string name="call_text">تماس تلفنی (فقط موارد ضروری)</string>
+    <string name="another_text">سایر</string>
+    <string name="idea_text">بیان نظرات</string>
+    <string name="about_us_text">درباره ما</string>
+    <string name="my_app_text">سایر برنامه های ما</string>
+    <string name="exit_title">خروج</string>
+    <string name="exit_account_text">خروج از حساب کاربری</string>
+    <string name="exit_app_text">خروج از برنامه</string>
+    <string name="start_text">شروع</string>
 </resources>
