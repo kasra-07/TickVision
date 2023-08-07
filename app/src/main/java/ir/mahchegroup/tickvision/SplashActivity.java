@@ -1,4 +1,4 @@
-package ir.mahchegroup.tickvision.activities;
+package ir.mahchegroup.tickvision;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -9,12 +9,11 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.widget.ImageView;
 
-import ir.mahchegroup.tickvision.Animations;
-import ir.mahchegroup.tickvision.CheckConnection;
-import ir.mahchegroup.tickvision.R;
-import ir.mahchegroup.tickvision.Shared;
-import ir.mahchegroup.tickvision.StartBtn;
-import ir.mahchegroup.tickvision.UserItems;
+import ir.mahchegroup.tickvision.classes.Animations;
+import ir.mahchegroup.tickvision.classes.CheckConnection;
+import ir.mahchegroup.tickvision.classes.Shared;
+import ir.mahchegroup.tickvision.classes.StartBtn;
+import ir.mahchegroup.tickvision.classes.UserItems;
 
 @SuppressLint("CustomSplashScreen")
 public class SplashActivity extends AppCompatActivity {

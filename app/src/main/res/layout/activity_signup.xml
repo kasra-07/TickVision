@@ -8,7 +8,7 @@
     android:clickable="true"
     android:focusable="true"
     android:layoutDirection="rtl"
-    tools:context=".activities.SignupActivity">
+    tools:context=".SignupActivity">
 
     <include layout="@layout/toolbar_layout" />
 

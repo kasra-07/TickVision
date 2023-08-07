@@ -1,4 +1,4 @@
-package ir.mahchegroup.tickvision;
+package ir.mahchegroup.tickvision.classes;
 
 import android.content.Context;
 import android.content.SharedPreferences;

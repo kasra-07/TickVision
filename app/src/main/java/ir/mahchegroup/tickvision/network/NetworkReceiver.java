@@ -5,10 +5,10 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
-import ir.mahchegroup.tickvision.Animations;
-import ir.mahchegroup.tickvision.CheckConnection;
-import ir.mahchegroup.tickvision.UserItems;
-import ir.mahchegroup.tickvision.activities.DisconnectActivity;
+import ir.mahchegroup.tickvision.classes.Animations;
+import ir.mahchegroup.tickvision.classes.CheckConnection;
+import ir.mahchegroup.tickvision.classes.UserItems;
+import ir.mahchegroup.tickvision.DisconnectActivity;
 
 public class NetworkReceiver extends BroadcastReceiver {
     @Override

@@ -1,4 +1,4 @@
-package ir.mahchegroup.tickvision;
+package ir.mahchegroup.tickvision.classes;
 
 import android.content.Context;
 import android.util.AttributeSet;
@@ -10,6 +10,8 @@ import android.view.animation.AnimationSet;
 import android.view.animation.ScaleAnimation;
 import android.widget.Button;
 import android.widget.RelativeLayout;
+
+import ir.mahchegroup.tickvision.R;
 
 public class StartBtn extends RelativeLayout {
     private View view;

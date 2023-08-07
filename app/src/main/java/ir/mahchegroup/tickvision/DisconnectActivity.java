@@ -1,4 +1,4 @@
-package ir.mahchegroup.tickvision.activities;
+package ir.mahchegroup.tickvision;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -8,11 +8,10 @@ import android.view.View;
 
 import java.util.Objects;
 
-import ir.mahchegroup.tickvision.Animations;
-import ir.mahchegroup.tickvision.CheckConnection;
-import ir.mahchegroup.tickvision.R;
-import ir.mahchegroup.tickvision.Shared;
-import ir.mahchegroup.tickvision.UserItems;
+import ir.mahchegroup.tickvision.classes.Animations;
+import ir.mahchegroup.tickvision.classes.CheckConnection;
+import ir.mahchegroup.tickvision.classes.Shared;
+import ir.mahchegroup.tickvision.classes.UserItems;
 
 public class DisconnectActivity extends AppCompatActivity {
     private String activityName;

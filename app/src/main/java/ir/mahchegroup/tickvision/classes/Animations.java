@@ -1,4 +1,4 @@
-package ir.mahchegroup.tickvision;
+package ir.mahchegroup.tickvision.classes;
 
 import android.app.Activity;
 import android.app.ActivityOptions;
@@ -7,6 +7,8 @@ import android.content.Intent;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+
+import ir.mahchegroup.tickvision.R;
 
 public class Animations {
 

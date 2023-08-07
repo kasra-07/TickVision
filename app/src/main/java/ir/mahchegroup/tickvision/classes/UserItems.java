@@ -1,4 +1,4 @@
-package ir.mahchegroup.tickvision;
+package ir.mahchegroup.tickvision.classes;
 
 public class UserItems {
     public static final String IS_USER_SIGNUP = "is_user_signup";
