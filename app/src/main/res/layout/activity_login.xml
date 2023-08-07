@@ -105,6 +105,7 @@
         android:layout_marginEnd="@dimen/margin_left_right_signup"
         android:background="@drawable/red_btn_background"
         android:text="@string/login_text"
+        android:onClick="btnOnClick"
         android:textColor="@color/primary_ultra_light_color"
         android:textSize="@dimen/btn_text_size"
         tools:ignore="VisualLintButtonSize,TextContrastCheck" />

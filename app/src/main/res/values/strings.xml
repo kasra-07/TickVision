@@ -34,4 +34,7 @@
     <string name="login_text">ورود</string>
     <string name="pass_forget_text">کلمه عبور را فراموش کرده ام</string>
     <string name="create_new_account_text"><u>ایجاد حساب کاربری جدید</u></string>
+    <string name="login_error">نام کاربری یا ایمیل نادرست است</string>
+    <string name="login_pass_error">کلمه عبور نادرست است</string>
+    <string name="coming_soon">به زودی اضافه خواهد شد</string>
 </resources>

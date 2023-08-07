@@ -7,5 +7,9 @@ public class UserItems {
     public static final String USERNAME = "username";
     public static final String MAIL = "mail";
     public static final String PASS = "pass";
+    public static final String IS_REMEMBER_CHECKED = "is_remember_checked";
+    public static final String USER_MAIL = "user_mail";
+    public static final String USER_TBL = "user_tbl";
     public static final String USER_SIGNUP_URL = "https://mahchegroup.ir/tick_vision/user_signup.php";
+    public static final String USER_LOGIN_URL = "https://mahchegroup.ir/tick_vision/user_login.php";
 }
