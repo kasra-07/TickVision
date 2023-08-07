@@ -9,4 +9,5 @@
     <dimen name="normal_radius_size">7dp</dimen>
     <dimen name="normal_stroke_size">2dp</dimen>
     <dimen name="small_text_size">12sp</dimen>
+    <dimen name="large_text_size">18sp</dimen>
 </resources>

@@ -1,9 +1,272 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.drawerlayout.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/home_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/background"
+    android:layoutDirection="ltr"
     tools:context=".HomeActivity">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <LinearLayout
+        android:id="@+id/home_toolbar_root"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <include layout="@layout/toolbar_layout" />
+
+    </LinearLayout>
+
+    <RelativeLayout
+        android:id="@+id/add_btn_root"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone">
+
+        <LinearLayout
+            android:id="@+id/add_btn_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_marginStart="30dp"
+            android:orientation="vertical"
+            tools:ignore="UselessParent">
+
+            <ImageView
+                android:id="@+id/add_btn_description"
+                android:layout_width="180dp"
+                android:layout_height="60dp"
+                android:layout_marginBottom="7dp"
+
+                android:src="@drawable/add_vision"
+                tools:ignore="ContentDescription" />
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/add_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="25dp"
+                android:backgroundTint="@color/primary_color"
+                android:src="@drawable/ic_add"
+                app:fab_colorNormal="@color/primary_color"
+                app:fab_colorPressed="@color/primary_dark_color"
+                app:fab_colorRipple="@color/primary_dark_color"
+                app:fab_size="normal"
+                tools:ignore="ContentDescription,SpeakableTextPresentCheck" />
+
+        </LinearLayout>
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/select_btn_root"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone">
+
+        <LinearLayout
+            android:id="@+id/select_btn_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_marginEnd="30dp"
+            android:layoutDirection="rtl"
+            android:orientation="vertical"
+            tools:ignore="UselessParent">
+
+            <ImageView
+                android:id="@+id/select_btn_description"
+                android:layout_width="180dp"
+                android:layout_height="60dp"
+                android:layout_marginBottom="7dp"
+                android:src="@drawable/select_vision"
+                android:visibility="gone"
+                tools:ignore="ContentDescription" />
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/select_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="25dp"
+                android:backgroundTint="@color/primary_color"
+                android:src="@drawable/ic_select_vision"
+                app:fab_colorNormal="@color/primary_color"
+                app:fab_colorPressed="@color/primary_dark_color"
+                app:fab_colorRipple="@color/primary_dark_color"
+                app:fab_size="normal"
+                tools:ignore="ContentDescription,SpeakableTextPresentCheck" />
+
+        </LinearLayout>
+
+    </RelativeLayout>
+
+    <androidx.drawerlayout.widget.DrawerLayout
+        android:id="@+id/drawer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"
+        android:layout_marginTop="?attr/actionBarSize">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <View
+                android:id="@+id/dim_menu"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="#A8000000"
+                android:visibility="gone"
+                android:elevation="10dp"/>
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/table_layout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="30dp"
+                android:layout_marginStart="30dp"
+                android:layout_centerInParent="true"
+                app:cardCornerRadius="8dp"
+                app:cardElevation="3dp"/>
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/time_layout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="30dp"
+                android:layout_marginEnd="30dp"
+                android:layout_marginStart="20dp"
+                app:cardCornerRadius="8dp"
+                app:cardElevation="3dp"/>
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/payment_layout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_above="@id/timer_switch"
+                android:layout_alignParentStart="true"
+                android:layout_marginStart="30dp"
+                android:layout_marginBottom="20dp"
+                app:cardCornerRadius="10dp"
+                app:cardElevation="3dp" />
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/income_layout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_above="@id/timer_switch"
+                android:layout_alignParentEnd="true"
+                android:layout_marginEnd="30dp"
+                android:layout_marginBottom="20dp"
+                app:cardCornerRadius="10dp"
+                app:cardElevation="3dp" />
+
+            <ImageView
+                android:id="@+id/timer_switch"
+                android:layout_width="130dp"
+                android:layout_height="70dp"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="5dp"
+                android:src="@drawable/timer_off"
+                tools:ignore="ContentDescription,ImageContrastCheck" />
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:elevation="20dp">
+
+                <com.github.clans.fab.FloatingActionMenu xmlns:fab="http://schemas.android.com/apk/res-auto"
+                    android:id="@+id/menu"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginEnd="10dp"
+                    android:layout_marginBottom="10dp"
+                    android:elevation="20dp"
+                    app:menu_colorPressed="@color/primary_color"
+                    app:menu_icon="@drawable/ic_menu"
+                    fab:menu_animationDelayPerItem="50"
+                    fab:menu_colorNormal="@color/primary_color"
+                    fab:menu_colorRipple="@color/primary_light_color"
+                    fab:menu_fab_size="normal"
+                    fab:menu_labels_colorNormal="@color/primary_color"
+                    fab:menu_labels_colorPressed="@color/primary_color"
+                    fab:menu_labels_colorRipple="@color/primary_light_color"
+                    fab:menu_labels_cornerRadius="10dp"
+                    fab:menu_labels_hideAnimation="@anim/fab_slide_out_to_right"
+                    fab:menu_labels_maxLines="1"
+                    fab:menu_labels_paddingLeft="10dp"
+                    fab:menu_labels_position="left"
+                    fab:menu_labels_showAnimation="@anim/fab_slide_in_from_right"
+                    fab:menu_labels_showShadow="true"
+                    fab:menu_labels_textSize="@dimen/large_text_size"
+                    fab:menu_openDirection="up"
+                    fab:menu_shadowColor="@color/shadow_color"
+                    fab:menu_shadowRadius="2dp"
+                    fab:menu_shadowXOffset="0dp"
+                    fab:menu_shadowYOffset="1dp"
+                    fab:menu_showShadow="true">
+
+                    <com.github.clans.fab.FloatingActionButton
+                        android:id="@+id/add_vision"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/ic_add"
+                        app:fab_colorNormal="@color/primary_color"
+                        app:fab_colorPressed="@color/primary_light_color"
+                        app:fab_colorRipple="@color/primary_color"
+                        app:fab_shadowRadius="3dp"
+                        fab:fab_label="@string/add_vision_text"
+                        fab:fab_size="mini" />
+
+                    <com.github.clans.fab.FloatingActionButton
+                        android:id="@+id/select_vision"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/ic_select_vision"
+                        app:fab_colorNormal="@color/primary_color"
+                        app:fab_colorPressed="@color/primary_light_color"
+                        app:fab_colorRipple="@color/primary_color"
+                        app:fab_shadowRadius="3dp"
+                        fab:fab_label="@string/select_check_vision_text"
+                        fab:fab_size="mini" />
+
+                    <com.github.clans.fab.FloatingActionButton
+                        android:id="@+id/list_vision"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/ic_edit"
+                        app:fab_colorNormal="@color/primary_color"
+                        app:fab_colorPressed="@color/primary_light_color"
+                        app:fab_colorRipple="@color/primary_color"
+                        app:fab_shadowRadius="3dp"
+                        fab:fab_label="@string/select_edit_vision_text"
+                        fab:fab_size="mini" />
+
+                </com.github.clans.fab.FloatingActionMenu>
+
+            </FrameLayout>
+
+        </RelativeLayout>
+
+        <com.google.android.material.navigation.NavigationView
+            android:id="@+id/navi"
+            android:layout_width="300dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="end"
+            android:theme="@style/navi"
+            app:headerLayout="@layout/header"
+            app:itemIconTint="@color/primary_color"
+            app:itemTextColor="@color/primary_color"
+            app:menu="@menu/menu"
+            app:subheaderColor="@color/gray"
+            tools:ignore="VisualLintBounds" />
+
+    </androidx.drawerlayout.widget.DrawerLayout>
+
+</androidx.drawerlayout.widget.DrawerLayout>

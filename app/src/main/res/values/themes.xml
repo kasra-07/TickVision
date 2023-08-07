@@ -8,4 +8,13 @@
         <item name="colorControlActivated">@color/primary_color</item>
         <item name="android:windowBackground">@drawable/background</item>
     </style>
+    <style name="navi" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="fontFamily">@font/iran_sans</item>
+        <item name="android:scrollbarThumbVertical">@color/transparent</item>
+        <item name="android:textSize">15sp</item>
+    </style>
+    <style name="dialog_anim">
+        <item name="android:windowEnterAnimation">@anim/dialog_fade_in</item>
+        <item name="android:windowExitAnimation">@anim/dialog_fade_out</item>
+    </style>
 </resources>

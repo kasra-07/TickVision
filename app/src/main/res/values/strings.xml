@@ -37,4 +37,7 @@
     <string name="login_error">نام کاربری یا ایمیل نادرست است</string>
     <string name="login_pass_error">کلمه عبور نادرست است</string>
     <string name="coming_soon">به زودی اضافه خواهد شد</string>
+    <string name="add_vision_text">افزودن هدف جدید</string>
+    <string name="select_check_vision_text">انتخاب هدف جهت بررسی</string>
+    <string name="select_edit_vision_text">انتخاب هدف جهت ویرایش</string>
 </resources>

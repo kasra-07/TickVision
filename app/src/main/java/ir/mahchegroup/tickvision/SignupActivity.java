@@ -84,8 +84,8 @@ public class SignupActivity extends AppCompatActivity implements UserSignup.User
 
     private void edtFocusChange() {
         eUsername.setOnFocusChangeListener((v, b) -> {
-            edtUnFocus(lMail, lPass, lCPass, eMail, ePass, eCPass);
             if (b) {
+                edtUnFocus(lMail, lPass, lCPass, eMail, ePass, eCPass);
                 if (isUsernameError) {
                     SetInputLayoutColors.setColor(this, lUsername, eUsername, getString(R.string.username_type_error), 2);
                 } else {
@@ -102,12 +102,14 @@ public class SignupActivity extends AppCompatActivity implements UserSignup.User
             }
         });
         eMail.setOnFocusChangeListener((v, b) -> {
-            edtUnFocus(lUsername, lPass, lCPass, eUsername, ePass, eCPass);
+                edtUnFocus(lUsername, lPass, lCPass, eUsername, ePass, eCPass);
             if (b) {
                 if (isMailError) {
                     SetInputLayoutColors.setColor(this, lMail, eMail, getString(R.string.mail_type_error), 2);
+                    eMail.setBackgroundTintList(ColorStateList.valueOf(getColor(R.color.red)));
                 } else {
                     SetInputLayoutColors.setColor(this, lMail, eMail, null, 1);
+                    eMail.setBackgroundTintList(ColorStateList.valueOf(getColor(R.color.primary_color)));
                 }
 
             } else {
@@ -121,7 +123,6 @@ public class SignupActivity extends AppCompatActivity implements UserSignup.User
             }
         });
         ePass.setOnFocusChangeListener((v, b) -> {
-            edtUnFocus(lMail, lUsername, lCPass, eMail, eUsername, eCPass);
             if (b) {
                 if (isPassError || (ePass.length() == 0 && eCPass.length() > 0) || (ePass.length() > 0 && eCPass.length() == 0)) {
                     SetInputLayoutColors.setColor(this, lPass, ePass, getString(R.string.pass_type_error), 2);
@@ -133,7 +134,6 @@ public class SignupActivity extends AppCompatActivity implements UserSignup.User
 
             } else {
                 SetInputLayoutColors.setColor(this, lPass, ePass, null, 0);
-                ePass.setBackgroundTintList(ColorStateList.valueOf(getColor(R.color.gray)));
                 if (isPassError) {
                     ePass.setTextColor(getColor(R.color.red));
                     eCPass.setTextColor(getColor(R.color.red));
@@ -143,11 +143,13 @@ public class SignupActivity extends AppCompatActivity implements UserSignup.User
                     ePass.setTextColor(getColor(R.color.green));
                     eCPass.setTextColor(getColor(R.color.green));
                 }
+                ePass.setBackgroundTintList(ColorStateList.valueOf(getColor(R.color.gray)));
             }
+            edtUnFocus(lMail, lUsername, lCPass, eMail, eUsername, eCPass);
         });
         eCPass.setOnFocusChangeListener((v, b) -> {
-            edtUnFocus(lMail, lPass, lUsername, eMail, ePass, eUsername);
             if (b) {
+                edtUnFocus(lMail, lPass, lUsername, eMail, ePass, eUsername);
                 if (isPassError || (eCPass.length() == 0 && ePass.length() > 0) || (eCPass.length() > 0 && ePass.length() == 0)) {
                     SetInputLayoutColors.setColor(this, lCPass, eCPass, getString(R.string.pass_type_error), 2);
                     ePass.setTextColor(getColor(R.color.red));
@@ -246,7 +248,7 @@ public class SignupActivity extends AppCompatActivity implements UserSignup.User
 
             @Override
             public void afterTextChanged(Editable s) {
-
+                eMail.setBackgroundTintList(ColorStateList.valueOf(getColor(R.color.primary_color)));
             }
         });
         ePass.addTextChangedListener(new TextWatcher() {
@@ -416,8 +418,11 @@ public class SignupActivity extends AppCompatActivity implements UserSignup.User
 
     private void edtUnFocus(TextInputLayout l1, TextInputLayout l2, TextInputLayout l3, TextInputEditText e1, TextInputEditText e2, TextInputEditText e3) {
         SetInputLayoutColors.setColor(this, l1, e1, null, 0);
+        e1.setBackgroundTintList(ColorStateList.valueOf(getColor(R.color.gray)));
         SetInputLayoutColors.setColor(this, l2, e2, null, 0);
+        e2.setBackgroundTintList(ColorStateList.valueOf(getColor(R.color.gray)));
         SetInputLayoutColors.setColor(this, l3, e3, null, 0);
+        e3.setBackgroundTintList(ColorStateList.valueOf(getColor(R.color.gray)));
     }
 
     private void init() {
