@@ -12,7 +12,7 @@ import android.widget.Button;
 import android.widget.RelativeLayout;
 
 public class StartBtn extends RelativeLayout {
-    private View root, view;
+    private View view;
     private Button btn;
 
     public StartBtn(Context context) {
@@ -36,7 +36,7 @@ public class StartBtn extends RelativeLayout {
     }
 
     private void init(Context context) {
-        root = LayoutInflater.from(context).inflate(R.layout.start_btn_layout, this, true);
+        View root = LayoutInflater.from(context).inflate(R.layout.start_btn_layout, this, true);
         view = root.findViewById(R.id.view_start_btn);
         btn = root.findViewById(R.id.button_start_btn);
     }
@@ -66,7 +66,7 @@ public class StartBtn extends RelativeLayout {
         super.onMeasure(MeasureSpec.makeMeasureSpec(size, MeasureSpec.EXACTLY), MeasureSpec.makeMeasureSpec(size, MeasureSpec.EXACTLY));
     }
 
-    public void setOnStartClickListener(OnClickListener onStartClickListener) {
-        btn.setOnClickListener(onStartClickListener);
+    public void setOnClickStartListener(OnClickListener onClickStartListener) {
+        btn.setOnClickListener(onClickStartListener);
     }
 }

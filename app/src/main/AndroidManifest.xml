@@ -19,11 +19,24 @@
         android:theme="@style/Theme.TickVision"
         tools:targetApi="31">
         <activity
-            android:name=".SplashActivity"
+            android:name=".activities.DisconnectActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activities.HomeActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activities.LoginActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activities.SignupActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activities.SplashActivity"
             android:exported="true"
             android:theme="@style/transparent_style">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
