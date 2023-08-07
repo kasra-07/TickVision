@@ -39,12 +39,11 @@
                 android:layout_width="180dp"
                 android:layout_height="60dp"
                 android:layout_marginBottom="7dp"
-
                 android:src="@drawable/add_vision"
                 tools:ignore="ContentDescription" />
 
             <com.google.android.material.floatingactionbutton.FloatingActionButton
-                android:id="@+id/add_btn"
+                android:id="@+id/btn_add"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="25dp"
@@ -86,7 +85,7 @@
                 tools:ignore="ContentDescription" />
 
             <com.google.android.material.floatingactionbutton.FloatingActionButton
-                android:id="@+id/select_btn"
+                android:id="@+id/btn_select"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="25dp"
@@ -106,8 +105,8 @@
         android:id="@+id/drawer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:visibility="gone"
-        android:layout_marginTop="?attr/actionBarSize">
+        android:layout_marginTop="?attr/actionBarSize"
+        android:visibility="gone">
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -119,29 +118,29 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:background="#A8000000"
-                android:visibility="gone"
-                android:elevation="10dp"/>
+                android:elevation="10dp"
+                android:visibility="gone" />
 
             <androidx.cardview.widget.CardView
                 android:id="@+id/table_layout"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="30dp"
-                android:layout_marginStart="30dp"
                 android:layout_centerInParent="true"
+                android:layout_marginStart="30dp"
+                android:layout_marginEnd="30dp"
                 app:cardCornerRadius="8dp"
-                app:cardElevation="3dp"/>
+                app:cardElevation="3dp" />
 
             <androidx.cardview.widget.CardView
                 android:id="@+id/time_layout"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"
+                android:layout_marginStart="20dp"
                 android:layout_marginTop="30dp"
                 android:layout_marginEnd="30dp"
-                android:layout_marginStart="20dp"
                 app:cardCornerRadius="8dp"
-                app:cardElevation="3dp"/>
+                app:cardElevation="3dp" />
 
             <androidx.cardview.widget.CardView
                 android:id="@+id/payment_layout"
