@@ -68,7 +68,7 @@ public class SplashActivity extends AppCompatActivity {
             e.printStackTrace();
         }
         Intent intent = new Intent(SplashActivity.this, c);
-        intent.putExtra(UserItems.ACTIVITY_NAME, activityName);
+        intent.putExtra(UserItems.ACTIVITY_NAME, "SplashActivity");
         Animations.AnimActivity(SplashActivity.this, intent);
     }
 

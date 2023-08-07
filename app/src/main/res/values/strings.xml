@@ -15,4 +15,6 @@
     <string name="exit_account_text">خروج از حساب کاربری</string>
     <string name="exit_app_text">خروج از برنامه</string>
     <string name="start_text">شروع</string>
+    <string name="try_again_text">تلاش دوباره</string>
+    <string name="check_connection_text">لطفا اتصال اینترنت دستگاه خود را چک نمائید</string>
 </resources>
