@@ -1,16 +1,11 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
-    <style name="Base.Theme.TickVision" parent="Theme.AppCompat.Light.NoActionBar">
+<resources>
+    <style name="Theme.TickVision" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="android:colorPrimary">@color/primary_color</item>
         <item name="android:colorPrimaryDark">@color/primary_dark_color</item>
         <item name="colorAccent">@color/accent_color</item>
         <item name="fontFamily">@font/iran_sans</item>
         <item name="colorControlNormal">@color/gray</item>
         <item name="colorControlActivated">@color/primary_color</item>
-        <item name="background">@drawable/background</item>
-        <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+        <item name="android:windowBackground">@drawable/background</item>
     </style>
-
-    <style name="Theme.TickVision" parent="Base.Theme.TickVision" />
 </resources>

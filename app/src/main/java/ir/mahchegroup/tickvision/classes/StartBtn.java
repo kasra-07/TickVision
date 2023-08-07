@@ -47,12 +47,12 @@ public class StartBtn extends RelativeLayout {
     protected void onFinishInflate() {
         super.onFinishInflate();
         if (!isInEditMode()) {
-            ScaleAnimation scaleAnimation = new ScaleAnimation(1f, 1.2f, 1f, 1.2f, Animation.RELATIVE_TO_SELF, .5f, Animation.RELATIVE_TO_SELF, .5f);
+            ScaleAnimation scaleAnimation = new ScaleAnimation(1f, 1.25f, 1f, 1.25f, Animation.RELATIVE_TO_SELF, .5f, Animation.RELATIVE_TO_SELF, .5f);
             AlphaAnimation alphaAnimation = new AlphaAnimation(1, 0);
-            scaleAnimation.setDuration(600);
+            scaleAnimation.setDuration(500);
             scaleAnimation.setRepeatCount(Animation.INFINITE);
             scaleAnimation.setRepeatMode(Animation.RESTART);
-            alphaAnimation.setDuration(600);
+            alphaAnimation.setDuration(500);
             alphaAnimation.setRepeatCount(Animation.INFINITE);
             alphaAnimation.setRepeatMode(Animation.RESTART);
             AnimationSet animationSet = new AnimationSet(true);

@@ -22,4 +22,11 @@
     <string name="config_password_text">تائید کلمه عبور</string>
     <string name="signup_text">ثبت نام</string>
     <string name="i_have_account_text">حساب کاربری دارم (ورود)</string>
+    <string name="empty_field_error">این فیلد نمی تواند خالی باشد</string>
+    <string name="username_type_error">نام کاربری باید متشکل از حروف یا اعداد انگلیسی یا یکی از علامت های \".\" و \"_\" باشد</string>
+    <string name="mail_type_error">ایمیل نادرست است</string>
+    <string name="pass_type_error">کلمه عبور با تائید آن همخوانی ندارد</string>
+    <string name="signup_error">ثبت نام با مشکل مواجه شد</string>
+    <string name="duplicate_error">ایمیل یا نام کاربری تکراری است</string>
+    <string name="signup_success">ثبت نام با موفقیت انجام شد</string>
 </resources>

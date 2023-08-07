@@ -8,4 +8,5 @@
     <dimen name="margin_top_text_input_layout">15dp</dimen>
     <dimen name="normal_radius_size">7dp</dimen>
     <dimen name="normal_stroke_size">2dp</dimen>
+    <dimen name="small_text_size">12sp</dimen>
 </resources>

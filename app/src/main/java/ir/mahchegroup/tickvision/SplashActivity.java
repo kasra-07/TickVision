@@ -59,7 +59,7 @@ public class SplashActivity extends AppCompatActivity {
     }
 
     private void setIntent(String str) {
-        String stringClass = "ir.mahchegroup.tickvision.activities." + str;
+        String stringClass = "ir.mahchegroup.tickvision." + str;
         Class<?> c = null;
         try {
             c = Class.forName(stringClass);
