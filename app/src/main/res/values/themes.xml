@@ -7,6 +7,7 @@
         <item name="fontFamily">@font/iran_sans</item>
         <item name="colorControlNormal">@color/gray</item>
         <item name="colorControlActivated">@color/primary_color</item>
+        <item name="background">@drawable/background</item>
         <!-- Customize your light theme here. -->
         <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
     </style>

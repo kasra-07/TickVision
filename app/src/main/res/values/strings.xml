@@ -17,4 +17,9 @@
     <string name="start_text">شروع</string>
     <string name="try_again_text">تلاش دوباره</string>
     <string name="check_connection_text">لطفا اتصال اینترنت دستگاه خود را چک نمائید</string>
+    <string name="username_text">نام کاربری</string>
+    <string name="password_text">کلمه عبور</string>
+    <string name="config_password_text">تائید کلمه عبور</string>
+    <string name="signup_text">ثبت نام</string>
+    <string name="i_have_account_text">حساب کاربری دارم (ورود)</string>
 </resources>
