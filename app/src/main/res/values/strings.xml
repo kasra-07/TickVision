@@ -40,4 +40,12 @@
     <string name="add_vision_text">افزودن هدف جدید</string>
     <string name="select_check_vision_text">انتخاب هدف جهت بررسی</string>
     <string name="select_edit_vision_text">انتخاب هدف جهت ویرایش</string>
+    <string name="update_old_visions_text">بروزرسانی هدف های پیشین</string>
+    <string name="first_update_vision_dialog_text">شما قبلا تعدادی هدف مشخص کرده اید\nآیا جهت بروزرسانی مایل هستید ؟</string>
+    <string name="update_text">بروزرسانی</string>
+    <string name="remove_text">حذف هدف ها</string>
+    <string name="clear_all_visions_tbl_title">حذف هدف های پیشین</string>
+    <string name="drop_tbl_text">در صورت انتخاب حذف ، تمام هدف ها حذف شده و قابل بازیابی نیستند. آیا ادامه میدهید</string>
+    <string name="back_text">بازگشت</string>
+    <string name="drop_text">حذف</string>
 </resources>

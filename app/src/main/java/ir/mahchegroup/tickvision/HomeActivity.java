@@ -16,8 +16,14 @@ import com.github.clans.fab.FloatingActionMenu;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import ir.mahchegroup.tickvision.classes.Shared;
+import ir.mahchegroup.tickvision.classes.UserItems;
+import ir.mahchegroup.tickvision.database.VisionDao;
+import ir.mahchegroup.tickvision.database.VisionDatabase;
+import ir.mahchegroup.tickvision.message_box.ClearAllVisionsDialog;
+import ir.mahchegroup.tickvision.message_box.UpdateAllVisionsDialog;
+import ir.mahchegroup.tickvision.network.GetCountVision;
 
-public class HomeActivity extends AppCompatActivity {
+public class HomeActivity extends AppCompatActivity implements GetCountVision.OnGetCountCallBack, UpdateAllVisionsDialog.OnUpdateAllVisionsDialogCallBack, ClearAllVisionsDialog.OnClearAllVisionsDialogCallBack {
     private RelativeLayout btnAddVisionRoot, btnSelectVisionRoot;
     private LinearLayout homeToolbarRoot, btnAddLayout, btnSelectLayout;
     private Toolbar toolbar;
@@ -30,6 +36,12 @@ public class HomeActivity extends AppCompatActivity {
     private View tableView, timeView, incomeView, paymentView;
     private FloatingActionMenu menu;
     private Shared shared;
+    private VisionDao dao;
+    private int onLineCount, ofLineCount;
+    private boolean isFirstTime, isUserAddVision, isUserSelectVision;
+    private String userTbl;
+    private UpdateAllVisionsDialog updateAllVisionsDialog;
+    private ClearAllVisionsDialog clearAllVisionsDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +49,60 @@ public class HomeActivity extends AppCompatActivity {
         setContentView(R.layout.activity_home);
 
         init();
+
+        if (isFirstTime) {
+            GetCountVision getCountVision = new GetCountVision(this);
+            getCountVision.getCount(userTbl);
+        }
+    }
+
+    @Override
+    public void onGetCountListener(int count) {
+        ofLineCount = dao.getCountVision();
+
+        if (onLineCount > ofLineCount) {
+            updateAllVisionsDialog.show();
+        } else {
+            if (!isUserAddVision) {
+                btnAddVisionRoot.setVisibility(View.VISIBLE);
+                setOnBtnAddClickListener();
+
+            } else if (!isUserSelectVision) {
+                btnSelectVisionRoot.setVisibility(View.VISIBLE);
+            }else {
+                startNormallyActivity();
+            }
+        }
+    }
+
+    private void setOnBtnAddClickListener() {
+
+    }
+
+    private void startNormallyActivity() {
+
+    }
+
+    @Override
+    public void onUpdateAllVisionsDialogUpdateListener() {
+
+    }
+
+    @Override
+    public void onUpdateAllVisionsDialogRemoveListener() {
+        updateAllVisionsDialog.dismiss();
+        clearAllVisionsDialog.show();
+    }
+
+    @Override
+    public void onClearAllVisionsDialogRemoveListener() {
+
+    }
+
+    @Override
+    public void onClearAllVisionsDialogBackListener() {
+        clearAllVisionsDialog.dismiss();
+        updateAllVisionsDialog.show();
     }
 
     private void init() {
@@ -60,5 +126,13 @@ public class HomeActivity extends AppCompatActivity {
         paymentLayout = findViewById(R.id.payment_layout);
         menu = findViewById(R.id.menu);
         shared = new Shared(this);
+        isFirstTime = shared.getShared().getBoolean(UserItems.IS_FIRST_TIME, true);
+        isUserAddVision = shared.getShared().getBoolean(UserItems.IS_USER_ADD_VISION, false);
+        isUserSelectVision = shared.getShared().getBoolean(UserItems.IS_USER_SELECT_VISION, false);
+        userTbl = shared.getShared().getString(UserItems.USER_TBL, "");
+        dao = VisionDatabase.getVisionDatabase(this).visionDao();
+
+        updateAllVisionsDialog = new UpdateAllVisionsDialog(this);
+        clearAllVisionsDialog = new ClearAllVisionsDialog(this);
     }
 }

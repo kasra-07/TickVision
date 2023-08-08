@@ -10,4 +10,8 @@
     <dimen name="normal_stroke_size">2dp</dimen>
     <dimen name="small_text_size">12sp</dimen>
     <dimen name="large_text_size">18sp</dimen>
+    <dimen name="large_radius_size">30dp</dimen>
+    <dimen name="btn_margin_left_right">40dp</dimen>
+    <dimen name="margin_top_first_view_dialog">15dp</dimen>
+    <dimen name="btn_dialog_height">40dp</dimen>
 </resources>
