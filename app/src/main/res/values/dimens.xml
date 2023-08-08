@@ -14,4 +14,8 @@
     <dimen name="btn_margin_left_right">40dp</dimen>
     <dimen name="margin_top_first_view_dialog">15dp</dimen>
     <dimen name="btn_dialog_height">40dp</dimen>
+    <dimen name="margin_layout_dialog">25dp</dimen>
+    <dimen name="edt_height_size">35dp</dimen>
+    <dimen name="margin_bottom_last_edt_dialog">25dp</dimen>
+    <dimen name="btn_dialog_width">105dp</dimen>
 </resources>

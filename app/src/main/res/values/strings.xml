@@ -48,4 +48,13 @@
     <string name="drop_tbl_text">در صورت انتخاب حذف ، تمام هدف ها حذف شده و قابل بازیابی نیستند. آیا ادامه میدهید</string>
     <string name="back_text">بازگشت</string>
     <string name="drop_text">حذف</string>
+    <string name="title_vision_text">عنوان هدف (حداکثر 50 کاراکتر)</string>
+    <string name="amount_vision_text">مبلغ هدف (حداکثر 9 کاراکتر)</string>
+    <string name="day_vision_text">تعداد روز تا تیک زدن هدف (حداکثر 5 کاراکتر)</string>
+    <string name="continue_text">ادامه</string>
+    <string name="add_vision_title_error">لطفا فیلد عنوان هدف را تکمیل نمائید</string>
+    <string name="add_vision_amount_error">لطفا فیلد مبلغ هدف را تکمیل نمائید</string>
+    <string name="save_vision_text">ثبت هدف</string>
+    <string name="add_vision_day_error">لطفا فیلد تعداد روز را تکمیل نمائید</string>
+    <string name="add_vision_all_field_error">لطفا تمام فیلدها را تکمیل نمائید</string>
 </resources>

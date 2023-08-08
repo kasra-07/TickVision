@@ -76,7 +76,9 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
     }
 
     private void setOnBtnAddClickListener() {
+        btnAdd.setOnClickListener(v -> {
 
+        });
     }
 
     private void startNormallyActivity() {

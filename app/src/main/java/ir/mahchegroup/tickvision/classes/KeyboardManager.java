@@ -17,7 +17,7 @@ public class KeyboardManager {
         }
     }
 
-    public static void showKeyboard(View view, Context context) {
+    public static void showKeyboard(Context context, View view) {
         InputMethodManager imm = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
         view.requestFocus();
         imm.showSoftInput(view, InputMethodManager.SHOW_IMPLICIT);
