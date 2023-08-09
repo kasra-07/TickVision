@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:layoutDirection="rtl">
+
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="5dp"
+        android:gravity="center"
+        android:text="@string/table_title"
+        android:textColor="@color/gray"
+        android:textSize="@dimen/title_size"
+        android:textStyle="bold" />
+
+    <View
+        android:id="@+id/v1"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/normal_line_size"
+        android:layout_below="@id/title"
+        android:background="@color/gray" />
+
+    <LinearLayout
+        android:id="@+id/income_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/v1"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/title_income"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight=".5"
+            android:gravity="start"
+            android:paddingStart="@dimen/padding_left_right_table"
+            android:paddingTop="@dimen/padding_bottom_top_table"
+            android:paddingBottom="@dimen/padding_bottom_top_table"
+            android:text="@string/income_text"
+            android:textSize="@dimen/large_text_size"
+            tools:ignore="RtlSymmetry" />
+
+        <View
+            android:id="@+id/v2"
+            android:layout_width="@dimen/normal_line_size"
+            android:layout_height="match_parent"
+            android:background="@color/gray" />
+
+        <TextView
+            android:id="@+id/tv_income"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1.2"
+            android:gravity="start"
+            android:paddingStart="@dimen/padding_left_right_table"
+            android:paddingTop="@dimen/padding_bottom_top_table"
+            android:paddingBottom="@dimen/padding_bottom_top_table"
+            android:textSize="@dimen/large_text_size"
+            tools:ignore="RtlSymmetry"
+            tools:text="@string/income_text" />
+
+    </LinearLayout>
+
+    <View
+        android:id="@+id/v3"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/normal_line_size"
+        android:layout_below="@id/income_layout"
+        android:background="@color/gray" />
+
+    <LinearLayout
+        android:id="@+id/payment_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/v3"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/title_payment"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight=".5"
+            android:gravity="start"
+            android:paddingStart="@dimen/padding_left_right_table"
+            android:paddingTop="@dimen/padding_bottom_top_table"
+            android:paddingBottom="@dimen/padding_bottom_top_table"
+            android:text="@string/payment_text"
+            android:textSize="@dimen/large_text_size"
+            tools:ignore="RtlSymmetry" />
+
+        <View
+            android:id="@+id/v4"
+            android:layout_width="@dimen/normal_line_size"
+            android:layout_height="match_parent"
+            android:background="@color/gray" />
+
+        <TextView
+            android:id="@+id/tv_payment"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1.2"
+            android:gravity="start"
+            android:paddingStart="@dimen/padding_left_right_table"
+            android:paddingTop="@dimen/padding_bottom_top_table"
+            android:paddingBottom="@dimen/padding_bottom_top_table"
+            android:textSize="@dimen/large_text_size"
+            tools:ignore="RtlSymmetry"
+            tools:text="@string/income_text" />
+
+    </LinearLayout>
+
+    <View
+        android:id="@+id/v5"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/normal_line_size"
+        android:layout_below="@id/payment_layout"
+        android:background="@color/gray" />
+
+    <LinearLayout
+        android:id="@+id/profit_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/v5"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/title_profit"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight=".5"
+            android:gravity="start"
+            android:paddingStart="@dimen/padding_left_right_table"
+            android:paddingTop="@dimen/padding_bottom_top_table"
+            android:paddingBottom="@dimen/padding_bottom_top_table"
+            android:textSize="@dimen/large_text_size"
+            tools:ignore="RtlSymmetry"
+            tools:text="@string/income_text" />
+
+        <View
+            android:id="@+id/v6"
+            android:layout_width="@dimen/normal_line_size"
+            android:layout_height="match_parent"
+            android:background="@color/gray" />
+
+        <TextView
+            android:id="@+id/tv_profit"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1.2"
+            android:gravity="start"
+            android:paddingStart="@dimen/padding_left_right_table"
+            android:paddingTop="@dimen/padding_bottom_top_table"
+            android:paddingBottom="@dimen/padding_bottom_top_table"
+            android:textSize="@dimen/large_text_size"
+            tools:ignore="RtlSymmetry"
+            tools:text="@string/income_text" />
+
+    </LinearLayout>
+
+    <View
+        android:id="@+id/v7"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/normal_line_size"
+        android:layout_below="@id/profit_layout"
+        android:background="@color/gray" />
+
+    <LinearLayout
+        android:id="@+id/rest_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/v7"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/title_rest"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight=".5"
+            android:gravity="start"
+            android:paddingStart="@dimen/padding_left_right_table"
+            android:paddingTop="@dimen/padding_bottom_top_table"
+            android:paddingBottom="@dimen/padding_bottom_top_table"
+            android:textSize="@dimen/large_text_size"
+            tools:ignore="RtlSymmetry"
+            tools:text="@string/income_text" />
+
+        <View
+            android:id="@+id/v8"
+            android:layout_width="@dimen/normal_line_size"
+            android:layout_height="match_parent"
+            android:background="@color/gray" />
+
+        <TextView
+            android:id="@+id/tv_rest"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1.2"
+            android:gravity="start"
+            android:paddingStart="@dimen/padding_left_right_table"
+            android:paddingTop="@dimen/padding_bottom_top_table"
+            android:paddingBottom="@dimen/padding_bottom_top_table"
+            android:textSize="@dimen/large_text_size"
+            tools:ignore="RtlSymmetry"
+            tools:text="@string/income_text" />
+
+    </LinearLayout>
+
+</RelativeLayout>

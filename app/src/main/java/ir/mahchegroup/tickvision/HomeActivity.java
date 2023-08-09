@@ -5,7 +5,9 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.cardview.widget.CardView;
 import androidx.drawerlayout.widget.DrawerLayout;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -37,13 +39,12 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
     private RelativeLayout btnAddVisionRoot, btnSelectVisionRoot;
     private LinearLayout homeToolbarRoot, btnAddLayout, btnSelectLayout;
     private Toolbar toolbar;
-    private TextView tvToolbar;
+    private TextView tvToolbar, tvTime, tvTimer, tvDay, tvDate, tvTitleTimer, tvIncome, tvPayment, tvProfit, tvRest, titleIncome, titlePayment, titleProfit, titleRest;
     private ImageView imgToolbar, btnAddDescription, btnSelectDescription, timerSwitch;
     private FloatingActionButton btnAdd, btnSelect;
     private DrawerLayout drawer;
-    private View dimMenu;
     private CardView tableLayout, timeLayout, incomeLayout, paymentLayout;
-    private View tableView, timeView, incomeView, paymentView;
+    private View tableView, timeView, incomeView, paymentView, dimMenu;
     private FloatingActionMenu menu;
     private Shared shared;
     private VisionDao dao;
@@ -58,6 +59,7 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
     private AddVision addVision;
     private GetAllVisions getAllVisions;
     private SelectVisionDialog selectVisionDialog;
+    private LayoutInflater inflater;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,15 +82,6 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
         }
     }
 
-    @Override
-    public void onGetCountListener(int count) {
-        ofLineCount = dao.getCountVision();
-        onLineCount = count;
-        if (onLineCount > ofLineCount) {
-            updateAllVisionsDialog.show();
-        }
-    }
-
     private void setOnBtnAddClickListener() {
         btnAddVisionRoot.setVisibility(View.VISIBLE);
         btnAdd.setOnClickListener(v -> addVisionDialog.show());
@@ -103,6 +96,47 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
         btnAddVisionRoot.setVisibility(View.GONE);
         btnSelectVisionRoot.setVisibility(View.GONE);
 
+        initTableViewAndTimeView();
+    }
+
+    @SuppressLint("InflateParams")
+    private void initTableViewAndTimeView() {
+        timeLayout.removeAllViews();
+        tableLayout.removeAllViews();
+
+        timeView = inflater.inflate(R.layout.time_layout, null);
+        tableView = inflater.inflate(R.layout.table_layout, null);
+
+        timeLayout.addView(timeView);
+        tableLayout.addView(tableView);
+
+        initTimeAndTableChildren();
+    }
+
+    private void initTimeAndTableChildren() {
+        tvTime = timeView.findViewById(R.id.tv_time);
+        tvTimer = timeView.findViewById(R.id.tv_timer);
+        tvDay = timeView.findViewById(R.id.tv_day);
+        tvDate = timeView.findViewById(R.id.tv_date);
+        tvTitleTimer = timeView.findViewById(R.id.tv_title_timer);
+
+        tvIncome = tableView.findViewById(R.id.tv_income);
+        titleIncome = tableView.findViewById(R.id.title_income);
+        tvPayment = tableView.findViewById(R.id.tv_payment);
+        titlePayment = tableView.findViewById(R.id.title_payment);
+        tvProfit = tableView.findViewById(R.id.tv_profit);
+        titleProfit = tableView.findViewById(R.id.title_profit);
+        tvRest = tableView.findViewById(R.id.tv_rest);
+        titleRest = tableView.findViewById(R.id.title_rest);
+    }
+
+    @Override
+    public void onGetCountListener(int count) {
+        ofLineCount = dao.getCountVision();
+        onLineCount = count;
+        if (onLineCount > ofLineCount) {
+            updateAllVisionsDialog.show();
+        }
     }
 
     @Override
@@ -238,6 +272,7 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
     }
 
     private void init() {
+        inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
         btnAddVisionRoot = findViewById(R.id.btn_add_root);
         btnSelectVisionRoot = findViewById(R.id.btn_select_root);
         btnAddLayout = findViewById(R.id.btn_add_layout);

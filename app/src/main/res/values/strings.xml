@@ -68,4 +68,9 @@
     <string name="select_vision_dialog_title">انتخاب هدف</string>
     <string name="select_vision_edit_dialog_text">لطفا یک هدف جهت ویرایش انتخاب نمائید</string>
     <string name="select_vision_error">لطفا یک هدف انتخاب نمائید</string>
+    <string name="table_title">عملکرد روزانه</string>
+    <string name="income_text">درآمد</string>
+    <string name="payment_text">هزینه</string>
+    <string name="time_00">00 : 00 : 00</string>
+    <string name="working_hours_day_text">مدت زمان کارکرد امروز تاکنون</string>
 </resources>

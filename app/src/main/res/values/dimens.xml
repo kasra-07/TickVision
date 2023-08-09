@@ -18,4 +18,8 @@
     <dimen name="edt_height_size">35dp</dimen>
     <dimen name="margin_bottom_last_edt_dialog">40dp</dimen>
     <dimen name="btn_dialog_width">110dp</dimen>
+    <dimen name="normal_line_size">1.5dp</dimen>
+    <dimen name="padding_left_right_table">10dp</dimen>
+    <dimen name="padding_bottom_top_table">5dp</dimen>
+    <dimen name="margin_left_right_time_view">20dp</dimen>
 </resources>
