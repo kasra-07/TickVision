@@ -22,4 +22,5 @@ public class UserItems {
     public static final String GET_COUNT_VISION_URL = "https://mahchegroup.ir/tick_vision/get_count_vision.php";
     public static final String ADD_VISION_URL = "https://mahchegroup.ir/tick_vision/add_vision.php";
     public static final String CLEAR_ALL_VISIONS_URL = "https://mahchegroup.ir/tick_vision/clear_all_visions.php";
+    public static final String GET_ALL_VISIONS_URL = "https://mahchegroup.ir/tick_vision/get_all_visions.php";
 }
