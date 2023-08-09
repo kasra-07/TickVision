@@ -209,21 +209,6 @@ public class LoginActivity extends AppCompatActivity implements UserLogin.OnUser
         userLogin.login(userMail, pass);
     }
 
-    private void init() {
-        root = findViewById(R.id.login_root);
-        lUserMail = findViewById(R.id.user_mail_layout);
-        lPass = findViewById(R.id.pass_layout);
-        eUserMail = findViewById(R.id.edt_user_mail);
-        ePass = findViewById(R.id.edt_pass);
-        loginLink = findViewById(R.id.login_link);
-        forgetLink = findViewById(R.id.forget_link);
-        chRemember = findViewById(R.id.ch_remember);
-        shared = new Shared(this);
-        isRememberChecked = shared.getShared().getBoolean(UserItems.IS_REMEMBER_CHECKED, false);
-        lUserMail.setDefaultHintTextColor(ColorStateList.valueOf(getColor(R.color.gray)));
-        lPass.setDefaultHintTextColor(ColorStateList.valueOf(getColor(R.color.gray)));
-    }
-
     @Override
     public void onUserLoginListener(List<String> loginList) {
         if (loginList.get(0).equals("empty")) {
@@ -248,5 +233,21 @@ public class LoginActivity extends AppCompatActivity implements UserLogin.OnUser
             Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
             Animations.AnimActivity(this, intent);
         }
+    }
+
+    private void init() {
+        root = findViewById(R.id.login_root);
+        lUserMail = findViewById(R.id.user_mail_layout);
+        lPass = findViewById(R.id.pass_layout);
+        eUserMail = findViewById(R.id.edt_user_mail);
+        ePass = findViewById(R.id.edt_pass);
+        loginLink = findViewById(R.id.login_link);
+        forgetLink = findViewById(R.id.forget_link);
+        chRemember = findViewById(R.id.ch_remember);
+        shared = new Shared(this);
+        isRememberChecked = shared.getShared().getBoolean(UserItems.IS_REMEMBER_CHECKED, false);
+        isChecked = shared.getShared().getBoolean(UserItems.IS_REMEMBER_CHECKED, false);
+        lUserMail.setDefaultHintTextColor(ColorStateList.valueOf(getColor(R.color.gray)));
+        lPass.setDefaultHintTextColor(ColorStateList.valueOf(getColor(R.color.gray)));
     }
 }

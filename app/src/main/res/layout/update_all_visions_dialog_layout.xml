@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_margin="20dp">
+    android:layout_margin="@dimen/margin_layout_dialog">
 
     <RelativeLayout
         android:id="@+id/layout"
@@ -31,9 +31,9 @@
             android:layout_marginStart="@dimen/btn_margin_left_right"
             android:layout_marginTop="@dimen/margin_top_first_view_dialog"
             android:layout_marginEnd="@dimen/btn_margin_left_right"
-            android:layout_marginBottom="42dp"
-            android:maxLines="2"
+            android:layout_marginBottom="@dimen/margin_bottom_last_edt_dialog"
             android:background="@drawable/red_edt_background"
+            android:maxLines="2"
             android:padding="10dp"
             android:text="@string/first_update_vision_dialog_text"
             android:textAlignment="center"
@@ -45,11 +45,11 @@
 
     <Button
         android:id="@+id/btn_remove"
-        android:layout_width="110dp"
-        android:layout_height="40dp"
+        android:layout_width="@dimen/btn_dialog_width"
+        android:layout_height="@dimen/btn_dialog_height"
         android:layout_alignParentStart="true"
         android:layout_marginStart="@dimen/btn_margin_left_right"
-        android:layout_marginTop="150sp"
+        android:layout_marginTop="147sp"
         android:layout_marginBottom="30sp"
         android:background="@drawable/red_btn_background"
         android:fontFamily="@font/iran_sans"
@@ -61,10 +61,10 @@
 
     <Button
         android:id="@+id/btn_update"
-        android:layout_width="110dp"
-        android:layout_height="40dp"
+        android:layout_width="@dimen/btn_dialog_width"
+        android:layout_height="@dimen/btn_dialog_height"
         android:layout_alignParentEnd="true"
-        android:layout_marginTop="150dp"
+        android:layout_marginTop="147dp"
         android:layout_marginEnd="@dimen/btn_margin_left_right"
         android:layout_marginBottom="30dp"
         android:background="@drawable/red_btn_background"

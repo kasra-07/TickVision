@@ -57,4 +57,9 @@
     <string name="save_vision_text">ثبت هدف</string>
     <string name="add_vision_day_error">لطفا فیلد تعداد روز را تکمیل نمائید</string>
     <string name="add_vision_all_field_error">لطفا تمام فیلدها را تکمیل نمائید</string>
+    <string name="add_vision_success">ثبت هدف با موفقیت انجام شد</string>
+    <string name="add_vision_error">ثبت هدف با خطا مواجه شد</string>
+    <string name="add_vision_duplicate_error">عنوان هدف تکراری است</string>
+    <string name="clear_all_vision_success_text">حذف هدف ها با موفقیت انجام شد</string>
+    <string name="clear_all_visions_error">حذف هدف ها با خطا مواجه شد\nلطفا مجددا تلاش نمائید</string>
 </resources>
