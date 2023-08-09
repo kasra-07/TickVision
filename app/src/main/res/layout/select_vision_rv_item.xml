@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layoutDirection="rtl">
+
+    <LinearLayout
+        android:id="@+id/rv_item_root"
+        android:layout_width="240dp"
+        android:layout_height="35dp"
+        android:layout_centerInParent="true"
+        android:layout_margin="15dp"
+        android:background="@drawable/red_edt_background"
+        android:orientation="horizontal"
+        tools:ignore="UselessParent">
+
+        <ImageView
+            android:id="@+id/img_is_tick_vision_select_vision"
+            android:layout_width="0dp"
+            android:layout_height="30dp"
+            android:layout_gravity="center"
+            android:layout_marginStart="5dp"
+            android:layout_weight="1"
+            android:src="@drawable/ok_rv"
+            tools:ignore="ContentDescription,ImageContrastCheck" />
+
+        <TextView
+            android:id="@+id/tv_vision_name_select_vision"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginStart="10dp"
+            android:layout_weight="5"
+            android:fontFamily="@font/iran_sans"
+            android:layout_marginEnd="10dp"
+            android:gravity="start|center_vertical"
+            android:textColor="@color/primary_color"
+            android:textSize="@dimen/normal_text_size"
+            tools:text="خرید خودرو" />
+
+    </LinearLayout>
+
+</RelativeLayout>
