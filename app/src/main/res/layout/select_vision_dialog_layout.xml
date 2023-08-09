@@ -38,7 +38,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/v1"
-            android:textSize="@dimen/large_text_size"
+            android:textSize="@dimen/btn_text_size"
             android:textColor="@color/primary_color"
             android:layout_marginTop="5dp"
             android:text="@string/select_vision_day_dialog_text"

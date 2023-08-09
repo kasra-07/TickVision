@@ -16,11 +16,11 @@ import java.util.List;
 
 import ir.mahchegroup.tickvision.R;
 
-public class RvSelectAdapter extends RecyclerView.Adapter<RvSelectAdapter.RvViewHolder> {
+public class SelectRvAdapter extends RecyclerView.Adapter<SelectRvAdapter.RvViewHolder> {
     private final Context context;
     private final List<SelectRvModel> list;
 
-    public RvSelectAdapter(Context context, List<SelectRvModel> list) {
+    public SelectRvAdapter(Context context, List<SelectRvModel> list) {
         this.context = context;
         this.list = list;
     }

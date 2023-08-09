@@ -11,7 +11,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.github.clans.fab.FloatingActionMenu;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -26,6 +25,7 @@ import ir.mahchegroup.tickvision.database.VisionDatabase;
 import ir.mahchegroup.tickvision.date.ChangeDate;
 import ir.mahchegroup.tickvision.message_box.AddVisionDialog;
 import ir.mahchegroup.tickvision.message_box.ClearAllVisionsDialog;
+import ir.mahchegroup.tickvision.message_box.SelectVisionDialog;
 import ir.mahchegroup.tickvision.message_box.ToastMessage;
 import ir.mahchegroup.tickvision.message_box.UpdateAllVisionsDialog;
 import ir.mahchegroup.tickvision.network.AddVision;
@@ -33,7 +33,7 @@ import ir.mahchegroup.tickvision.network.ClearAllVisions;
 import ir.mahchegroup.tickvision.network.GetAllVisions;
 import ir.mahchegroup.tickvision.network.GetCountVision;
 
-public class HomeActivity extends AppCompatActivity implements GetCountVision.OnGetCountCallBack, UpdateAllVisionsDialog.OnUpdateAllVisionsDialogCallBack, ClearAllVisionsDialog.OnClearAllVisionsDialogCallBack, AddVisionDialog.OnAddVisionDialogCallBack, AddVision.OnAddVisionCallBack, ClearAllVisions.OnClearAllVisionsCallBack, GetAllVisions.OnGetAllVisionsCallBack {
+public class HomeActivity extends AppCompatActivity implements GetCountVision.OnGetCountCallBack, UpdateAllVisionsDialog.OnUpdateAllVisionsDialogCallBack, ClearAllVisionsDialog.OnClearAllVisionsDialogCallBack, AddVisionDialog.OnAddVisionDialogCallBack, AddVision.OnAddVisionCallBack, ClearAllVisions.OnClearAllVisionsCallBack, GetAllVisions.OnGetAllVisionsCallBack, SelectVisionDialog.OnSelectVisionDialogCallBack {
     private RelativeLayout btnAddVisionRoot, btnSelectVisionRoot;
     private LinearLayout homeToolbarRoot, btnAddLayout, btnSelectLayout;
     private Toolbar toolbar;
@@ -49,6 +49,7 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
     private VisionDao dao;
     private int onLineCount, ofLineCount;
     private boolean isFirstTime, isUserAddVision, isUserSelectVision;
+    public static boolean isCheckDayMode = true;
     private String userTbl, date, title, amount, day;
     private UpdateAllVisionsDialog updateAllVisionsDialog;
     private ClearAllVisionsDialog clearAllVisionsDialog;
@@ -56,6 +57,7 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
     private AddVisionDialog addVisionDialog;
     private AddVision addVision;
     private GetAllVisions getAllVisions;
+    private SelectVisionDialog selectVisionDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,10 +71,8 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
             getCountVision.getCount(userTbl);
         } else {
             if (!isUserAddVision || !isUserSelectVision) {
-                btnAddVisionRoot.setVisibility(View.VISIBLE);
-                btnSelectVisionRoot.setVisibility(View.VISIBLE);
                 setOnBtnAddClickListener();
-                //setBtnSelectClickListener();
+                setOnBtnSelectClickListener();
 
             } else {
                 startNormallyActivity();
@@ -90,10 +90,18 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
     }
 
     private void setOnBtnAddClickListener() {
+        btnAddVisionRoot.setVisibility(View.VISIBLE);
         btnAdd.setOnClickListener(v -> addVisionDialog.show());
     }
 
+    private void setOnBtnSelectClickListener() {
+        btnSelectVisionRoot.setVisibility(View.VISIBLE);
+        btnSelect.setOnClickListener(v -> selectVisionDialog.show());
+    }
+
     private void startNormallyActivity() {
+        btnAddVisionRoot.setVisibility(View.GONE);
+        btnSelectVisionRoot.setVisibility(View.GONE);
 
     }
 
@@ -134,17 +142,13 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
         addVisionDialog.dismiss();
 
         if (!isUserAddVision) {
-            btnAddVisionRoot.setVisibility(View.VISIBLE);
             setOnBtnAddClickListener();
 
-
-            // setOnBtnSelectClickListener();
-
         } else if (!isUserSelectVision) {
-            btnAddVisionRoot.setVisibility(View.VISIBLE);
-            btnSelectVisionRoot.setVisibility(View.VISIBLE);
+            setOnBtnAddClickListener();
+            setOnBtnSelectClickListener();
+
         } else {
-            btnAddVisionRoot.setVisibility(View.GONE);
             startNormallyActivity();
         }
     }
@@ -176,8 +180,10 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
 
             if (!isUserAddVision) {
                 shared.getEditor().putBoolean(UserItems.IS_USER_ADD_VISION, true).apply();
+                setOnBtnSelectClickListener();
 
-                // selectVisionDialogShow();
+            } else if (!isUserSelectVision) {
+                selectVisionDialog.show();
 
             } else {
                 startNormallyActivity();
@@ -195,8 +201,8 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
         if (isClearAllVisions.equals("success")) {
             clearAllVisionsDialog.dismiss();
             ToastMessage.show(this, getString(R.string.clear_all_vision_success_text), true, true);
-            btnAddVisionRoot.setVisibility(View.VISIBLE);
             setOnBtnAddClickListener();
+            btnSelectVisionRoot.setVisibility(View.GONE);
             shared.getEditor().putBoolean(UserItems.IS_FIRST_TIME, false).apply();
         } else {
             ToastMessage.show(this, getString(R.string.clear_all_visions_error), false, false);
@@ -205,14 +211,30 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
 
     @Override
     public void onGetAllVisionsListener(List<ModelVision> getAllVisionsList) {
-        for (int i = 0; i < getAllVisionsList.size(); i++) {
-            dao.addVision(getAllVisionsList.get(i));
+        if (!isUserSelectVision) {
+            for (int i = 0; i < getAllVisionsList.size(); i++) {
+                dao.addVision(getAllVisionsList.get(i));
+            }
+            updateAllVisionsDialog.dismiss();
+            ToastMessage.show(this, getString(R.string.update_all_visions_success_text), true, true);
+            setOnBtnAddClickListener();
+            setOnBtnSelectClickListener();
+            shared.getEditor().putBoolean(UserItems.IS_FIRST_TIME, false).apply();
         }
-        updateAllVisionsDialog.dismiss();
-        ToastMessage.show(this, getString(R.string.update_all_visions_success_text), true, true);
-        btnAddVisionRoot.setVisibility(View.VISIBLE);
-        btnSelectVisionRoot.setVisibility(View.VISIBLE);
-        shared.getEditor().putBoolean(UserItems.IS_FIRST_TIME, false).apply();
+    }
+
+    @Override
+    public void onSelectVisionDialogSelectListener(String titleSelectVision) {
+
+    }
+
+    @Override
+    public void onSelectVisionDialogCancelListener() {
+        selectVisionDialog.dismiss();
+        if (!isUserSelectVision) {
+            setOnBtnAddClickListener();
+            setOnBtnSelectClickListener();
+        }
     }
 
     private void init() {
@@ -248,5 +270,6 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
         addVisionDialog = new AddVisionDialog(this);
         addVision = new AddVision(this);
         getAllVisions = new GetAllVisions(this);
+        selectVisionDialog = new SelectVisionDialog(this);
     }
 }

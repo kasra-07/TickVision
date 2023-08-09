@@ -6,6 +6,8 @@ import androidx.room.Insert;
 import androidx.room.Query;
 import androidx.room.Update;
 
+import java.util.List;
+
 @Dao
 public interface VisionDao {
     @Insert
@@ -18,6 +20,8 @@ public interface VisionDao {
     int clearAllVisions();
     @Query("SELECT * FROM vision_tbl WHERE title = :title")
     ModelVision getVision(String title);
+    @Query("SELECT * FROM vision_tbl")
+    List<ModelVision> getAllVisions();
     @Query("SELECT COUNT(id) FROM vision_tbl")
     int getCountVision();
 }

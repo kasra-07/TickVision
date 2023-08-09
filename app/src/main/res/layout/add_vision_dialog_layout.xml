@@ -2,8 +2,8 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
     android:layout_margin="@dimen/margin_layout_dialog">
 
     <RelativeLayout
@@ -109,8 +109,8 @@
         android:layout_height="@dimen/btn_dialog_height"
         android:layout_alignParentStart="true"
         android:layout_marginStart="40dp"
+        android:layout_marginEnd="20dp"
         android:layout_marginTop="-20dp"
-        android:layout_marginEnd="40dp"
         android:background="@drawable/red_btn_background"
         android:gravity="center"
         android:text="@string/back_text"
