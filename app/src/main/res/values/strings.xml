@@ -63,4 +63,7 @@
     <string name="clear_all_vision_success_text">حذف هدف ها با موفقیت انجام شد</string>
     <string name="clear_all_visions_error">حذف هدف ها با خطا مواجه شد\nلطفا مجددا تلاش نمائید</string>
     <string name="update_all_visions_success_text">بروزرسانی هدف ها با موفقیت انجام شد</string>
+    <string name="select_vision_day_dialog_text">لطفا یک هدف جهت بررسی روزانه انتخاب نمائید</string>
+    <string name="select_text">انتخاب</string>
+    <string name="select_vision_dialog_title">انتخاب هدف</string>
 </resources>
