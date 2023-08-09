@@ -1,5 +1,6 @@
 package ir.mahchegroup.tickvision;
 
+import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.cardview.widget.CardView;
@@ -13,18 +14,24 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.github.clans.fab.FloatingActionMenu;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.text.DecimalFormat;
 import java.util.List;
+import java.util.Locale;
+import java.util.Objects;
 
+import ir.mahchegroup.tickvision.classes.FaNum;
 import ir.mahchegroup.tickvision.classes.Shared;
 import ir.mahchegroup.tickvision.classes.UserItems;
 import ir.mahchegroup.tickvision.database.ModelVision;
 import ir.mahchegroup.tickvision.database.VisionDao;
 import ir.mahchegroup.tickvision.database.VisionDatabase;
 import ir.mahchegroup.tickvision.date.ChangeDate;
+import ir.mahchegroup.tickvision.date.ShamsiCalendar;
 import ir.mahchegroup.tickvision.message_box.AddVisionDialog;
 import ir.mahchegroup.tickvision.message_box.ClearAllVisionsDialog;
 import ir.mahchegroup.tickvision.message_box.SelectVisionDialog;
@@ -50,8 +57,10 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
     private VisionDao dao;
     private int onLineCount, ofLineCount;
     private boolean isFirstTime, isUserAddVision, isUserSelectVision;
+    private LayoutInflater inflater;
     public static boolean isCheckDayMode = true;
-    private String userTbl, date, title, amount, day;
+    private String userTbl, date, title, amount, day, selected_vision;
+    private ModelVision selectVisionModel;
     private UpdateAllVisionsDialog updateAllVisionsDialog;
     private ClearAllVisionsDialog clearAllVisionsDialog;
     private ClearAllVisions clearAllVisions;
@@ -59,7 +68,6 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
     private AddVision addVision;
     private GetAllVisions getAllVisions;
     private SelectVisionDialog selectVisionDialog;
-    private LayoutInflater inflater;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,14 +103,33 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
     private void startNormallyActivity() {
         btnAddVisionRoot.setVisibility(View.GONE);
         btnSelectVisionRoot.setVisibility(View.GONE);
+        drawer.setVisibility(View.VISIBLE);
+
+        selectVisionModel = dao.getVision(selected_vision);
+
+        setSupportActionBar(toolbar);
+        Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
+
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, R.string.open, R.string.close);
+        drawer.addDrawerListener(toggle);
+        toggle.syncState();
+
+        Toast.makeText(this, selectVisionModel.getTitle(), Toast.LENGTH_SHORT).show();
+
+        tvToolbar.setText(selectVisionModel.getTitle());
 
         initTableViewAndTimeView();
     }
 
     @SuppressLint("InflateParams")
     private void initTableViewAndTimeView() {
-        timeLayout.removeAllViews();
-        tableLayout.removeAllViews();
+        if (timeLayout.getChildAt(0) != null) {
+            timeLayout.removeAllViews();
+        }
+
+        if (tableLayout.getChildAt(0) != null) {
+            tableLayout.removeAllViews();
+        }
 
         timeView = inflater.inflate(R.layout.time_layout, null);
         tableView = inflater.inflate(R.layout.table_layout, null);
@@ -128,6 +155,112 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
         titleProfit = tableView.findViewById(R.id.title_profit);
         tvRest = tableView.findViewById(R.id.tv_rest);
         titleRest = tableView.findViewById(R.id.title_rest);
+
+        setTimeValues();
+
+        setTableValues();
+    }
+
+    private void setTimeValues() {
+        tvTime.setText(FaNum.convert(ChangeDate.getCurrentTime()));
+        tvDate.setText(FaNum.convert(ChangeDate.getCurrentYear() + " / " + ChangeDate.getCurrentMonth() + " / " + ChangeDate.getCurrentDay()));
+        long t = Long.parseLong(selectVisionModel.getMilli_sec());
+        tvTimer.setText(timeFormat(t));
+        tvDay.setText(showDay());
+
+        tvTimer.setTextColor(selectVisionModel.getIs_tick().equals("0") ? getColor(R.color.primary_color) : getColor(R.color.gray));
+        tvTitleTimer.setTextColor(selectVisionModel.getIs_tick().equals("0") ? getColor(R.color.primary_color) : getColor(R.color.gray));
+    }
+
+    private void setTableValues() {
+        String isTick = selectVisionModel.getIs_tick();
+
+        int income = Integer.parseInt(selectVisionModel.getIncome());
+        titleIncome.setText(isTick.equals("0") ? getString(R.string.income_text) : getString(R.string.all_income_text));
+        titleIncome.setTextColor(isTick.equals("0") ? (income == 0 ? getColor(R.color.primary_color) : getColor(R.color.accent_color)) : getColor(R.color.gray));
+
+        int incomeAmount = Integer.parseInt(selectVisionModel.getIncome_amount());
+        tvIncome.setText(isTick.equals("0") ? FaNum.convert(splitDigits(income)) + "   تومان" : FaNum.convert(splitDigits(incomeAmount)) + "   تومان");
+        tvIncome.setTextColor(isTick.equals("0") ? (income == 0 ? getColor(R.color.primary_color) : getColor(R.color.accent_color)) : getColor(R.color.gray));
+
+        //------------------------------------------------------------------------------------------
+
+        int payment = Integer.parseInt(selectVisionModel.getPayment());
+        titlePayment.setText(isTick.equals("0") ? getString(R.string.payment_text) : getString(R.string.all_rest_text));
+        titlePayment.setTextColor(isTick.equals("0") ? (payment > 0 ? getColor(R.color.primary_color) : getColor(R.color.accent_color)) : getColor(R.color.gray));
+
+        int amount = Integer.parseInt(selectVisionModel.getAmount());
+        int restAmount = amount - incomeAmount;
+        tvPayment.setText(isTick.equals("0") ? FaNum.convert(splitDigits(payment)) + "   تومان" : FaNum.convert(splitDigits(restAmount)) + "   تومان");
+        tvPayment.setTextColor(isTick.equals("0") ? (payment > 0 ? getColor(R.color.primary_color) : getColor(R.color.accent_color)) : getColor(R.color.gray));
+
+        //------------------------------------------------------------------------------------------
+
+        int profit = Integer.parseInt(selectVisionModel.getProfit());
+        titleProfit.setText(isTick.equals("0") ? (profit > 0 ? getString(R.string.profit_text) : getString(R.string.damage_text)) : getString(R.string.all_days_text));
+        titleProfit.setTextColor(isTick.equals("0") ? (profit <= 0 ? getColor(R.color.primary_color) : getColor(R.color.accent_color)) : getColor(R.color.gray));
+
+        String dayVision = selectVisionModel.getDay_vision();
+        tvProfit.setText(isTick.equals("0") ? FaNum.convert(splitDigits(profit)) + "   تومان" : FaNum.convert(dayVision));
+        tvProfit.setTextColor(isTick.equals("0") ? (profit <= 0 ? getColor(R.color.primary_color) : getColor(R.color.accent_color)) : getColor(R.color.gray));
+
+        //------------------------------------------------------------------------------------------
+
+        int rest = Integer.parseInt(selectVisionModel.getRest());
+        titleRest.setText(isTick.equals("0") ? (rest > 0 ? getString(R.string.rest_text) : getString(R.string.extra_text)) : getString(R.string.rest_days_text));
+        titleRest.setTextColor(isTick.equals("0") ? (rest > 0 ? getColor(R.color.primary_color) : getColor(R.color.accent_color)) : getColor(R.color.gray));
+
+        String dayRest = selectVisionModel.getDay_rest();
+        tvRest.setText(isTick.equals("0") ? FaNum.convert(splitDigits(rest)) + "   تومان" : FaNum.convert(dayRest));
+        tvRest.setTextColor(isTick.equals("0") ? (rest > 0 ? getColor(R.color.primary_color) : getColor(R.color.accent_color)) : getColor(R.color.gray));
+    }
+
+
+    private String timeFormat(long t) {
+        int sec = (int) (t / 1000);
+        int min = sec / 60;
+        int hour = min / 60;
+        sec %= 60;
+        min %= 60;
+        return FaNum.convert(String.format(Locale.ENGLISH, "%02d", sec) + " : " + String.format(Locale.ENGLISH, "%02d", min) + " : " + String.format(Locale.ENGLISH, "%02d", hour));
+    }
+
+    private String showDay() {
+        String result = "";
+        int day = ShamsiCalendar.dayOfWeek(ShamsiCalendar.shSysDate());
+        switch (day) {
+            case 2:
+                result = "دوشنبه";
+                break;
+
+            case 3:
+                result = "سه شنبه";
+                break;
+
+            case 4:
+                result = "چهارشنبه";
+                break;
+
+            case 5:
+                result = "پنجشنبه";
+                break;
+
+            case 6:
+                result = "جمعه";
+                break;
+
+            case 7:
+                result = "شنبه";
+                break;
+
+            case 1:
+                result = "یکشنبه";
+        }
+        return result;
+    }
+
+    public static String splitDigits(int number) {
+        return new DecimalFormat("###,###,###,###,###,###").format(number);
     }
 
     @Override
@@ -253,13 +386,25 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
             ToastMessage.show(this, getString(R.string.update_all_visions_success_text), true, true);
             setOnBtnAddClickListener();
             setOnBtnSelectClickListener();
-            shared.getEditor().putBoolean(UserItems.IS_FIRST_TIME, false).apply();
+            shared.getEditor().putBoolean(UserItems.IS_FIRST_TIME, false);
+            shared.getEditor().putBoolean(UserItems.IS_USER_ADD_VISION, true);
+            shared.getEditor().apply();
         }
     }
 
     @Override
     public void onSelectVisionDialogSelectListener(String titleSelectVision) {
-
+        if (!isUserSelectVision) {
+            title = titleSelectVision;
+            shared.getEditor().putBoolean(UserItems.IS_USER_SELECT_VISION, true);
+            shared.getEditor().putBoolean(UserItems.IS_USER_ADD_VISION, true);
+            shared.getEditor().putString(UserItems.SELECTED_VISION, title);
+            shared.getEditor().apply();
+            startNormallyActivity();
+        } else {
+            startNormallyActivity();
+        }
+        selectVisionDialog.dismiss();
     }
 
     @Override
@@ -278,8 +423,8 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
         btnAddLayout = findViewById(R.id.btn_add_layout);
         btnSelectLayout = findViewById(R.id.btn_select_layout);
         toolbar = findViewById(R.id.toolbar);
-        tvToolbar = findViewById(R.id.tv_toolbar);
-        imgToolbar = findViewById(R.id.img_toolbar);
+        tvToolbar = toolbar.findViewById(R.id.tv_toolbar);
+        imgToolbar = toolbar.findViewById(R.id.img_toolbar);
         btnAddDescription = findViewById(R.id.btn_add_description);
         btnSelectDescription = findViewById(R.id.btn_select_description);
         timerSwitch = findViewById(R.id.timer_switch);
@@ -297,6 +442,7 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
         isUserAddVision = shared.getShared().getBoolean(UserItems.IS_USER_ADD_VISION, false);
         isUserSelectVision = shared.getShared().getBoolean(UserItems.IS_USER_SELECT_VISION, false);
         userTbl = shared.getShared().getString(UserItems.USER_TBL, "");
+        selected_vision = shared.getShared().getString(UserItems.SELECTED_VISION, "");
         dao = VisionDatabase.getVisionDatabase(this).visionDao();
 
         updateAllVisionsDialog = new UpdateAllVisionsDialog(this);

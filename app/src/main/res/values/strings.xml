@@ -72,5 +72,15 @@
     <string name="income_text">درآمد</string>
     <string name="payment_text">هزینه</string>
     <string name="time_00">00 : 00 : 00</string>
-    <string name="working_hours_day_text">مدت زمان کارکرد امروز تاکنون</string>
+    <string name="working_hours_day_text">مدت زمان کارکرد امروز تاکنون :</string>
+    <string name="close">close</string>
+    <string name="open">open</string>
+    <string name="all_income_text">کل درآمد</string>
+    <string name="all_rest_text">کل باقیمانده</string>
+    <string name="all_days_text">تعداد روز</string>
+    <string name="profit_text">سود</string>
+    <string name="damage_text">زیان</string>
+    <string name="rest_days_text">باقیمانده روز</string>
+    <string name="rest_text">باقیمانده</string>
+    <string name="extra_text">مازاد</string>
 </resources>
