@@ -4,7 +4,9 @@ import android.app.Activity;
 import android.app.ActivityOptions;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Handler;
 import android.view.View;
+import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 
@@ -27,6 +29,6 @@ public class Animations {
     public static void AnimActivity(Context context, Intent intent) {
         ActivityOptions options = ActivityOptions.makeCustomAnimation(context.getApplicationContext(), R.anim.activity_fade_in, R.anim.activity_fade_out);
         context.startActivity(intent, options.toBundle());
-        ((Activity)context).finish();
+        ((Activity) context).finish();
     }
 }

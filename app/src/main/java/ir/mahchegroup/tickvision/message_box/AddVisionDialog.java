@@ -57,7 +57,7 @@ public class AddVisionDialog {
 
                 if (title.isEmpty()) {
                     ToastMessage.show(dialog.getContext(), context.getString(R.string.add_vision_title_error), false, false);
-                }else {
+                } else {
                     level++;
                     edtAmount.setVisibility(View.VISIBLE);
                     edtAmount.requestFocus();
@@ -68,7 +68,7 @@ public class AddVisionDialog {
 
                 if (amount.isEmpty()) {
                     ToastMessage.show(dialog.getContext(), context.getString(R.string.add_vision_amount_error), false, false);
-                }else {
+                } else {
                     level++;
                     btnSave.setText(context.getString(R.string.save_vision_text));
                     edtDay.setVisibility(View.VISIBLE);
@@ -79,16 +79,17 @@ public class AddVisionDialog {
 
                 if (day.isEmpty()) {
                     ToastMessage.show(dialog.getContext(), context.getString(R.string.add_vision_day_error), false, false);
-                }else {
+                } else {
                     title = edtTitle.getText().toString().trim();
                     amount = edtAmount.getText().toString().trim();
                     day = edtDay.getText().toString().trim();
 
                     if (!title.isEmpty() && !amount.isEmpty() && !day.isEmpty()) {
                         level = 0;
-                        onAddVisionDialogCallBack.onAddVisionDialogSaveListener(title, amount, day);
-                    }else {
-                        ToastMessage.show(dialog.getContext(),context.getString(R.string.add_vision_all_field_error), false, false);
+                        KeyboardManager.hideKeyboardOnDialog(dialog, context);
+                        new Handler().postDelayed(() -> onAddVisionDialogCallBack.onAddVisionDialogSaveListener(title, amount, day), 150);
+                    } else {
+                        ToastMessage.show(dialog.getContext(), context.getString(R.string.add_vision_all_field_error), false, false);
                     }
                 }
             }

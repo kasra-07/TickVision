@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<set android:duration="1200" android:fillAfter="true" xmlns:android="http://schemas.android.com/apk/res/android">
+<set android:duration="600" android:fillAfter="true" xmlns:android="http://schemas.android.com/apk/res/android">
     <alpha android:fromAlpha="0" android:toAlpha="1"/>
 </set>

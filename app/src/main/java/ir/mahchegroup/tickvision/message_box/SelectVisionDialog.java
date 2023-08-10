@@ -44,8 +44,10 @@ public class SelectVisionDialog {
         dialog = new Dialog(context);
         View view = LayoutInflater.from(context).inflate(R.layout.select_vision_dialog_layout, null);
         TextView tv = view.findViewById(R.id.tv_text_select_vision_dialog);
+        TextView title = view.findViewById(R.id.tv_title_dialog);
 
         tv.setText(HomeActivity.isCheckDayMode ? context.getString(R.string.select_vision_day_dialog_text) : context.getString(R.string.select_vision_edit_dialog_text));
+        title.setText(HomeActivity.isCheckDayMode ? context.getString(R.string.select_vision_day_dialog_title) : context.getString(R.string.select_vision_edit_dialog_title));
 
         RecyclerView rv = view.findViewById(R.id.select_dialog_rv);
         Button btnCancel = view.findViewById(R.id.btn_cancel);

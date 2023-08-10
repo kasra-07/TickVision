@@ -9,12 +9,12 @@ import androidx.drawerlayout.widget.DrawerLayout;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.Gravity;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.Animation;
@@ -33,7 +33,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
+import ir.mahchegroup.tickvision.classes.Animations;
 import ir.mahchegroup.tickvision.classes.FaNum;
+import ir.mahchegroup.tickvision.classes.KeyboardManager;
 import ir.mahchegroup.tickvision.classes.Shared;
 import ir.mahchegroup.tickvision.classes.UserItems;
 import ir.mahchegroup.tickvision.database.ModelVision;
@@ -50,10 +52,12 @@ import ir.mahchegroup.tickvision.network.AddVision;
 import ir.mahchegroup.tickvision.network.ClearAllVisions;
 import ir.mahchegroup.tickvision.network.GetAllVisions;
 import ir.mahchegroup.tickvision.network.GetCountVision;
+import ir.mahchegroup.tickvision.network.NetworkReceiver;
 
 public class HomeActivity extends AppCompatActivity implements GetCountVision.OnGetCountCallBack, UpdateAllVisionsDialog.OnUpdateAllVisionsDialogCallBack, ClearAllVisionsDialog.OnClearAllVisionsDialogCallBack, AddVisionDialog.OnAddVisionDialogCallBack, AddVision.OnAddVisionCallBack, ClearAllVisions.OnClearAllVisionsCallBack, GetAllVisions.OnGetAllVisionsCallBack, SelectVisionDialog.OnSelectVisionDialogCallBack {
+    private NetworkReceiver receiver;
     private RelativeLayout btnAddVisionRoot, btnSelectVisionRoot;
-    private LinearLayout homeToolbarRoot, btnAddLayout, btnSelectLayout;
+    private LinearLayout btnAddLayout, btnSelectLayout;
     private Toolbar toolbar;
     private TextView tvToolbar, tvTime, tvTimer, tvDay, tvDate, tvTitleTimer, tvIncome, tvPayment, tvProfit, tvRest, titleIncome, titlePayment, titleProfit, titleRest;
     private ImageView imgToolbar, btnAddDescription, btnSelectDescription, timerSwitch;
@@ -64,10 +68,10 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
     private FloatingActionMenu menu;
     private Shared shared;
     private VisionDao dao;
-    private int onLineCount, ofLineCount;
-    private boolean isFirstTime, isUserAddVision, isUserSelectVision, isOpenMenu;
+    private int ofLineCount;
+    private boolean isFirstTime, isUserAddVision, isUserSelectVision, isOpenMenu, isEquals = false, isBackEditActivity;
+    public static boolean isCheckDayMode;
     private LayoutInflater inflater;
-    public static boolean isCheckDayMode = true;
     private String userTbl, date, title, amount, day, selected_vision;
     private ModelVision selectVisionModel;
     private UpdateAllVisionsDialog updateAllVisionsDialog;
@@ -108,9 +112,13 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
             GetCountVision getCountVision = new GetCountVision(this);
             getCountVision.getCount(userTbl);
         } else {
-            if (!isUserAddVision || !isUserSelectVision) {
+            if (!isUserAddVision) {
+                setOnBtnAddClickListener();
+
+            } else if (!isUserSelectVision) {
                 setOnBtnAddClickListener();
                 setOnBtnSelectClickListener();
+                new Handler().postDelayed(() -> selectVisionDialog.show(), 500);
 
             } else {
                 startNormallyActivity();
@@ -129,6 +137,39 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
     }
 
     private void startNormallyActivity() {
+
+        if (isBackEditActivity && isEquals) {
+            drawer.setVisibility(View.GONE);
+            if (dao.getCountVision() > 0) {
+                selectVisionDialog.show();
+            } else {
+
+
+                setOnBtnAddClickListener();
+            }
+
+        } else if (isBackEditActivity) {
+            if (dao.getCountVision() == 0) {
+
+                drawer.setVisibility(View.GONE);
+                setOnBtnAddClickListener();
+
+            } else {
+                starting();
+            }
+
+        } else {
+            starting();
+        }
+
+        isBackEditActivity = false;
+        isEquals = false;
+        shared.getEditor().putBoolean(UserItems.IS_BACK_EDIT_ACTIVITY, false);
+        shared.getEditor().putBoolean(UserItems.IS_EQUALS_SELECTED_VISION, false);
+        shared.getEditor().apply();
+    }
+
+    private void starting() {
         btnAddVisionRoot.setVisibility(View.GONE);
         btnSelectVisionRoot.setVisibility(View.GONE);
         drawer.setVisibility(View.VISIBLE);
@@ -364,10 +405,16 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
 
     @Override
     public void onGetCountListener(int count) {
-        ofLineCount = dao.getCountVision();
-        onLineCount = count;
-        if (onLineCount > ofLineCount) {
-            updateAllVisionsDialog.show();
+        if (count > 0) {
+            ofLineCount = dao.getCountVision();
+
+            if (count > ofLineCount) {
+                updateAllVisionsDialog.show();
+            } else {
+                selectVisionDialog.show();
+            }
+        } else {
+            setOnBtnAddClickListener();
         }
     }
 
@@ -441,12 +488,17 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
             model.setIs_tick("0");
 
             dao.addVision(model);
-            addVisionDialog.dismiss();
+            KeyboardManager.hideKeyboardOnActivity(this, this);
+
+            new Handler().postDelayed(() -> addVisionDialog.dismiss(), 200);
+
             ToastMessage.show(this, getString(R.string.add_vision_success), true, true);
 
+
             if (!isUserAddVision) {
+                shared.getEditor().putBoolean(UserItems.IS_FIRST_TIME, false).apply();
                 shared.getEditor().putBoolean(UserItems.IS_USER_ADD_VISION, true).apply();
-                setOnBtnSelectClickListener();
+                selectVisionDialog.show();
 
             } else if (!isUserSelectVision) {
                 selectVisionDialog.show();
@@ -477,18 +529,17 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
 
     @Override
     public void onGetAllVisionsListener(List<ModelVision> getAllVisionsList) {
-        if (!isUserSelectVision) {
-            for (int i = 0; i < getAllVisionsList.size(); i++) {
-                dao.addVision(getAllVisionsList.get(i));
-            }
-            updateAllVisionsDialog.dismiss();
-            ToastMessage.show(this, getString(R.string.update_all_visions_success_text), true, true);
-            setOnBtnAddClickListener();
-            setOnBtnSelectClickListener();
-            shared.getEditor().putBoolean(UserItems.IS_FIRST_TIME, false);
-            shared.getEditor().putBoolean(UserItems.IS_USER_ADD_VISION, true);
-            shared.getEditor().apply();
+        for (int i = 0; i < getAllVisionsList.size(); i++) {
+            dao.addVision(getAllVisionsList.get(i));
         }
+        updateAllVisionsDialog.dismiss();
+        ToastMessage.show(this, getString(R.string.update_all_visions_success_text), true, true);
+        setOnBtnAddClickListener();
+        setOnBtnSelectClickListener();
+        shared.getEditor().putBoolean(UserItems.IS_FIRST_TIME, false);
+        shared.getEditor().putBoolean(UserItems.IS_USER_ADD_VISION, true);
+        shared.getEditor().apply();
+        selectVisionDialog.show();
     }
 
     @Override
@@ -499,16 +550,32 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
         if (!isUserSelectVision) {
             shared.getEditor().putBoolean(UserItems.IS_USER_SELECT_VISION, true);
             shared.getEditor().putBoolean(UserItems.IS_USER_ADD_VISION, true);
-            shared.getEditor().putString(UserItems.SELECTED_VISION, title);
+            shared.getEditor().putString(UserItems.SELECTED_VISION, titleSelectVision);
             shared.getEditor().apply();
             Intent intent = new Intent(HomeActivity.this, HomeActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
             startActivity(intent);
-            overridePendingTransition(0, 0);
+            overridePendingTransition(R.anim.activity_fade_in, R.anim.activity_fade_out);
             finish();
         } else {
-            startNormallyActivity();
+            if (isCheckDayMode) {
+                shared.getEditor().putString(UserItems.SELECTED_VISION, titleSelectVision);
+                shared.getEditor().apply();
+                selected_vision = titleSelectVision;
+                selectVisionModel = dao.getVision(titleSelectVision);
+                startNormallyActivity();
+                selectVisionDialog.dismiss();
+            } else {
+                shared.getEditor().putBoolean(UserItems.IS_BACK_EDIT_ACTIVITY, true);
+                Intent intent = new Intent(HomeActivity.this, EditActivity.class);
+                intent.putExtra(UserItems.TITLE, titleSelectVision);
+                intent.putExtra(UserItems.IS_EQUALS_SELECTED_VISION, titleSelectVision.equals(selected_vision));
+                shared.getEditor().putBoolean(UserItems.IS_EQUALS_SELECTED_VISION, titleSelectVision.equals(selected_vision));
+                shared.getEditor().apply();
+                selectVisionDialog.dismiss();
+                new Handler().postDelayed(() -> Animations.AnimActivity(this, intent), 300);
+            }
         }
     }
 
@@ -518,6 +585,35 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
         if (!isUserSelectVision) {
             setOnBtnAddClickListener();
             setOnBtnSelectClickListener();
+        } else {
+            startNormallyActivity();
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            receiver = new NetworkReceiver();
+            registerReceiver(receiver, new IntentFilter("android.net.conn.CONNECTIVITY_CHANGE"));
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        unregisterReceiver(receiver);
+    }
+
+    @SuppressLint("RtlHardcoded")
+    @Override
+    public void onBackPressed() {
+        if (drawer.isDrawerOpen(Gravity.RIGHT)) {
+            drawer.closeDrawer(Gravity.RIGHT);
+        } else if (menu.isOpened()) {
+            closeMenu();
+        } else {
+            finish();
         }
     }
 
@@ -547,6 +643,7 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
         isFirstTime = shared.getShared().getBoolean(UserItems.IS_FIRST_TIME, true);
         isUserAddVision = shared.getShared().getBoolean(UserItems.IS_USER_ADD_VISION, false);
         isUserSelectVision = shared.getShared().getBoolean(UserItems.IS_USER_SELECT_VISION, false);
+        isCheckDayMode = shared.getShared().getBoolean(UserItems.IS_CHECK_DAY_MODE, true);
         userTbl = shared.getShared().getString(UserItems.USER_TBL, "");
         selected_vision = shared.getShared().getString(UserItems.SELECTED_VISION, "");
         dao = VisionDatabase.getVisionDatabase(this).visionDao();
