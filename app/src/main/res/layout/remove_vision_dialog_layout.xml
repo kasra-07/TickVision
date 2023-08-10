@@ -24,7 +24,7 @@
             android:textStyle="bold" />
 
         <TextView
-            android:id="@+id/tv_text_select_vision_dialog"
+            android:id="@+id/tv_text_remove_vision_dialog"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/tv_title_dialog"

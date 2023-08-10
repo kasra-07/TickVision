@@ -31,10 +31,12 @@ import ir.mahchegroup.tickvision.classes.UserItems;
 import ir.mahchegroup.tickvision.database.ModelVision;
 import ir.mahchegroup.tickvision.database.VisionDao;
 import ir.mahchegroup.tickvision.database.VisionDatabase;
+import ir.mahchegroup.tickvision.message_box.ToastMessage;
+import ir.mahchegroup.tickvision.network.ClearAllVisions;
 import ir.mahchegroup.tickvision.network.NetworkReceiver;
 import ir.mahchegroup.tickvision.network.RemoveVision;
 
-public class EditActivity extends AppCompatActivity implements RemoveVision.OnRemoveVisionCallBack {
+public class EditActivity extends AppCompatActivity implements RemoveVision.OnRemoveVisionCallBack, ClearAllVisions.OnClearAllVisionsCallBack {
     private TextView tvTitle;
     private TextInputLayout lTitle, lAmount, lDay;
     private TextInputEditText eTitle, eAmount, eDay;
@@ -45,6 +47,7 @@ public class EditActivity extends AppCompatActivity implements RemoveVision.OnRe
     private Shared shared;
     private static String userTbl, title;
     private boolean isEquals;
+    private static boolean isAllDelete;
     private int result = 0;
     private NetworkReceiver receiver;
 
@@ -64,7 +67,15 @@ public class EditActivity extends AppCompatActivity implements RemoveVision.OnRe
 
         init();
 
-        btnDel.setOnClickListener(v -> RemoveVisionDialog.show(this));
+        btnDel.setOnClickListener(v -> {
+            isAllDelete = false;
+            RemoveDialog.show(this);
+        });
+
+        btnAllDel.setOnClickListener(v -> {
+            isAllDelete = true;
+            RemoveDialog.show(this);
+        });
     }
 
     @Override
@@ -104,18 +115,36 @@ public class EditActivity extends AppCompatActivity implements RemoveVision.OnRe
                 shared.getEditor().putBoolean(UserItems.IS_USER_ADD_VISION, true);
                 shared.getEditor().putBoolean(UserItems.IS_USER_SELECT_VISION, false);
 
-            }else {
+            } else {
                 shared.getEditor().putBoolean(UserItems.IS_FIRST_TIME, false);
                 shared.getEditor().putBoolean(UserItems.IS_USER_ADD_VISION, true);
                 shared.getEditor().putBoolean(UserItems.IS_USER_SELECT_VISION, true);
             }
             shared.getEditor().apply();
-            RemoveVisionDialog.dismiss();
+            RemoveDialog.dismiss();
             new Handler().postDelayed(this::onBackPressed, 300);
         }
     }
 
-    private static class RemoveVisionDialog {
+    @Override
+    public void onClearAllVisionsListener(String isClearAllVisions) {
+        if (isClearAllVisions.equals("success")) {
+            dao.clearAllVisions();
+
+            shared.getEditor().putBoolean(UserItems.IS_FIRST_TIME, true);
+            shared.getEditor().putBoolean(UserItems.IS_USER_ADD_VISION, false);
+            shared.getEditor().putBoolean(UserItems.IS_USER_SELECT_VISION, false);
+            shared.getEditor().apply();
+
+            RemoveDialog.dismiss();
+
+            ToastMessage.show(this, getString(R.string.clear_all_vision_success_text), true, true);
+
+            new Handler().postDelayed(this::onBackPressed,300);
+        }
+    }
+
+    private static class RemoveDialog {
         private static Dialog dialog;
 
         @SuppressLint("InflateParams")
@@ -124,14 +153,25 @@ public class EditActivity extends AppCompatActivity implements RemoveVision.OnRe
             View view = LayoutInflater.from(context).inflate(R.layout.remove_vision_dialog_layout, null);
             Button btnCancel = view.findViewById(R.id.btn_cancel);
             Button btnRemove = view.findViewById(R.id.btn_remove);
+            TextView tvTitle = view.findViewById(R.id.tv_title_dialog);
+            TextView tvText = view.findViewById(R.id.tv_text_remove_vision_dialog);
+
+            tvText.setText(!isAllDelete ? context.getString(R.string.remove_vision_text) : context.getString(R.string.clear_all_visions_text));
+            tvTitle.setText(!isAllDelete ? context.getString(R.string.remove_vision_title) : context.getString(R.string.clear_all_visions_title));
+
             dialog.setCancelable(true);
             Objects.requireNonNull(dialog.getWindow()).getAttributes().windowAnimations = R.style.dialog_anim;
 
             btnCancel.setOnClickListener(v -> dialog.dismiss());
 
             btnRemove.setOnClickListener(v -> {
-                RemoveVision removeVision = new RemoveVision(context);
-                removeVision.remove(userTbl, title);
+                if (!isAllDelete) {
+                    RemoveVision removeVision = new RemoveVision(context);
+                    removeVision.remove(userTbl, title);
+                } else {
+                    ClearAllVisions clearAllVisions = new ClearAllVisions(context);
+                    clearAllVisions.clear(userTbl);
+                }
             });
 
             dialog.getWindow().setBackgroundDrawable(new ColorDrawable(0));

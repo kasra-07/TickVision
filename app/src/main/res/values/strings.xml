@@ -91,4 +91,6 @@
     <string name="delete_text">حذف</string>
     <string name="select_vision_day_dialog_title">انتخاب هدف (بررسی)</string>
     <string name="select_vision_edit_dialog_title">انتخاب هدف (ویرایش)</string>
+    <string name="clear_all_visions_text">آیا از حذف تمام هدف ها اطمینان دارید ؟</string>
+    <string name="clear_all_visions_title">حذف تمام هدف ها</string>
 </resources>
