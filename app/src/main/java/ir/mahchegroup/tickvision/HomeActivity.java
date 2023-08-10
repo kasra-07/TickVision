@@ -1,5 +1,6 @@
 package ir.mahchegroup.tickvision;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -7,9 +8,17 @@ import androidx.cardview.widget.CardView;
 import androidx.drawerlayout.widget.DrawerLayout;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -56,7 +65,7 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
     private Shared shared;
     private VisionDao dao;
     private int onLineCount, ofLineCount;
-    private boolean isFirstTime, isUserAddVision, isUserSelectVision;
+    private boolean isFirstTime, isUserAddVision, isUserSelectVision, isOpenMenu;
     private LayoutInflater inflater;
     public static boolean isCheckDayMode = true;
     private String userTbl, date, title, amount, day, selected_vision;
@@ -68,6 +77,25 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
     private AddVision addVision;
     private GetAllVisions getAllVisions;
     private SelectVisionDialog selectVisionDialog;
+
+    @SuppressLint("RtlHardcoded")
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        int id = android.R.id.home;
+        if (item.getItemId() == id) {
+            if (menu.isOpened()) {
+                menu.close(true);
+                new Handler().postDelayed(() -> drawer.openDrawer(Gravity.RIGHT), 400);
+            } else {
+                if (drawer.isDrawerOpen(Gravity.RIGHT)) {
+                    drawer.closeDrawer(Gravity.RIGHT);
+                } else {
+                    drawer.openDrawer(Gravity.RIGHT);
+                }
+            }
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -114,11 +142,11 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        Toast.makeText(this, selectVisionModel.getTitle(), Toast.LENGTH_SHORT).show();
-
         tvToolbar.setText(selectVisionModel.getTitle());
 
         initTableViewAndTimeView();
+
+        initIncomeViewAndPaymentView();
     }
 
     @SuppressLint("InflateParams")
@@ -215,6 +243,49 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
         tvRest.setTextColor(isTick.equals("0") ? (rest > 0 ? getColor(R.color.primary_color) : getColor(R.color.accent_color)) : getColor(R.color.gray));
     }
 
+    private void initIncomeViewAndPaymentView() {
+        incomeView = inflater.inflate(R.layout)
+    }
+
+    private void setMenu() {
+        menu.setOnMenuButtonClickListener(view -> {
+            if (isOpenMenu) {
+                closeMenu();
+            } else {
+                Animation animation = AnimationUtils.loadAnimation(this, R.anim.fade_in);
+                dimMenu.startAnimation(animation);
+                dimMenu.setVisibility(View.VISIBLE);
+                menu.open(true);
+                isOpenMenu = true;
+                dimMenu.setOnClickListener(view1 -> closeMenu());
+            }
+        });
+
+        menu.getChildAt(0).setOnClickListener(view -> {
+            closeMenu();
+            addVisionDialog.show();
+        });
+
+        menu.getChildAt(1).setOnClickListener(view -> {
+            closeMenu();
+            isCheckDayMode = true;
+            selectVisionDialog.show();
+        });
+
+        menu.getChildAt(2).setOnClickListener(view -> {
+            isCheckDayMode = false;
+            closeMenu();
+            selectVisionDialog.show();
+        });
+    }
+
+    private void closeMenu() {
+        Animation animation = AnimationUtils.loadAnimation(this, R.anim.fade_out);
+        dimMenu.startAnimation(animation);
+        dimMenu.setVisibility(View.GONE);
+        menu.close(true);
+        isOpenMenu = false;
+    }
 
     private String timeFormat(long t) {
         int sec = (int) (t / 1000);
@@ -394,17 +465,23 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
 
     @Override
     public void onSelectVisionDialogSelectListener(String titleSelectVision) {
+        title = titleSelectVision;
+        selectVisionModel = dao.getVision(titleSelectVision);
+
         if (!isUserSelectVision) {
-            title = titleSelectVision;
             shared.getEditor().putBoolean(UserItems.IS_USER_SELECT_VISION, true);
             shared.getEditor().putBoolean(UserItems.IS_USER_ADD_VISION, true);
             shared.getEditor().putString(UserItems.SELECTED_VISION, title);
             shared.getEditor().apply();
-            startNormallyActivity();
+            Intent intent = new Intent(HomeActivity.this, HomeActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+            startActivity(intent);
+            overridePendingTransition(0,0);
+            finish();
         } else {
             startNormallyActivity();
         }
-        selectVisionDialog.dismiss();
     }
 
     @Override
@@ -417,6 +494,7 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
     }
 
     private void init() {
+        selectVisionModel = new ModelVision();
         inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
         btnAddVisionRoot = findViewById(R.id.btn_add_root);
         btnSelectVisionRoot = findViewById(R.id.btn_select_root);
