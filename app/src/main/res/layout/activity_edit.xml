@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/background"
+    tools:context=".EditActivity">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/edit_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:layout_alignParentTop="true"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        android:background="@color/primary_color"
+        android:layoutDirection="rtl">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:id="@+id/del_vision"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:layout_marginEnd="15dp"
+                android:padding="5dp"
+                android:src="@drawable/ic_del"
+                app:tint="@color/primary_text_color"
+                tools:ignore="ContentDescription" />
+
+            <ImageView
+                android:id="@+id/del_all_vision"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignEnd="@id/del_vision"
+                android:layout_centerVertical="true"
+                android:layout_marginEnd="45dp"
+                android:padding="5dp"
+                android:src="@drawable/ic_all_del"
+                app:tint="@color/primary_text_color"
+                tools:ignore="ContentDescription" />
+
+            <ImageView
+                android:id="@+id/edit_vision"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:layout_marginEnd="105dp"
+                android:padding="5dp"
+                android:src="@drawable/ic_tick"
+                app:tint="@color/primary_text_color"
+                tools:ignore="ContentDescription" />
+
+        </RelativeLayout>
+
+    </androidx.appcompat.widget.Toolbar>
+
+
+    <TextView
+        android:id="@+id/tv_title_edit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/edit_toolbar"
+        android:layout_marginStart="50dp"
+        android:layout_marginTop="40dp"
+        android:layout_marginEnd="50dp"
+        android:background="@drawable/red_edt_background"
+        android:paddingStart="10dp"
+        android:paddingTop="10dp"
+        android:paddingEnd="10dp"
+        android:paddingBottom="10dp"
+        android:textAlignment="center"
+        android:textColor="@color/primary_color"
+        android:textSize="@dimen/title_size"
+        tools:text="خرید خودرو" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/title_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tv_title_edit"
+        android:layout_marginStart="@dimen/margin_left_right_signup"
+        android:layout_marginTop="40dp"
+        android:layout_marginEnd="@dimen/margin_left_right_signup"
+        app:counterEnabled="true"
+        app:counterMaxLength="50"
+        app:errorIconTint="@color/red"
+        app:errorTextAppearance="@color/red"
+        app:errorTextColor="@color/red"
+        app:startIconDrawable="@drawable/ic_edit"
+        app:startIconTint="@color/gray">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/edt_title"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:hint="@string/title_vision_text"
+            android:inputType="text"
+            android:maxLength="50"
+            android:maxLines="1"
+            android:paddingStart="@dimen/edt_padding"
+            android:paddingEnd="@dimen/edt_padding"
+            android:textCursorDrawable="@drawable/red_cursor"
+            android:textSize="@dimen/normal_text_size"
+            tools:ignore="VisualLintTextFieldSize,TextContrastCheck" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/amount_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/title_layout"
+        android:layout_marginStart="@dimen/margin_left_right_signup"
+        android:layout_marginTop="@dimen/margin_top_text_input_layout"
+        android:layout_marginEnd="@dimen/margin_left_right_signup"
+        app:counterEnabled="true"
+        app:counterMaxLength="9"
+        app:errorIconTint="@color/red"
+        app:errorTextAppearance="@color/red"
+        app:errorTextColor="@color/red"
+        app:startIconDrawable="@drawable/ic_edit"
+        app:startIconTint="@color/gray">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/edt_amount"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:hint="@string/amount_vision_text"
+            android:inputType="number"
+            android:maxLength="9"
+            android:maxLines="1"
+            android:paddingStart="@dimen/edt_padding"
+            android:paddingEnd="@dimen/edt_padding"
+            android:textCursorDrawable="@drawable/red_cursor"
+            android:textSize="@dimen/normal_text_size"
+            tools:ignore="TextContrastCheck,VisualLintTextFieldSize" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/day_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/amount_layout"
+        android:layout_marginStart="@dimen/margin_left_right_signup"
+        android:layout_marginTop="@dimen/margin_top_text_input_layout"
+        android:layout_marginEnd="@dimen/margin_left_right_signup"
+        app:counterEnabled="true"
+        app:counterMaxLength="5"
+        app:errorIconDrawable="@null"
+        app:errorIconTint="@color/red"
+        app:errorTextAppearance="@color/red"
+        app:errorTextColor="@color/red"
+        app:passwordToggleTint="@color/gray"
+        app:startIconDrawable="@drawable/ic_edit"
+        app:startIconTint="@color/gray">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/edt_day"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:hint="@string/day_vision_text"
+            android:inputType="number"
+            android:maxLength="5"
+            android:maxLines="1"
+            android:paddingStart="@dimen/edt_padding"
+            android:paddingEnd="@dimen/edt_padding"
+            android:textCursorDrawable="@drawable/red_cursor"
+            android:textSize="@dimen/normal_text_size"
+            tools:ignore="TextContrastCheck,VisualLintTextFieldSize" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/day_layout"
+        android:layout_marginStart="50dp"
+        android:layout_marginTop="60dp"
+        android:layout_marginEnd="50dp"
+        android:orientation="vertical"
+        tools:ignore="UseCompoundDrawables">
+
+        <ImageView
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_gravity="center"
+            android:src="@drawable/ic_warning"
+            app:tint="@color/primary_dark_color"
+            tools:ignore="ContentDescription" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="7dp"
+            android:gravity="center"
+            android:text="@string/warning_edit_text"
+            android:textColor="@color/primary_dark_color"
+            android:textSize="@dimen/large_text_size" />
+
+    </LinearLayout>
+
+</RelativeLayout>

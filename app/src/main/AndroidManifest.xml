@@ -19,6 +19,9 @@
         android:theme="@style/Theme.TickVision"
         tools:targetApi="31">
         <activity
+            android:name=".EditActivity"
+            android:exported="false" />
+        <activity
             android:name=".DisconnectActivity"
             android:exported="false" />
         <activity

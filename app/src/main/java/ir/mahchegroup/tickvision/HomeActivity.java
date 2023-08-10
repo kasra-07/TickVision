@@ -84,7 +84,7 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
         int id = android.R.id.home;
         if (item.getItemId() == id) {
             if (menu.isOpened()) {
-                menu.close(true);
+                closeMenu();
                 new Handler().postDelayed(() -> drawer.openDrawer(Gravity.RIGHT), 400);
             } else {
                 if (drawer.isDrawerOpen(Gravity.RIGHT)) {
@@ -147,6 +147,16 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
         initTableViewAndTimeView();
 
         initIncomeViewAndPaymentView();
+
+        setMenu();
+
+        incomeLayout.setOnClickListener(v -> {
+            Toast.makeText(this, "income", Toast.LENGTH_SHORT).show();
+        });
+
+        paymentLayout.setOnClickListener(v -> {
+            Toast.makeText(this, "payment", Toast.LENGTH_SHORT).show();
+        });
     }
 
     @SuppressLint("InflateParams")
@@ -243,8 +253,26 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
         tvRest.setTextColor(isTick.equals("0") ? (rest > 0 ? getColor(R.color.primary_color) : getColor(R.color.accent_color)) : getColor(R.color.gray));
     }
 
+    @SuppressLint("InflateParams")
     private void initIncomeViewAndPaymentView() {
-        incomeView = inflater.inflate(R.layout)
+        if (incomeLayout.getChildAt(0) != null) {
+            incomeLayout.removeAllViews();
+        }
+
+        if (paymentLayout.getChildAt(0) != null) {
+            incomeLayout.removeAllViews();
+        }
+
+        String isTick = selectVisionModel.getIs_tick();
+
+        incomeView = inflater.inflate(isTick.equals("0") ? R.layout.income_view : R.layout.income_view_gray, null);
+        paymentView = inflater.inflate(isTick.equals("0") ? R.layout.payment_view : R.layout.payment_view_gray, null);
+
+        incomeLayout.addView(incomeView);
+        paymentLayout.addView(paymentView);
+
+        incomeLayout.setEnabled(isTick.equals("0"));
+        paymentLayout.setEnabled(isTick.equals("0"));
     }
 
     private void setMenu() {
@@ -263,19 +291,19 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
 
         menu.getChildAt(0).setOnClickListener(view -> {
             closeMenu();
-            addVisionDialog.show();
+            new Handler().postDelayed(() -> addVisionDialog.show(), 400);
         });
 
         menu.getChildAt(1).setOnClickListener(view -> {
             closeMenu();
             isCheckDayMode = true;
-            selectVisionDialog.show();
+            new Handler().postDelayed(() -> selectVisionDialog.show(), 400);
         });
 
         menu.getChildAt(2).setOnClickListener(view -> {
-            isCheckDayMode = false;
             closeMenu();
-            selectVisionDialog.show();
+            isCheckDayMode = false;
+            new Handler().postDelayed(() -> selectVisionDialog.show(), 400);
         });
     }
 
@@ -477,7 +505,7 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
             startActivity(intent);
-            overridePendingTransition(0,0);
+            overridePendingTransition(0, 0);
             finish();
         } else {
             startNormallyActivity();

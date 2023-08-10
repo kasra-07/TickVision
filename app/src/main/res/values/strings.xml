@@ -37,9 +37,9 @@
     <string name="login_error">نام کاربری یا ایمیل نادرست است</string>
     <string name="login_pass_error">کلمه عبور نادرست است</string>
     <string name="coming_soon">به زودی اضافه خواهد شد</string>
-    <string name="add_vision_text">افزودن هدف جدید</string>
-    <string name="select_check_vision_text">انتخاب هدف جهت بررسی</string>
-    <string name="select_edit_vision_text">انتخاب هدف جهت ویرایش</string>
+    <string name="add_vision_text">هدف جدید</string>
+    <string name="select_check_vision_text">بررسی هدف</string>
+    <string name="select_edit_vision_text">ویرایش هدف</string>
     <string name="update_old_visions_text">بروزرسانی هدف های پیشین</string>
     <string name="first_update_vision_dialog_text">شما قبلا تعدادی هدف مشخص کرده اید\nآیا جهت بروزرسانی مایل هستید ؟</string>
     <string name="update_text">بروزرسانی</string>
@@ -83,4 +83,7 @@
     <string name="rest_days_text">باقیمانده روز</string>
     <string name="rest_text">باقیمانده</string>
     <string name="extra_text">مازاد</string>
+    <string name="save_income_text">ثبت درآمد</string>
+    <string name="save_payment_text">ثبت هزینه</string>
+    <string name="warning_edit_text">لطفا توجه داشته باشید که در صورت ویرایش ، تمامی مقادیر مربوط به این هدف صفر خواهد شد</string>
 </resources>
