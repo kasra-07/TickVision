@@ -23,6 +23,7 @@ public class UserItems {
     public static final String IS_CHECK_DAY_MODE = "is_check_day_mode";
     public static final String DAY_AMOUNT = "day_amount";
     public static final String NEW_TITLE = "new_title";
+    public static final String TITLE_SELECTED_VISION = "title_selected_vision";
     public static final String USER_SIGNUP_URL = "https://mahchegroup.ir/tick_vision/user_signup.php";
     public static final String USER_LOGIN_URL = "https://mahchegroup.ir/tick_vision/user_login.php";
     public static final String GET_COUNT_VISION_URL = "https://mahchegroup.ir/tick_vision/get_count_vision.php";

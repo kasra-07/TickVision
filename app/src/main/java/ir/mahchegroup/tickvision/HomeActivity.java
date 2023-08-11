@@ -568,12 +568,13 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
                 selectVisionDialog.dismiss();
             } else {
                 shared.getEditor().putBoolean(UserItems.IS_BACK_EDIT_ACTIVITY, true);
+                shared.getEditor().putString(UserItems.TITLE_SELECTED_VISION, titleSelectVision);
                 Intent intent = new Intent(HomeActivity.this, EditActivity.class);
-                intent.putExtra(UserItems.TITLE, titleSelectVision);
                 intent.putExtra(UserItems.IS_EQUALS_SELECTED_VISION, titleSelectVision.equals(selected_vision));
                 shared.getEditor().putBoolean(UserItems.IS_EQUALS_SELECTED_VISION, titleSelectVision.equals(selected_vision));
                 shared.getEditor().apply();
                 selectVisionDialog.dismiss();
+                Toast.makeText(this, shared.getShared().getString(UserItems.TITLE_SELECTED_VISION, ""), Toast.LENGTH_SHORT).show();
                 new Handler().postDelayed(() -> Animations.AnimActivity(this, intent), 300);
             }
         }

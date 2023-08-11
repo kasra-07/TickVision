@@ -13,13 +13,15 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
@@ -27,6 +29,8 @@ import com.google.android.material.textfield.TextInputLayout;
 import java.util.Objects;
 
 import ir.mahchegroup.tickvision.classes.Animations;
+import ir.mahchegroup.tickvision.classes.KeyboardManager;
+import ir.mahchegroup.tickvision.classes.SetInputLayoutColors;
 import ir.mahchegroup.tickvision.classes.Shared;
 import ir.mahchegroup.tickvision.classes.UserItems;
 import ir.mahchegroup.tickvision.database.ModelVision;
@@ -40,21 +44,19 @@ import ir.mahchegroup.tickvision.network.NetworkReceiver;
 import ir.mahchegroup.tickvision.network.RemoveVision;
 
 public class EditActivity extends AppCompatActivity implements RemoveVision.OnRemoveVisionCallBack, ClearAllVisions.OnClearAllVisionsCallBack, EditVision.OnEditVisionCallBack {
-    private TextView tvTitle;
+    private RelativeLayout root;
     private TextInputLayout lTitle, lAmount, lDay;
-    private static TextInputEditText eTitle, eAmount, eDay;
+    private TextInputEditText eTitle, eAmount, eDay;
     private ImageView btnDel, btnAllDel, btnEdit;
     private ModelVision model;
     private VisionDao dao;
-    private Toolbar toolbar;
     private Shared shared;
-    private static String userTbl, title;
+    private String userTbl, title;
     private boolean isEquals;
-    private static boolean isTitleError, isAmountError, isDayError;
-    private static int mode, dayAmount;
-    private int result = 0;
+    private int mode, dayAmount;
     private NetworkReceiver receiver;
-    private static String titleVision, amountVision, dayVision, dateVision;
+    private String titleVision, amountVision, dayVision, dateVision;
+    private ThisDialog thisDialog;
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
@@ -72,20 +74,163 @@ public class EditActivity extends AppCompatActivity implements RemoveVision.OnRe
 
         init();
 
+        root.setOnClickListener(v -> {
+            KeyboardManager.hideKeyboardOnActivity(this, this);
+            setInputLayoutGray();
+        });
+
+        thisDialog = new ThisDialog(this);
+
         btnDel.setOnClickListener(v -> {
             mode = 0;
-            thisDialog.show(this);
+            thisDialog.show();
         });
 
         btnAllDel.setOnClickListener(v -> {
             mode = 1;
-            thisDialog.show(this);
+            thisDialog.show();
         });
 
         btnEdit.setOnClickListener(v -> {
-            mode = 2;
-            thisDialog.show(this);
+            if (eTitle.length() == 0 || eAmount.length() == 0 || eDay.length() == 0) {
+                if (eTitle.length() == 0) {
+                    SetInputLayoutColors.setColor(this, lTitle, eTitle, getString(R.string.empty_field_error), 2);
+                } else {
+                    SetInputLayoutColors.setColor(this, lTitle, eTitle, null, 0);
+                    eTitle.setTextColor(getColor(R.color.green));
+                }
+
+                if (eAmount.length() == 0) {
+                    SetInputLayoutColors.setColor(this, lAmount, eAmount, getString(R.string.empty_field_error), 2);
+                } else {
+                    SetInputLayoutColors.setColor(this, lAmount, eAmount, null, 0);
+                    eAmount.setTextColor(getColor(R.color.green));
+                }
+
+                if (eDay.length() == 0) {
+                    SetInputLayoutColors.setColor(this, lDay, eDay, getString(R.string.empty_field_error), 2);
+                } else {
+                    SetInputLayoutColors.setColor(this, lDay, eDay, null, 0);
+                    eDay.setTextColor(getColor(R.color.green));
+                }
+            } else {
+                mode = 2;
+                thisDialog.show();
+            }
         });
+
+        setOnFocus();
+
+        setOnTextChange();
+    }
+
+    private void setInputLayoutGray() {
+        SetInputLayoutColors.setColor(this, lTitle, eTitle, null, 0);
+        SetInputLayoutColors.setColor(this, lAmount, eAmount, null, 0);
+        SetInputLayoutColors.setColor(this, lDay, eDay, null, 0);
+        setTextInputTextColorGreen();
+    }
+
+    private void setOnTextChange() {
+        eTitle.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (s.length() > 0) {
+                    SetInputLayoutColors.setColor(EditActivity.this, lTitle, eTitle, null, 1);
+                } else {
+                    SetInputLayoutColors.setColor(EditActivity.this, lTitle, eTitle, getString(R.string.empty_field_error), 2);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+        eAmount.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (s.length() > 0) {
+                    SetInputLayoutColors.setColor(EditActivity.this, lAmount, eAmount, null, 1);
+                } else {
+                    SetInputLayoutColors.setColor(EditActivity.this, lAmount, eAmount, getString(R.string.empty_field_error), 2);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+        eDay.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (s.length() > 0) {
+                    SetInputLayoutColors.setColor(EditActivity.this, lDay, eDay, null, 1);
+                } else {
+                    SetInputLayoutColors.setColor(EditActivity.this, lDay, eDay, getString(R.string.empty_field_error), 2);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+    }
+
+    private void setOnFocus() {
+        eTitle.setOnFocusChangeListener((v, b) -> {
+            if (b) {
+                SetInputLayoutColors.setColor(this, lTitle, eTitle, null, 1);
+                SetInputLayoutColors.setColor(this, lAmount, eAmount, null, 0);
+                SetInputLayoutColors.setColor(this, lDay, eDay, null, 0);
+            } else {
+                SetInputLayoutColors.setColor(this, lTitle, eTitle, null, 0);
+                setTextInputTextColorGreen();
+            }
+        });
+        eAmount.setOnFocusChangeListener((v, b) -> {
+            if (b) {
+                SetInputLayoutColors.setColor(this, lAmount, eAmount, null, 1);
+                SetInputLayoutColors.setColor(this, lTitle, eTitle, null, 0);
+                SetInputLayoutColors.setColor(this, lDay, eDay, null, 0);
+            } else {
+                SetInputLayoutColors.setColor(this, lAmount, eAmount, null, 0);
+                setTextInputTextColorGreen();
+            }
+        });
+        eDay.setOnFocusChangeListener((v, b) -> {
+            if (b) {
+                SetInputLayoutColors.setColor(this, lDay, eDay, null, 1);
+                SetInputLayoutColors.setColor(this, lAmount, eAmount, null, 0);
+                SetInputLayoutColors.setColor(this, lTitle, eTitle, null, 0);
+            } else {
+                SetInputLayoutColors.setColor(this, lDay, eDay, null, 0);
+                setTextInputTextColorGreen();
+            }
+        });
+    }
+
+    private void setTextInputTextColorGreen() {
+        eTitle.setTextColor(getColor(R.color.green));
+        eAmount.setTextColor(getColor(R.color.green));
+        eDay.setTextColor(getColor(R.color.green));
     }
 
     @Override
@@ -112,7 +257,7 @@ public class EditActivity extends AppCompatActivity implements RemoveVision.OnRe
 
     @Override
     public void onRemoveVisionListener() {
-        result = dao.removeVision(model);
+        int result = dao.removeVision(model);
 
         if (result == 1) {
             if ((isEquals && dao.getCountVision() == 0) || (dao.getCountVision() == 0)) {
@@ -181,9 +326,7 @@ public class EditActivity extends AppCompatActivity implements RemoveVision.OnRe
             editModel.setMilli_sec("0");
             editModel.setIs_tick("0");
 
-            int result = dao.editVision(editModel);
-
-            Toast.makeText(this, "" + result, Toast.LENGTH_SHORT).show();
+            dao.editVision(editModel);
 
             ToastMessage.show(this, getString(R.string.edit_vision_success_text), true, true);
 
@@ -193,13 +336,17 @@ public class EditActivity extends AppCompatActivity implements RemoveVision.OnRe
         }
     }
 
-    private static class thisDialog {
-        @SuppressLint("StaticFieldLeak")
-        private static TextView tvTitle, tvText;
-        private static Dialog dialog;
+    private class ThisDialog {
+        private TextView tvTitle, tvText;
+        private Dialog dialog;
+        private final Context context;
+
+        public ThisDialog(Context context) {
+            this.context = context;
+        }
 
         @SuppressLint("InflateParams")
-        public static void show(Context context) {
+        public void show() {
             dialog = new Dialog(context);
             View view = LayoutInflater.from(context).inflate(R.layout.remove_vision_dialog_layout, null);
             Button btnCancel = view.findViewById(R.id.btn_cancel);
@@ -247,14 +394,8 @@ public class EditActivity extends AppCompatActivity implements RemoveVision.OnRe
 
                     dayAmount = Integer.parseInt(amountVision) / Integer.parseInt(dayVision);
 
-                    isTitleError = titleVision.isEmpty();
-                    isAmountError = amountVision.isEmpty();
-                    isDayError = dayVision.isEmpty();
-
-                    if (!isTitleError && !isAmountError && !isDayError) {
-                        EditVision editVision = new EditVision(context);
-                        editVision.edit(userTbl, title, titleVision, dateVision, amountVision, dayVision, String.valueOf(dayAmount));
-                    }
+                    EditVision editVision = new EditVision(context);
+                    editVision.edit(userTbl, title, titleVision, dateVision, amountVision, dayVision, String.valueOf(dayAmount));
                 }
             });
 
@@ -264,22 +405,23 @@ public class EditActivity extends AppCompatActivity implements RemoveVision.OnRe
             dialog.show();
         }
 
-        public static void dismiss() {
+        public void dismiss() {
             dialog.dismiss();
         }
 
-        private static void setMode(String title, String text) {
+        private void setMode(String title, String text) {
             tvTitle.setText(title);
             tvText.setText(text);
         }
     }
 
     private void init() {
-        toolbar = findViewById(R.id.edit_toolbar);
+        Toolbar toolbar = findViewById(R.id.edit_toolbar);
         setSupportActionBar(toolbar);
         Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
 
-        tvTitle = findViewById(R.id.tv_title_edit);
+        root = findViewById(R.id.edit_root);
+        TextView tvTitle = findViewById(R.id.tv_title_edit);
         lTitle = findViewById(R.id.title_layout);
         lAmount = findViewById(R.id.amount_layout);
         lDay = findViewById(R.id.day_layout);
@@ -289,8 +431,9 @@ public class EditActivity extends AppCompatActivity implements RemoveVision.OnRe
         btnDel = findViewById(R.id.btn_del_vision);
         btnAllDel = findViewById(R.id.btn_del_all_vision);
         btnEdit = findViewById(R.id.btn_edit_vision);
+        shared = new Shared(this);
 
-        title = getIntent().getStringExtra(UserItems.TITLE);
+        title = shared.getShared().getString(UserItems.TITLE_SELECTED_VISION, "");
         isEquals = getIntent().getBooleanExtra(UserItems.IS_EQUALS_SELECTED_VISION, false);
 
         dao = VisionDatabase.getVisionDatabase(this).visionDao();
@@ -301,7 +444,6 @@ public class EditActivity extends AppCompatActivity implements RemoveVision.OnRe
         eAmount.setText(model.getAmount());
         eDay.setText(model.getDay_vision());
 
-        shared = new Shared(this);
         userTbl = shared.getShared().getString(UserItems.USER_TBL, "");
         isEquals = shared.getShared().getBoolean(UserItems.IS_EQUALS_SELECTED_VISION, false);
     }
