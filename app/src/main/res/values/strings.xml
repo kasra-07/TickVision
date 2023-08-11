@@ -98,4 +98,7 @@
     <string name="edit_vision_title">ویرایش هدف</string>
     <string name="edit_vision_text">آیا از ویرایش هدف اطمینان دارید ؟</string>
     <string name="edit_text">ویرایش</string>
+    <string name="income_amount_text">مبلغ دریافتی (حداکثر 9 کاراکتر)</string>
+    <string name="save_price_text">ثبت مبلغ</string>
+    <string name="payment_amount_text">مبلغ پرداختی (حداکثر 9 کاراکتر)</string>
 </resources>

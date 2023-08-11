@@ -24,6 +24,12 @@ public class UserItems {
     public static final String DAY_AMOUNT = "day_amount";
     public static final String NEW_TITLE = "new_title";
     public static final String TITLE_SELECTED_VISION = "title_selected_vision";
+    public static final String INCOME_AMOUNT = "income_amount";
+    public static final String REST_AMOUNT = "rest_amount";
+    public static final String INCOME = "income";
+    public static final String PAYMENT = "payment";
+    public static final String PROFIT = "profit";
+    public static final String REST = "rest";
     public static final String USER_SIGNUP_URL = "https://mahchegroup.ir/tick_vision/user_signup.php";
     public static final String USER_LOGIN_URL = "https://mahchegroup.ir/tick_vision/user_login.php";
     public static final String GET_COUNT_VISION_URL = "https://mahchegroup.ir/tick_vision/get_count_vision.php";
@@ -33,4 +39,5 @@ public class UserItems {
     public static final String GET_SELECT_VISION_INFO_URL = "https://mahchegroup.ir/tick_vision/get_select_vision_info.php";
     public static final String REMOVE_VISION_URL = "https://mahchegroup.ir/tick_vision/remove_vision.php";
     public static final String EDIT_VISION_URL = "https://mahchegroup.ir/tick_vision/edit_vision.php";
+    public static final String UPDATE_PRICE_URL = "https://mahchegroup.ir/tick_vision/update_price.php";
 }
