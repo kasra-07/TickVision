@@ -21,6 +21,8 @@ public class UserItems {
     public static final String IS_EQUALS_SELECTED_VISION = "equals_selected_vision";
     public static final String IS_BACK_EDIT_ACTIVITY = "is_back_edit_activity";
     public static final String IS_CHECK_DAY_MODE = "is_check_day_mode";
+    public static final String DAY_AMOUNT = "day_amount";
+    public static final String NEW_TITLE = "new_title";
     public static final String USER_SIGNUP_URL = "https://mahchegroup.ir/tick_vision/user_signup.php";
     public static final String USER_LOGIN_URL = "https://mahchegroup.ir/tick_vision/user_login.php";
     public static final String GET_COUNT_VISION_URL = "https://mahchegroup.ir/tick_vision/get_count_vision.php";
@@ -29,4 +31,5 @@ public class UserItems {
     public static final String GET_ALL_VISIONS_URL = "https://mahchegroup.ir/tick_vision/get_all_visions.php";
     public static final String GET_SELECT_VISION_INFO_URL = "https://mahchegroup.ir/tick_vision/get_select_vision_info.php";
     public static final String REMOVE_VISION_URL = "https://mahchegroup.ir/tick_vision/remove_vision.php";
+    public static final String EDIT_VISION_URL = "https://mahchegroup.ir/tick_vision/edit_vision.php";
 }

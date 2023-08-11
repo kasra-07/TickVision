@@ -93,4 +93,9 @@
     <string name="select_vision_edit_dialog_title">انتخاب هدف (ویرایش)</string>
     <string name="clear_all_visions_text">آیا از حذف تمام هدف ها اطمینان دارید ؟</string>
     <string name="clear_all_visions_title">حذف تمام هدف ها</string>
+    <string name="edit_vision_success_text">ویرایش هدف با موفقیت انجام شد</string>
+    <string name="edit_vision_success_error">ویرایش متن با خطا مواجه شد</string>
+    <string name="edit_vision_title">ویرایش هدف</string>
+    <string name="edit_vision_text">آیا از ویرایش هدف اطمینان دارید ؟</string>
+    <string name="edit_text">ویرایش</string>
 </resources>
