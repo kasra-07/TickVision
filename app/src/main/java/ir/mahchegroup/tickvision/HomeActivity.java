@@ -12,6 +12,7 @@ import android.content.ComponentName;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.icu.text.SimpleDateFormat;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -23,10 +24,8 @@ import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-
 import com.github.clans.fab.FloatingActionMenu;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -67,10 +66,9 @@ import ir.mahchegroup.tickvision.network.UpdatePrice;
 public class HomeActivity extends AppCompatActivity implements GetCountVision.OnGetCountCallBack, UpdateAllVisionsDialog.OnUpdateAllVisionsDialogCallBack, ClearAllVisionsDialog.OnClearAllVisionsDialogCallBack, AddVisionDialog.OnAddVisionDialogCallBack, AddVision.OnAddVisionCallBack, ClearAllVisions.OnClearAllVisionsCallBack, GetAllVisions.OnGetAllVisionsCallBack, SelectVisionDialog.OnSelectVisionDialogCallBack, UpdatePriceDialog.OnUpdatePriceDialogCallBack, UpdatePrice.OnUpdatePriceCallBack {
     private NetworkReceiver receiver;
     private RelativeLayout btnAddVisionRoot, btnSelectVisionRoot;
-    private LinearLayout btnAddLayout, btnSelectLayout;
     private Toolbar toolbar;
     private TextView tvToolbar, tvTime, tvTimer, tvDay, tvDate, tvTitleTimer, tvIncome, tvPayment, tvProfit, tvRest, titleIncome, titlePayment, titleProfit, titleRest;
-    private ImageView imgToolbar, btnAddDescription, btnSelectDescription, timerSwitch;
+    private ImageView imgToolbar, timerSwitch;
     private FloatingActionButton btnAdd, btnSelect;
     private DrawerLayout drawer;
     private CardView tableLayout, timeLayout, incomeLayout, paymentLayout;
@@ -78,7 +76,7 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
     private FloatingActionMenu menu;
     private Shared shared;
     private VisionDao dao;
-    private int ofLineCount, price, oldIncome, newIncome, oldPayment, newPayment, oldProfit, newProfit, oldRest, newRest, oldIncomeAmount, newIncomeAmount, oldRestAmount, newRestAmount, oldAmount;
+    private int newIncome, newPayment, newProfit, newRest, newIncomeAmount, newRestAmount;
     private boolean isFirstTime, isUserAddVision, isUserSelectVision, isOpenMenu, isEquals = false, isBackEditActivity, isIncome, isTimerOn;
     public static boolean isCheckDayMode;
     private LayoutInflater inflater;
@@ -95,7 +93,6 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
     private UpdatePrice updatePrice;
     public static int MILLI_SEC;
     private Intent timerIntent;
-    private Timer timer;
 
     @SuppressLint("RtlHardcoded")
     @Override
@@ -136,21 +133,7 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
                 new Handler().postDelayed(() -> selectVisionDialog.show(), 500);
 
             } else {
-                if (shared.getShared().getBoolean(UserItems.IS_CHANGE_DAY, false)) {
-                    ResetAllVisions resetAllVisions = new ResetAllVisions(this);
-                    resetAllVisions.reset(userTbl, shared.getShared().getString(UserItems.DIFF, "1"));
-
-                    resetAllVisions.setOnResetAllVisionsCallBack(isReset -> {
-                        if (isReset.equals("success")) {
-                            startNormallyActivity();
-                        } else {
-                            Intent intent = new Intent(HomeActivity.this, UpdateErrorActivity.class);
-                            Animations.AnimActivity(this, intent);
-                        }
-                    });
-                } else {
-                    startNormallyActivity();
-                }
+                startNormallyActivity();
             }
         }
     }
@@ -246,6 +229,29 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
 
     public static String splitDigits(int number) {
         return new DecimalFormat("###,###,###,###,###,###").format(number);
+    }
+
+    @SuppressLint("SimpleDateFormat")
+    public long calcTimeDiff(String dateStart, String dateStop) {
+        SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy");
+
+        java.util.Date d1;
+        java.util.Date d2;
+
+        long diffDays = 0;
+
+        try {
+            d1 = format.parse(dateStart);
+            d2 = format.parse(dateStop);
+
+            long diff = d2.getTime() - d1.getTime();
+
+            diffDays = diff / (24 * 60 * 60 * 1000);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return diffDays;
     }
 
     @SuppressLint("InflateParams")
@@ -359,61 +365,84 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
 
         selectVisionModel = dao.getVision(selectedVision);
 
-        MILLI_SEC = Integer.parseInt(selectVisionModel.getMilli_sec());
+        if (shared.getShared().getBoolean(UserItems.IS_CHANGE_DAY, false)) {
+            String d = selectVisionModel.getDate_vision();
+            long diff = calcTimeDiff(d, date);
 
-        if (TimerService.RUNNING) {
-            bindService(timerIntent, serviceConnection, BIND_AUTO_CREATE);
-            isTimerOn = true;
+            ResetAllVisions resetAllVisions = new ResetAllVisions();
+            resetAllVisions.reset(this, userTbl, String.valueOf(diff));
+
+            resetAllVisions.setOnResetAllVisionsCallBack(isReset -> {
+                if (isReset.equals("success")) {
+                    shared.getEditor().putBoolean(UserItems.IS_CHANGE_DAY, false).apply();
+                    getAllVisions.get(userTbl);
+                } else {
+                    Intent intent = new Intent(HomeActivity.this, UpdateErrorActivity.class);
+                    Animations.AnimActivity(this, intent);
+                }
+            });
+
         } else {
-            isTimerOn = false;
-        }
+            MILLI_SEC = Integer.parseInt(selectVisionModel.getMilli_sec());
 
-        setSupportActionBar(toolbar);
-        Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
-
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, R.string.open, R.string.close);
-        drawer.addDrawerListener(toggle);
-        toggle.syncState();
-
-        tvToolbar.setText(selectVisionModel.getTitle());
-
-        initTableViewAndTimeView();
-
-        initIncomeViewAndPaymentView();
-
-        setMenu();
-
-        incomeLayout.setOnClickListener(v -> {
-            isIncome = true;
-            updatePriceDialog.show(true);
-        });
-
-        paymentLayout.setOnClickListener(v -> {
-            isIncome = false;
-            updatePriceDialog.show(false);
-        });
-
-        timerSwitch.setOnClickListener(v -> {
-            if (isTimerOn) {
-                timerSwitch.setImageResource(R.drawable.timer_off);
-                isTimerOn = false;
-                stopService(timerIntent);
-
-                MILLI_SEC = TimerService.COUNTER;
-                selectVisionModel.setMilli_sec(String.valueOf(MILLI_SEC));
-                dao.editVision(selectVisionModel);
-                UpdateMilliSec updateMilliSec = new UpdateMilliSec(this);
-                updateMilliSec.set(userTbl, selectedVision, String.valueOf(MILLI_SEC));
-
-                unbindService(serviceConnection);
-            } else {
-                timerSwitch.setImageResource(R.drawable.timer_on);
-                isTimerOn = true;
-
-                startService(timerIntent);
+            if (TimerService.RUNNING) {
                 bindService(timerIntent, serviceConnection, BIND_AUTO_CREATE);
+                isTimerOn = true;
+            } else {
+                isTimerOn = false;
             }
-        });
+
+            setSupportActionBar(toolbar);
+            Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
+
+            ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, R.string.open, R.string.close);
+            drawer.addDrawerListener(toggle);
+            toggle.syncState();
+
+            tvToolbar.setText(selectVisionModel.getTitle());
+
+            initTableViewAndTimeView();
+
+            initIncomeViewAndPaymentView();
+
+            setMenu();
+
+            incomeLayout.setOnClickListener(v -> {
+                isIncome = true;
+                updatePriceDialog.show(true);
+            });
+
+            paymentLayout.setOnClickListener(v -> {
+                isIncome = false;
+                updatePriceDialog.show(false);
+            });
+
+            timerSwitch.setOnClickListener(v -> {
+                if (isTimerOn) {
+                    stopTimer();
+
+                } else {
+                    timerSwitch.setImageResource(R.drawable.timer_on);
+                    isTimerOn = true;
+
+                    startService(timerIntent);
+                    bindService(timerIntent, serviceConnection, BIND_AUTO_CREATE);
+                }
+            });
+        }
+    }
+
+    private void stopTimer() {
+        timerSwitch.setImageResource(R.drawable.timer_off);
+        isTimerOn = false;
+        stopService(timerIntent);
+        unbindService(serviceConnection);
+
+        MILLI_SEC = TimerService.COUNTER;
+        selectVisionModel.setMilli_sec(String.valueOf(MILLI_SEC));
+        dao.editVision(selectVisionModel);
+        UpdateMilliSec updateMilliSec = new UpdateMilliSec(this);
+        updateMilliSec.set(userTbl, selectedVision, String.valueOf(MILLI_SEC));
     }
 
     private final ServiceConnection serviceConnection = new ServiceConnection() {
@@ -472,7 +501,7 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
     }
 
     private void setTimeValues(String isTick) {
-        timer = new Timer();
+        Timer timer = new Timer();
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
@@ -564,7 +593,7 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
     @Override
     public void onGetCountListener(int count) {
         if (count > 0) {
-            ofLineCount = dao.getCountVision();
+            int ofLineCount = dao.getCountVision();
 
             if (count > ofLineCount) {
                 updateAllVisionsDialog.show();
@@ -687,17 +716,25 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
 
     @Override
     public void onGetAllVisionsListener(List<ModelVision> getAllVisionsList) {
+        dao.clearAllVisions();
+
         for (int i = 0; i < getAllVisionsList.size(); i++) {
             dao.addVision(getAllVisionsList.get(i));
         }
-        updateAllVisionsDialog.dismiss();
-        ToastMessage.show(this, getString(R.string.update_all_visions_success_text), true, true);
-        setOnBtnAddClickListener();
-        setOnBtnSelectClickListener();
-        shared.getEditor().putBoolean(UserItems.IS_FIRST_TIME, false);
-        shared.getEditor().putBoolean(UserItems.IS_USER_ADD_VISION, true);
-        shared.getEditor().apply();
-        selectVisionDialog.show();
+
+        if (!isUserAddVision) {
+            updateAllVisionsDialog.dismiss();
+            ToastMessage.show(this, getString(R.string.update_all_visions_success_text), true, true);
+            setOnBtnAddClickListener();
+            setOnBtnSelectClickListener();
+            shared.getEditor().putBoolean(UserItems.IS_FIRST_TIME, false);
+            shared.getEditor().putBoolean(UserItems.IS_USER_ADD_VISION, true);
+            shared.getEditor().apply();
+            selectVisionDialog.show();
+
+        } else {
+            starting();
+        }
     }
 
     @Override
@@ -750,15 +787,11 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
 
     @Override
     public void onUpdatePriceDialogListener(int price) {
-        this.price = price;
-
-        oldIncomeAmount = Integer.parseInt(selectVisionModel.getIncome_amount());
-        oldRestAmount = Integer.parseInt(selectVisionModel.getRest_amount());
-        oldIncome = Integer.parseInt(selectVisionModel.getIncome());
-        oldPayment = Integer.parseInt(selectVisionModel.getPayment());
-        oldProfit = Integer.parseInt(selectVisionModel.getProfit());
-        oldRest = Integer.parseInt(selectVisionModel.getRest());
-        oldAmount = Integer.parseInt(selectVisionModel.getAmount());
+        int oldIncomeAmount = Integer.parseInt(selectVisionModel.getIncome_amount());
+        int oldIncome = Integer.parseInt(selectVisionModel.getIncome());
+        int oldPayment = Integer.parseInt(selectVisionModel.getPayment());
+        int oldRest = Integer.parseInt(selectVisionModel.getRest());
+        int oldAmount = Integer.parseInt(selectVisionModel.getAmount());
 
         if (isIncome) {
             newIncome = oldIncome + price;
@@ -776,6 +809,9 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
         newProfit = newIncome - newPayment;
 
         if (newRest <= 0) {
+            if (TimerService.RUNNING) {
+                stopTimer();
+            }
             isTick = "1";
         } else {
             isTick = "0";
@@ -801,7 +837,7 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
             starting();
 
             if (isTick.equals("1")) {
-                new Handler().postDelayed(() -> CongratulationDialog.show(this), 500);
+                new Handler().postDelayed(() -> CongratulationDialog.show(this), 300);
             }
 
         } else {
@@ -813,13 +849,9 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
         inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
         btnAddVisionRoot = findViewById(R.id.btn_add_root);
         btnSelectVisionRoot = findViewById(R.id.btn_select_root);
-        btnAddLayout = findViewById(R.id.btn_add_layout);
-        btnSelectLayout = findViewById(R.id.btn_select_layout);
         toolbar = findViewById(R.id.toolbar);
         tvToolbar = toolbar.findViewById(R.id.tv_toolbar);
         imgToolbar = toolbar.findViewById(R.id.img_toolbar);
-        btnAddDescription = findViewById(R.id.btn_add_description);
-        btnSelectDescription = findViewById(R.id.btn_select_description);
         timerSwitch = findViewById(R.id.timer_switch);
         btnAdd = findViewById(R.id.btn_add);
         btnSelect = findViewById(R.id.btn_select);

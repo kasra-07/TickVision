@@ -14,7 +14,6 @@ import java.util.Map;
 import ir.mahchegroup.tickvision.classes.UserItems;
 
 public class ResetAllVisions {
-    private final Context context;
     private OnResetAllVisionsCallBack onResetAllVisionsCallBack;
     private static final String TAG = "ResetAllVisions";
 
@@ -22,13 +21,9 @@ public class ResetAllVisions {
         this.onResetAllVisionsCallBack = onResetAllVisionsCallBack;
     }
 
-    public ResetAllVisions(Context context) {
-        this.context = context;
-    }
-
-    public void reset(String userTbl, String diff) {
+    public void reset(Context context, String userTbl, String diff) {
         StringRequest request = new StringRequest(Request.Method.POST, UserItems.RESET_ALL_VISIONS_URL,
-                onResetAllVisionsCallBack::onResetAllVisionListener,
+                response -> onResetAllVisionsCallBack.onResetAllVisionListener(response),
                 error -> Log.e(TAG, "reset: " + error))
         {
             @NonNull
