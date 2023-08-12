@@ -40,6 +40,7 @@ public class UpdatePrice {
                 params.put(UserItems.PAYMENT, payment);
                 params.put(UserItems.PROFIT, profit);
                 params.put(UserItems.REST, rest);
+                params.put(UserItems.IS_TICK, isTick);
                 return params;
             }
         };

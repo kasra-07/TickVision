@@ -60,6 +60,7 @@ import ir.mahchegroup.tickvision.network.ClearAllVisions;
 import ir.mahchegroup.tickvision.network.GetAllVisions;
 import ir.mahchegroup.tickvision.network.GetCountVision;
 import ir.mahchegroup.tickvision.network.NetworkReceiver;
+import ir.mahchegroup.tickvision.network.ResetAllVisions;
 import ir.mahchegroup.tickvision.network.UpdateMilliSec;
 import ir.mahchegroup.tickvision.network.UpdatePrice;
 
@@ -135,7 +136,21 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
                 new Handler().postDelayed(() -> selectVisionDialog.show(), 500);
 
             } else {
-                startNormallyActivity();
+                if (shared.getShared().getBoolean(UserItems.IS_CHANGE_DAY, false)) {
+                    ResetAllVisions resetAllVisions = new ResetAllVisions(this);
+                    resetAllVisions.reset(userTbl, shared.getShared().getString(UserItems.DIFF, "1"));
+
+                    resetAllVisions.setOnResetAllVisionsCallBack(isReset -> {
+                        if (isReset.equals("success")) {
+                            startNormallyActivity();
+                        } else {
+                            Intent intent = new Intent(HomeActivity.this, UpdateErrorActivity.class);
+                            Animations.AnimActivity(this, intent);
+                        }
+                    });
+                } else {
+                    startNormallyActivity();
+                }
             }
         }
     }
@@ -145,6 +160,7 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
             if (TimerService.RUNNING) {
                 ToastMessage.show(this, getString(R.string.timer_on_error), false, true);
             } else {
+                dimMenu.setEnabled(false);
                 if (isOpenMenu) {
                     closeMenu();
                 } else {
@@ -155,6 +171,7 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
                     isOpenMenu = true;
                     dimMenu.setOnClickListener(view1 -> closeMenu());
                 }
+                new Handler().postDelayed(() -> dimMenu.setEnabled(true), 500);
             }
         });
 
@@ -245,6 +262,7 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
             paymentLayout.setEnabled(false);
 
             timerSwitch.setImageResource(R.drawable.timer_disable);
+            timerSwitch.setEnabled(false);
 
             imgToolbar.setVisibility(View.VISIBLE);
 
@@ -260,6 +278,7 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
             paymentLayout.setEnabled(true);
 
             timerSwitch.setImageResource(TimerService.RUNNING ? R.drawable.timer_on : R.drawable.timer_off);
+            timerSwitch.setEnabled(true);
 
             imgToolbar.setVisibility(View.GONE);
         }
@@ -292,12 +311,6 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
         unregisterReceiver(receiver);
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        timer.cancel();
-    }
-
     private void setOnBtnAddClickListener() {
         btnAddVisionRoot.setVisibility(View.VISIBLE);
         btnAdd.setOnClickListener(v -> addVisionDialog.show());
@@ -315,8 +328,6 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
             if (dao.getCountVision() > 0) {
                 selectVisionDialog.show();
             } else {
-
-
                 setOnBtnAddClickListener();
             }
 
@@ -467,13 +478,13 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
             public void run() {
                 runOnUiThread(() -> {
                     tvTime.setText(FaNum.convert(ChangeDate.getCurrentTime()));
-                    tvDate.setText(FaNum.convert(ChangeDate.getCurrentDay() + " / " +  ChangeDate.getCurrentMonth() + " / " + ChangeDate.getCurrentYear()));
+                    tvDate.setText(FaNum.convert(ChangeDate.getCurrentDay() + " / " + ChangeDate.getCurrentMonth() + " / " + ChangeDate.getCurrentYear()));
                 });
             }
-        },0,1000);
+        }, 0, 1000);
 
         tvTime.setText(FaNum.convert(ChangeDate.getCurrentTime()));
-        tvDate.setText(FaNum.convert(ChangeDate.getCurrentDay() + " / " +  ChangeDate.getCurrentMonth() + " / " + ChangeDate.getCurrentYear()));
+        tvDate.setText(FaNum.convert(ChangeDate.getCurrentDay() + " / " + ChangeDate.getCurrentMonth() + " / " + ChangeDate.getCurrentYear()));
         long t = Long.parseLong(selectVisionModel.getMilli_sec());
         tvTimer.setText(timeFormat(t));
         tvDay.setText(showDay());
@@ -766,8 +777,10 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
 
         if (newRest <= 0) {
             isTick = "1";
-            setDisableViewsInPrice(isTick);
+        } else {
+            isTick = "0";
         }
+        setDisableViewsInPrice(isTick);
         updatePrice.set(userTbl, selectedVision, String.valueOf(newIncomeAmount), String.valueOf(newRestAmount), String.valueOf(newIncome), String.valueOf(newPayment), String.valueOf(newProfit), String.valueOf(newRest), isTick);
     }
 

@@ -109,4 +109,5 @@
     <string name="timer_on_error">لطفا ابتدا تایمر را خاموش نمائید</string>
     <string name="congratulation_text">شما با موفقیت هدف امروز را تیک زدید...</string>
     <string name="ok_text">بسیار خب</string>
+    <string name="update_vision_again_text">بروزرسانی اطلاعات هدف با خطا مواجه شد\nبا کلیک برروی تصویر فوق ، مجددا جهت بروزرسانی تلاش نمائید</string>
 </resources>
