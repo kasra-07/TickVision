@@ -104,4 +104,6 @@
     <string name="empty_save_price_field_error">لطفا فیلد مبلغ را تکمیل نمائید</string>
     <string name="update_price_success_test">ثبت مبلغ با موفقیت انجام شد</string>
     <string name="update_price_error">ثبت مبلغ با خطا مواجه شد</string>
+    <string name="tick____vision">تیکـ...ویژن</string>
+    <string name="notify_text">تیک ویژن در حال اجراست</string>
 </resources>

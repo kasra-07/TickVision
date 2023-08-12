@@ -30,14 +30,15 @@ public class UserItems {
     public static final String PAYMENT = "payment";
     public static final String PROFIT = "profit";
     public static final String REST = "rest";
+    public static final String MILLI_SEC = "milli_sec";
     public static final String USER_SIGNUP_URL = "https://mahchegroup.ir/tick_vision/user_signup.php";
     public static final String USER_LOGIN_URL = "https://mahchegroup.ir/tick_vision/user_login.php";
     public static final String GET_COUNT_VISION_URL = "https://mahchegroup.ir/tick_vision/get_count_vision.php";
     public static final String ADD_VISION_URL = "https://mahchegroup.ir/tick_vision/add_vision.php";
     public static final String CLEAR_ALL_VISIONS_URL = "https://mahchegroup.ir/tick_vision/clear_all_visions.php";
     public static final String GET_ALL_VISIONS_URL = "https://mahchegroup.ir/tick_vision/get_all_visions.php";
-    public static final String GET_SELECT_VISION_INFO_URL = "https://mahchegroup.ir/tick_vision/get_select_vision_info.php";
     public static final String REMOVE_VISION_URL = "https://mahchegroup.ir/tick_vision/remove_vision.php";
     public static final String EDIT_VISION_URL = "https://mahchegroup.ir/tick_vision/edit_vision.php";
     public static final String UPDATE_PRICE_URL = "https://mahchegroup.ir/tick_vision/update_price.php";
+    public static final String UPDATE_MILLI_SEC_URL = "https://mahchegroup.ir/tick_vision/update_milli_sec.php";
 }

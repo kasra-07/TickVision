@@ -8,11 +8,14 @@ import androidx.cardview.widget.CardView;
 import androidx.drawerlayout.widget.DrawerLayout;
 
 import android.annotation.SuppressLint;
+import android.content.ComponentName;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.ServiceConnection;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.IBinder;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -23,7 +26,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.github.clans.fab.FloatingActionMenu;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -37,6 +39,7 @@ import ir.mahchegroup.tickvision.classes.Animations;
 import ir.mahchegroup.tickvision.classes.FaNum;
 import ir.mahchegroup.tickvision.classes.KeyboardManager;
 import ir.mahchegroup.tickvision.classes.Shared;
+import ir.mahchegroup.tickvision.classes.TimerService;
 import ir.mahchegroup.tickvision.classes.UserItems;
 import ir.mahchegroup.tickvision.database.ModelVision;
 import ir.mahchegroup.tickvision.database.VisionDao;
@@ -54,6 +57,7 @@ import ir.mahchegroup.tickvision.network.ClearAllVisions;
 import ir.mahchegroup.tickvision.network.GetAllVisions;
 import ir.mahchegroup.tickvision.network.GetCountVision;
 import ir.mahchegroup.tickvision.network.NetworkReceiver;
+import ir.mahchegroup.tickvision.network.UpdateMilliSec;
 import ir.mahchegroup.tickvision.network.UpdatePrice;
 
 public class HomeActivity extends AppCompatActivity implements GetCountVision.OnGetCountCallBack, UpdateAllVisionsDialog.OnUpdateAllVisionsDialogCallBack, ClearAllVisionsDialog.OnClearAllVisionsDialogCallBack, AddVisionDialog.OnAddVisionDialogCallBack, AddVision.OnAddVisionCallBack, ClearAllVisions.OnClearAllVisionsCallBack, GetAllVisions.OnGetAllVisionsCallBack, SelectVisionDialog.OnSelectVisionDialogCallBack, UpdatePriceDialog.OnUpdatePriceDialogCallBack, UpdatePrice.OnUpdatePriceCallBack {
@@ -71,7 +75,7 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
     private Shared shared;
     private VisionDao dao;
     private int ofLineCount, price, oldIncome, newIncome, oldPayment, newPayment, oldProfit, newProfit, oldRest, newRest, oldIncomeAmount, newIncomeAmount, oldRestAmount, newRestAmount, oldAmount;
-    private boolean isFirstTime, isUserAddVision, isUserSelectVision, isOpenMenu, isEquals = false, isBackEditActivity, isIncome;
+    private boolean isFirstTime, isUserAddVision, isUserSelectVision, isOpenMenu, isEquals = false, isBackEditActivity, isIncome, isTimerOn;
     public static boolean isCheckDayMode;
     private LayoutInflater inflater;
     private String userTbl, date, title, amount, day, selectedVision, isTick;
@@ -85,6 +89,8 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
     private SelectVisionDialog selectVisionDialog;
     private UpdatePriceDialog updatePriceDialog;
     private UpdatePrice updatePrice;
+    public static int MILLI_SEC;
+    private Intent timerIntent;
 
     @SuppressLint("RtlHardcoded")
     @Override
@@ -220,7 +226,7 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
             paymentLayout.addView(paymentView);
             paymentLayout.setEnabled(true);
 
-            timerSwitch.setImageResource(R.drawable.timer_on);
+            timerSwitch.setImageResource(TimerService.RUNNING ? R.drawable.timer_on : R.drawable.timer_off);
 
             imgToolbar.setVisibility(View.GONE);
         }
@@ -239,6 +245,16 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
     protected void onPause() {
         super.onPause();
         unregisterReceiver(receiver);
+    }
+
+    private void setOnBtnAddClickListener() {
+        btnAddVisionRoot.setVisibility(View.VISIBLE);
+        btnAdd.setOnClickListener(v -> addVisionDialog.show());
+    }
+
+    private void setOnBtnSelectClickListener() {
+        btnSelectVisionRoot.setVisibility(View.VISIBLE);
+        btnSelect.setOnClickListener(v -> selectVisionDialog.show());
     }
 
     //==============================================================================================
@@ -266,16 +282,6 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
                 startNormallyActivity();
             }
         }
-    }
-
-    private void setOnBtnAddClickListener() {
-        btnAddVisionRoot.setVisibility(View.VISIBLE);
-        btnAdd.setOnClickListener(v -> addVisionDialog.show());
-    }
-
-    private void setOnBtnSelectClickListener() {
-        btnSelectVisionRoot.setVisibility(View.VISIBLE);
-        btnSelect.setOnClickListener(v -> selectVisionDialog.show());
     }
 
     private void startNormallyActivity() {
@@ -318,6 +324,15 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
 
         selectVisionModel = dao.getVision(selectedVision);
 
+        MILLI_SEC = Integer.parseInt(selectVisionModel.getMilli_sec());
+
+        if (TimerService.RUNNING) {
+            bindService(timerIntent, serviceConnection, BIND_AUTO_CREATE);
+            isTimerOn = true;
+        }else {
+            isTimerOn = false;
+        }
+
         setSupportActionBar(toolbar);
         Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
 
@@ -342,7 +357,44 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
             isIncome = false;
             updatePriceDialog.show(false);
         });
+
+        timerSwitch.setOnClickListener(v -> {
+            if (isTimerOn) {
+                timerSwitch.setImageResource(R.drawable.timer_off);
+                isTimerOn = false;
+                stopService(timerIntent);
+
+                MILLI_SEC = TimerService.COUNTER;
+                selectVisionModel.setMilli_sec(String.valueOf(MILLI_SEC));
+                dao.editVision(selectVisionModel);
+                UpdateMilliSec updateMilliSec = new UpdateMilliSec(this);
+                updateMilliSec.set(userTbl, selectedVision, String.valueOf(MILLI_SEC));
+
+                unbindService(serviceConnection);
+            }else {
+                timerSwitch.setImageResource(R.drawable.timer_on);
+                isTimerOn = true;
+
+                startService(timerIntent);
+                bindService(timerIntent, serviceConnection, BIND_AUTO_CREATE);
+            }
+        });
     }
+
+    private final ServiceConnection serviceConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName componentName, IBinder binder) {
+            if (binder instanceof TimerService.TimeBinder) {
+                TimerService timerService = ((TimerService.TimeBinder) binder).getService();
+                timerService.setUpdateUiCallBack(time -> runOnUiThread(() -> tvTimer.setText(time)));
+            }
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName componentName) {
+
+        }
+    };
 
     @SuppressLint("InflateParams")
     private void initTableViewAndTimeView() {
@@ -393,6 +445,8 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
 
         tvTimer.setTextColor(isTick.equals("0") ? getColor(R.color.primary_color) : getColor(R.color.gray));
         tvTitleTimer.setTextColor(isTick.equals("0") ? getColor(R.color.primary_color) : getColor(R.color.gray));
+
+        timerSwitch.setImageResource(isTick.equals("0") ? (isTimerOn ? R.drawable.timer_on : R.drawable.timer_off) : R.drawable.timer_disable);
     }
 
     private void setTableValues(String isTick) {
@@ -743,6 +797,7 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
         userTbl = shared.getShared().getString(UserItems.USER_TBL, "");
         selectedVision = shared.getShared().getString(UserItems.SELECTED_VISION, "");
         dao = VisionDatabase.getVisionDatabase(this).visionDao();
+        timerIntent = new Intent(HomeActivity.this, TimerService.class);
 
         updateAllVisionsDialog = new UpdateAllVisionsDialog(this);
         clearAllVisionsDialog = new ClearAllVisionsDialog(this);
