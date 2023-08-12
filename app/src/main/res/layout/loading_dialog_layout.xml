@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="320dp"
+        android:layout_height="wrap_content"
+        android:background="@drawable/loading_background"
+        tools:ignore="UselessParent">
+
+        <com.tuyenmonkey.mkloader.MKLoader
+            android:id="@+id/loading"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="30dp"
+            app:mk_color="@color/primary_text_color"
+            app:mk_type="Sharingan"
+            tools:ignore="TextSizeCheck" />
+
+        <TextView
+            android:id="@+id/tv_loading"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/loading"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="-25dp"
+            android:layout_marginBottom="15dp"
+            android:textColor="@color/primary_text_color"
+            android:textStyle="bold"
+            android:textSize="@dimen/title_size"
+            tools:ignore="TextContrastCheck"
+            tools:text="در حال ارتباط با سرور" />
+
+    </RelativeLayout>
+
+</RelativeLayout>
