@@ -48,13 +48,15 @@ import ir.mahchegroup.tickvision.message_box.ClearAllVisionsDialog;
 import ir.mahchegroup.tickvision.message_box.SelectVisionDialog;
 import ir.mahchegroup.tickvision.message_box.ToastMessage;
 import ir.mahchegroup.tickvision.message_box.UpdateAllVisionsDialog;
+import ir.mahchegroup.tickvision.message_box.UpdatePriceDialog;
 import ir.mahchegroup.tickvision.network.AddVision;
 import ir.mahchegroup.tickvision.network.ClearAllVisions;
 import ir.mahchegroup.tickvision.network.GetAllVisions;
 import ir.mahchegroup.tickvision.network.GetCountVision;
 import ir.mahchegroup.tickvision.network.NetworkReceiver;
+import ir.mahchegroup.tickvision.network.UpdatePrice;
 
-public class HomeActivity extends AppCompatActivity implements GetCountVision.OnGetCountCallBack, UpdateAllVisionsDialog.OnUpdateAllVisionsDialogCallBack, ClearAllVisionsDialog.OnClearAllVisionsDialogCallBack, AddVisionDialog.OnAddVisionDialogCallBack, AddVision.OnAddVisionCallBack, ClearAllVisions.OnClearAllVisionsCallBack, GetAllVisions.OnGetAllVisionsCallBack, SelectVisionDialog.OnSelectVisionDialogCallBack {
+public class HomeActivity extends AppCompatActivity implements GetCountVision.OnGetCountCallBack, UpdateAllVisionsDialog.OnUpdateAllVisionsDialogCallBack, ClearAllVisionsDialog.OnClearAllVisionsDialogCallBack, AddVisionDialog.OnAddVisionDialogCallBack, AddVision.OnAddVisionCallBack, ClearAllVisions.OnClearAllVisionsCallBack, GetAllVisions.OnGetAllVisionsCallBack, SelectVisionDialog.OnSelectVisionDialogCallBack, UpdatePriceDialog.OnUpdatePriceDialogCallBack, UpdatePrice.OnUpdatePriceCallBack {
     private NetworkReceiver receiver;
     private RelativeLayout btnAddVisionRoot, btnSelectVisionRoot;
     private LinearLayout btnAddLayout, btnSelectLayout;
@@ -68,11 +70,11 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
     private FloatingActionMenu menu;
     private Shared shared;
     private VisionDao dao;
-    private int ofLineCount;
-    private boolean isFirstTime, isUserAddVision, isUserSelectVision, isOpenMenu, isEquals = false, isBackEditActivity;
+    private int ofLineCount, price, oldIncome, newIncome, oldPayment, newPayment, oldProfit, newProfit, oldRest, newRest, oldIncomeAmount, newIncomeAmount, oldRestAmount, newRestAmount, oldAmount;
+    private boolean isFirstTime, isUserAddVision, isUserSelectVision, isOpenMenu, isEquals = false, isBackEditActivity, isIncome;
     public static boolean isCheckDayMode;
     private LayoutInflater inflater;
-    private String userTbl, date, title, amount, day, selected_vision;
+    private String userTbl, date, title, amount, day, selectedVision, isTick;
     private ModelVision selectVisionModel;
     private UpdateAllVisionsDialog updateAllVisionsDialog;
     private ClearAllVisionsDialog clearAllVisionsDialog;
@@ -81,6 +83,8 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
     private AddVision addVision;
     private GetAllVisions getAllVisions;
     private SelectVisionDialog selectVisionDialog;
+    private UpdatePriceDialog updatePriceDialog;
+    private UpdatePrice updatePrice;
 
     @SuppressLint("RtlHardcoded")
     @Override
@@ -99,221 +103,6 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
             }
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_home);
-
-        init();
-
-        if (isFirstTime) {
-            GetCountVision getCountVision = new GetCountVision(this);
-            getCountVision.getCount(userTbl);
-        } else {
-            if (!isUserAddVision) {
-                setOnBtnAddClickListener();
-
-            } else if (!isUserSelectVision) {
-                setOnBtnAddClickListener();
-                setOnBtnSelectClickListener();
-                new Handler().postDelayed(() -> selectVisionDialog.show(), 500);
-
-            } else {
-                startNormallyActivity();
-            }
-        }
-    }
-
-    private void setOnBtnAddClickListener() {
-        btnAddVisionRoot.setVisibility(View.VISIBLE);
-        btnAdd.setOnClickListener(v -> addVisionDialog.show());
-    }
-
-    private void setOnBtnSelectClickListener() {
-        btnSelectVisionRoot.setVisibility(View.VISIBLE);
-        btnSelect.setOnClickListener(v -> selectVisionDialog.show());
-    }
-
-    private void startNormallyActivity() {
-
-        if (isBackEditActivity && isEquals) {
-            drawer.setVisibility(View.GONE);
-            if (dao.getCountVision() > 0) {
-                selectVisionDialog.show();
-            } else {
-
-
-                setOnBtnAddClickListener();
-            }
-
-        } else if (isBackEditActivity) {
-            if (dao.getCountVision() == 0) {
-
-                drawer.setVisibility(View.GONE);
-                setOnBtnAddClickListener();
-
-            } else {
-                starting();
-            }
-
-        } else {
-            starting();
-        }
-
-        isBackEditActivity = false;
-        isEquals = false;
-        shared.getEditor().putBoolean(UserItems.IS_BACK_EDIT_ACTIVITY, false);
-        shared.getEditor().putBoolean(UserItems.IS_EQUALS_SELECTED_VISION, false);
-        shared.getEditor().apply();
-    }
-
-    private void starting() {
-        btnAddVisionRoot.setVisibility(View.GONE);
-        btnSelectVisionRoot.setVisibility(View.GONE);
-        drawer.setVisibility(View.VISIBLE);
-
-        selectVisionModel = dao.getVision(selected_vision);
-
-        setSupportActionBar(toolbar);
-        Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
-
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, R.string.open, R.string.close);
-        drawer.addDrawerListener(toggle);
-        toggle.syncState();
-
-        tvToolbar.setText(selectVisionModel.getTitle());
-
-        initTableViewAndTimeView();
-
-        initIncomeViewAndPaymentView();
-
-        setMenu();
-
-        incomeLayout.setOnClickListener(v -> {
-            Toast.makeText(this, "income", Toast.LENGTH_SHORT).show();
-        });
-
-        paymentLayout.setOnClickListener(v -> {
-            Toast.makeText(this, "payment", Toast.LENGTH_SHORT).show();
-        });
-    }
-
-    @SuppressLint("InflateParams")
-    private void initTableViewAndTimeView() {
-        if (timeLayout.getChildAt(0) != null) {
-            timeLayout.removeAllViews();
-        }
-
-        if (tableLayout.getChildAt(0) != null) {
-            tableLayout.removeAllViews();
-        }
-
-        timeView = inflater.inflate(R.layout.time_layout, null);
-        tableView = inflater.inflate(R.layout.table_layout, null);
-
-        timeLayout.addView(timeView);
-        tableLayout.addView(tableView);
-
-        initTimeAndTableChildren();
-    }
-
-    private void initTimeAndTableChildren() {
-        tvTime = timeView.findViewById(R.id.tv_time);
-        tvTimer = timeView.findViewById(R.id.tv_timer);
-        tvDay = timeView.findViewById(R.id.tv_day);
-        tvDate = timeView.findViewById(R.id.tv_date);
-        tvTitleTimer = timeView.findViewById(R.id.tv_title_timer);
-
-        tvIncome = tableView.findViewById(R.id.tv_income);
-        titleIncome = tableView.findViewById(R.id.title_income);
-        tvPayment = tableView.findViewById(R.id.tv_payment);
-        titlePayment = tableView.findViewById(R.id.title_payment);
-        tvProfit = tableView.findViewById(R.id.tv_profit);
-        titleProfit = tableView.findViewById(R.id.title_profit);
-        tvRest = tableView.findViewById(R.id.tv_rest);
-        titleRest = tableView.findViewById(R.id.title_rest);
-
-        setTimeValues();
-
-        setTableValues();
-    }
-
-    private void setTimeValues() {
-        tvTime.setText(FaNum.convert(ChangeDate.getCurrentTime()));
-        tvDate.setText(FaNum.convert(ChangeDate.getCurrentYear() + " / " + ChangeDate.getCurrentMonth() + " / " + ChangeDate.getCurrentDay()));
-        long t = Long.parseLong(selectVisionModel.getMilli_sec());
-        tvTimer.setText(timeFormat(t));
-        tvDay.setText(showDay());
-
-        tvTimer.setTextColor(selectVisionModel.getIs_tick().equals("0") ? getColor(R.color.primary_color) : getColor(R.color.gray));
-        tvTitleTimer.setTextColor(selectVisionModel.getIs_tick().equals("0") ? getColor(R.color.primary_color) : getColor(R.color.gray));
-    }
-
-    private void setTableValues() {
-        String isTick = selectVisionModel.getIs_tick();
-
-        int income = Integer.parseInt(selectVisionModel.getIncome());
-        titleIncome.setText(isTick.equals("0") ? getString(R.string.income_text) : getString(R.string.all_income_text));
-        titleIncome.setTextColor(isTick.equals("0") ? (income == 0 ? getColor(R.color.primary_color) : getColor(R.color.accent_color)) : getColor(R.color.gray));
-
-        int incomeAmount = Integer.parseInt(selectVisionModel.getIncome_amount());
-        tvIncome.setText(isTick.equals("0") ? FaNum.convert(splitDigits(income)) + "   تومان" : FaNum.convert(splitDigits(incomeAmount)) + "   تومان");
-        tvIncome.setTextColor(isTick.equals("0") ? (income == 0 ? getColor(R.color.primary_color) : getColor(R.color.accent_color)) : getColor(R.color.gray));
-
-        //------------------------------------------------------------------------------------------
-
-        int payment = Integer.parseInt(selectVisionModel.getPayment());
-        titlePayment.setText(isTick.equals("0") ? getString(R.string.payment_text) : getString(R.string.all_rest_text));
-        titlePayment.setTextColor(isTick.equals("0") ? (payment > 0 ? getColor(R.color.primary_color) : getColor(R.color.accent_color)) : getColor(R.color.gray));
-
-        int amount = Integer.parseInt(selectVisionModel.getAmount());
-        int restAmount = amount - incomeAmount;
-        tvPayment.setText(isTick.equals("0") ? FaNum.convert(splitDigits(payment)) + "   تومان" : FaNum.convert(splitDigits(restAmount)) + "   تومان");
-        tvPayment.setTextColor(isTick.equals("0") ? (payment > 0 ? getColor(R.color.primary_color) : getColor(R.color.accent_color)) : getColor(R.color.gray));
-
-        //------------------------------------------------------------------------------------------
-
-        int profit = Integer.parseInt(selectVisionModel.getProfit());
-        titleProfit.setText(isTick.equals("0") ? (profit > 0 ? getString(R.string.profit_text) : getString(R.string.damage_text)) : getString(R.string.all_days_text));
-        titleProfit.setTextColor(isTick.equals("0") ? (profit <= 0 ? getColor(R.color.primary_color) : getColor(R.color.accent_color)) : getColor(R.color.gray));
-
-        String dayVision = selectVisionModel.getDay_vision();
-        tvProfit.setText(isTick.equals("0") ? FaNum.convert(splitDigits(profit)) + "   تومان" : FaNum.convert(dayVision));
-        tvProfit.setTextColor(isTick.equals("0") ? (profit <= 0 ? getColor(R.color.primary_color) : getColor(R.color.accent_color)) : getColor(R.color.gray));
-
-        //------------------------------------------------------------------------------------------
-
-        int rest = Integer.parseInt(selectVisionModel.getRest());
-        titleRest.setText(isTick.equals("0") ? (rest > 0 ? getString(R.string.rest_text) : getString(R.string.extra_text)) : getString(R.string.rest_days_text));
-        titleRest.setTextColor(isTick.equals("0") ? (rest > 0 ? getColor(R.color.primary_color) : getColor(R.color.accent_color)) : getColor(R.color.gray));
-
-        String dayRest = selectVisionModel.getDay_rest();
-        tvRest.setText(isTick.equals("0") ? FaNum.convert(splitDigits(rest)) + "   تومان" : FaNum.convert(dayRest));
-        tvRest.setTextColor(isTick.equals("0") ? (rest > 0 ? getColor(R.color.primary_color) : getColor(R.color.accent_color)) : getColor(R.color.gray));
-    }
-
-    @SuppressLint("InflateParams")
-    private void initIncomeViewAndPaymentView() {
-        if (incomeLayout.getChildAt(0) != null) {
-            incomeLayout.removeAllViews();
-        }
-
-        if (paymentLayout.getChildAt(0) != null) {
-            incomeLayout.removeAllViews();
-        }
-
-        String isTick = selectVisionModel.getIs_tick();
-
-        incomeView = inflater.inflate(isTick.equals("0") ? R.layout.income_view : R.layout.income_view_gray, null);
-        paymentView = inflater.inflate(isTick.equals("0") ? R.layout.payment_view : R.layout.payment_view_gray, null);
-
-        incomeLayout.addView(incomeView);
-        paymentLayout.addView(paymentView);
-
-        incomeLayout.setEnabled(isTick.equals("0"));
-        paymentLayout.setEnabled(isTick.equals("0"));
     }
 
     private void setMenu() {
@@ -401,6 +190,275 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
 
     public static String splitDigits(int number) {
         return new DecimalFormat("###,###,###,###,###,###").format(number);
+    }
+
+    @SuppressLint("InflateParams")
+    private void setDisableViewsInPrice(String isTick) {
+        if (isTick.equals("1")) {
+            incomeLayout.removeAllViews();
+            incomeView = inflater.inflate(R.layout.income_view_gray, null);
+            incomeLayout.addView(incomeView);
+            incomeLayout.setEnabled(false);
+
+            paymentLayout.removeAllViews();
+            paymentView = inflater.inflate(R.layout.payment_view_gray, null);
+            paymentLayout.addView(paymentView);
+            paymentLayout.setEnabled(false);
+
+            timerSwitch.setImageResource(R.drawable.timer_disable);
+
+            imgToolbar.setVisibility(View.VISIBLE);
+
+        } else {
+            incomeLayout.removeAllViews();
+            incomeView = inflater.inflate(R.layout.income_view, null);
+            incomeLayout.addView(incomeView);
+            incomeLayout.setEnabled(true);
+
+            paymentLayout.removeAllViews();
+            paymentView = inflater.inflate(R.layout.payment_view, null);
+            paymentLayout.addView(paymentView);
+            paymentLayout.setEnabled(true);
+
+            timerSwitch.setImageResource(R.drawable.timer_on);
+
+            imgToolbar.setVisibility(View.GONE);
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            receiver = new NetworkReceiver();
+            registerReceiver(receiver, new IntentFilter("android.net.conn.CONNECTIVITY_CHANGE"));
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        unregisterReceiver(receiver);
+    }
+
+    //==============================================================================================
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_home);
+
+        init();
+
+        if (isFirstTime) {
+            GetCountVision getCountVision = new GetCountVision(this);
+            getCountVision.getCount(userTbl);
+        } else {
+            if (!isUserAddVision) {
+                setOnBtnAddClickListener();
+
+            } else if (!isUserSelectVision) {
+                setOnBtnAddClickListener();
+                setOnBtnSelectClickListener();
+                new Handler().postDelayed(() -> selectVisionDialog.show(), 500);
+
+            } else {
+                startNormallyActivity();
+            }
+        }
+    }
+
+    private void setOnBtnAddClickListener() {
+        btnAddVisionRoot.setVisibility(View.VISIBLE);
+        btnAdd.setOnClickListener(v -> addVisionDialog.show());
+    }
+
+    private void setOnBtnSelectClickListener() {
+        btnSelectVisionRoot.setVisibility(View.VISIBLE);
+        btnSelect.setOnClickListener(v -> selectVisionDialog.show());
+    }
+
+    private void startNormallyActivity() {
+
+        if (isBackEditActivity && isEquals) {
+            drawer.setVisibility(View.GONE);
+            if (dao.getCountVision() > 0) {
+                selectVisionDialog.show();
+            } else {
+
+
+                setOnBtnAddClickListener();
+            }
+
+        } else if (isBackEditActivity) {
+            if (dao.getCountVision() == 0) {
+
+                drawer.setVisibility(View.GONE);
+                setOnBtnAddClickListener();
+
+            } else {
+                starting();
+            }
+
+        } else {
+            starting();
+        }
+
+        isBackEditActivity = false;
+        isEquals = false;
+        shared.getEditor().putBoolean(UserItems.IS_BACK_EDIT_ACTIVITY, false);
+        shared.getEditor().putBoolean(UserItems.IS_EQUALS_SELECTED_VISION, false);
+        shared.getEditor().apply();
+    }
+
+    private void starting() {
+        btnAddVisionRoot.setVisibility(View.GONE);
+        btnSelectVisionRoot.setVisibility(View.GONE);
+        drawer.setVisibility(View.VISIBLE);
+
+        selectVisionModel = dao.getVision(selectedVision);
+
+        setSupportActionBar(toolbar);
+        Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
+
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, R.string.open, R.string.close);
+        drawer.addDrawerListener(toggle);
+        toggle.syncState();
+
+        tvToolbar.setText(selectVisionModel.getTitle());
+
+        initTableViewAndTimeView();
+
+        initIncomeViewAndPaymentView();
+
+        setMenu();
+
+        incomeLayout.setOnClickListener(v -> {
+            isIncome = true;
+            updatePriceDialog.show(true);
+        });
+
+        paymentLayout.setOnClickListener(v -> {
+            isIncome = false;
+            updatePriceDialog.show(false);
+        });
+    }
+
+    @SuppressLint("InflateParams")
+    private void initTableViewAndTimeView() {
+        if (timeLayout.getChildAt(0) != null) {
+            timeLayout.removeAllViews();
+        }
+
+        if (tableLayout.getChildAt(0) != null) {
+            tableLayout.removeAllViews();
+        }
+
+        timeView = inflater.inflate(R.layout.time_layout, null);
+        tableView = inflater.inflate(R.layout.table_layout, null);
+
+        timeLayout.addView(timeView);
+        tableLayout.addView(tableView);
+
+        initTimeAndTableChildren();
+    }
+
+    private void initTimeAndTableChildren() {
+        tvTime = timeView.findViewById(R.id.tv_time);
+        tvTimer = timeView.findViewById(R.id.tv_timer);
+        tvDay = timeView.findViewById(R.id.tv_day);
+        tvDate = timeView.findViewById(R.id.tv_date);
+        tvTitleTimer = timeView.findViewById(R.id.tv_title_timer);
+
+        tvIncome = tableView.findViewById(R.id.tv_income);
+        titleIncome = tableView.findViewById(R.id.title_income);
+        tvPayment = tableView.findViewById(R.id.tv_payment);
+        titlePayment = tableView.findViewById(R.id.title_payment);
+        tvProfit = tableView.findViewById(R.id.tv_profit);
+        titleProfit = tableView.findViewById(R.id.title_profit);
+        tvRest = tableView.findViewById(R.id.tv_rest);
+        titleRest = tableView.findViewById(R.id.title_rest);
+
+        setTimeValues(selectVisionModel.getIs_tick());
+
+        setTableValues(selectVisionModel.getIs_tick());
+    }
+
+    private void setTimeValues(String isTick) {
+        tvTime.setText(FaNum.convert(ChangeDate.getCurrentTime()));
+        tvDate.setText(FaNum.convert(ChangeDate.getCurrentYear() + " / " + ChangeDate.getCurrentMonth() + " / " + ChangeDate.getCurrentDay()));
+        long t = Long.parseLong(selectVisionModel.getMilli_sec());
+        tvTimer.setText(timeFormat(t));
+        tvDay.setText(showDay());
+
+        tvTimer.setTextColor(isTick.equals("0") ? getColor(R.color.primary_color) : getColor(R.color.gray));
+        tvTitleTimer.setTextColor(isTick.equals("0") ? getColor(R.color.primary_color) : getColor(R.color.gray));
+    }
+
+    private void setTableValues(String isTick) {
+
+        setDisableViewsInPrice(isTick);
+
+        int income = Integer.parseInt(selectVisionModel.getIncome());
+        titleIncome.setText(isTick.equals("0") ? getString(R.string.income_text) : getString(R.string.all_income_text));
+        titleIncome.setTextColor(isTick.equals("0") ? (income == 0 ? getColor(R.color.primary_color) : getColor(R.color.accent_color)) : getColor(R.color.gray));
+
+        int incomeAmount = Integer.parseInt(selectVisionModel.getIncome_amount());
+        tvIncome.setText(isTick.equals("0") ? FaNum.convert(splitDigits(income)) + "   تومان" : FaNum.convert(splitDigits(incomeAmount)) + "   تومان");
+        tvIncome.setTextColor(isTick.equals("0") ? (income == 0 ? getColor(R.color.primary_color) : getColor(R.color.accent_color)) : getColor(R.color.gray));
+
+        //------------------------------------------------------------------------------------------
+
+        int payment = Integer.parseInt(selectVisionModel.getPayment());
+        titlePayment.setText(isTick.equals("0") ? getString(R.string.payment_text) : getString(R.string.all_rest_text));
+        titlePayment.setTextColor(isTick.equals("0") ? (payment > 0 ? getColor(R.color.primary_color) : getColor(R.color.accent_color)) : getColor(R.color.gray));
+
+        int amount = Integer.parseInt(selectVisionModel.getAmount());
+        int restAmount = amount - incomeAmount;
+        tvPayment.setText(isTick.equals("0") ? FaNum.convert(splitDigits(payment)) + "   تومان" : FaNum.convert(splitDigits(restAmount)) + "   تومان");
+        tvPayment.setTextColor(isTick.equals("0") ? (payment > 0 ? getColor(R.color.primary_color) : getColor(R.color.accent_color)) : getColor(R.color.gray));
+
+        //------------------------------------------------------------------------------------------
+
+        int profit = Integer.parseInt(selectVisionModel.getProfit());
+        titleProfit.setText(isTick.equals("0") ? (profit >= 0 ? getString(R.string.profit_text) : getString(R.string.damage_text)) : getString(R.string.all_days_text));
+        titleProfit.setTextColor(isTick.equals("0") ? (profit <= 0 ? getColor(R.color.primary_color) : getColor(R.color.accent_color)) : getColor(R.color.gray));
+
+        String dayVision = selectVisionModel.getDay_vision();
+        tvProfit.setText(isTick.equals("0") ? FaNum.convert(splitDigits(Math.abs(profit))) + "   تومان" : FaNum.convert(dayVision));
+        tvProfit.setTextColor(isTick.equals("0") ? (profit <= 0 ? getColor(R.color.primary_color) : getColor(R.color.accent_color)) : getColor(R.color.gray));
+
+        //------------------------------------------------------------------------------------------
+
+        int rest = Integer.parseInt(selectVisionModel.getRest());
+        titleRest.setText(isTick.equals("0") ? (rest >= 0 ? getString(R.string.rest_text) : getString(R.string.extra_text)) : getString(R.string.rest_days_text));
+        titleRest.setTextColor(isTick.equals("0") ? (rest > 0 ? getColor(R.color.primary_color) : getColor(R.color.accent_color)) : getColor(R.color.gray));
+
+        String dayRest = selectVisionModel.getDay_rest();
+        tvRest.setText(isTick.equals("0") ? FaNum.convert(splitDigits(Math.abs(rest))) + "   تومان" : FaNum.convert(dayRest));
+        tvRest.setTextColor(isTick.equals("0") ? (rest > 0 ? getColor(R.color.primary_color) : getColor(R.color.accent_color)) : getColor(R.color.gray));
+    }
+
+    @SuppressLint("InflateParams")
+    private void initIncomeViewAndPaymentView() {
+        if (incomeLayout.getChildAt(0) != null) {
+            incomeLayout.removeAllViews();
+        }
+
+        if (paymentLayout.getChildAt(0) != null) {
+            incomeLayout.removeAllViews();
+        }
+
+        String isTick = selectVisionModel.getIs_tick();
+
+        incomeView = inflater.inflate(isTick.equals("0") ? R.layout.income_view : R.layout.income_view_gray, null);
+        paymentView = inflater.inflate(isTick.equals("0") ? R.layout.payment_view : R.layout.payment_view_gray, null);
+
+        incomeLayout.addView(incomeView);
+        paymentLayout.addView(paymentView);
+
+        incomeLayout.setEnabled(isTick.equals("0"));
+        paymentLayout.setEnabled(isTick.equals("0"));
     }
 
     @Override
@@ -562,7 +620,7 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
             if (isCheckDayMode) {
                 shared.getEditor().putString(UserItems.SELECTED_VISION, titleSelectVision);
                 shared.getEditor().apply();
-                selected_vision = titleSelectVision;
+                selectedVision = titleSelectVision;
                 selectVisionModel = dao.getVision(titleSelectVision);
                 startNormallyActivity();
                 selectVisionDialog.dismiss();
@@ -570,11 +628,10 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
                 shared.getEditor().putBoolean(UserItems.IS_BACK_EDIT_ACTIVITY, true);
                 shared.getEditor().putString(UserItems.TITLE_SELECTED_VISION, titleSelectVision);
                 Intent intent = new Intent(HomeActivity.this, EditActivity.class);
-                intent.putExtra(UserItems.IS_EQUALS_SELECTED_VISION, titleSelectVision.equals(selected_vision));
-                shared.getEditor().putBoolean(UserItems.IS_EQUALS_SELECTED_VISION, titleSelectVision.equals(selected_vision));
+                intent.putExtra(UserItems.IS_EQUALS_SELECTED_VISION, titleSelectVision.equals(selectedVision));
+                shared.getEditor().putBoolean(UserItems.IS_EQUALS_SELECTED_VISION, titleSelectVision.equals(selectedVision));
                 shared.getEditor().apply();
                 selectVisionDialog.dismiss();
-                Toast.makeText(this, shared.getShared().getString(UserItems.TITLE_SELECTED_VISION, ""), Toast.LENGTH_SHORT).show();
                 new Handler().postDelayed(() -> Animations.AnimActivity(this, intent), 300);
             }
         }
@@ -591,21 +648,6 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
         }
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            receiver = new NetworkReceiver();
-            registerReceiver(receiver, new IntentFilter("android.net.conn.CONNECTIVITY_CHANGE"));
-        }
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        unregisterReceiver(receiver);
-    }
-
     @SuppressLint("RtlHardcoded")
     @Override
     public void onBackPressed() {
@@ -618,8 +660,61 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
         }
     }
 
+    @Override
+    public void onUpdatePriceDialogListener(int price) {
+        this.price = price;
+
+        oldIncomeAmount = Integer.parseInt(selectVisionModel.getIncome_amount());
+        oldRestAmount = Integer.parseInt(selectVisionModel.getRest_amount());
+        oldIncome = Integer.parseInt(selectVisionModel.getIncome());
+        oldPayment = Integer.parseInt(selectVisionModel.getPayment());
+        oldProfit = Integer.parseInt(selectVisionModel.getProfit());
+        oldRest = Integer.parseInt(selectVisionModel.getRest());
+        oldAmount = Integer.parseInt(selectVisionModel.getAmount());
+
+        if (isIncome) {
+            newIncome = oldIncome + price;
+            newPayment = oldPayment;
+            newRest = oldRest - price;
+            newIncomeAmount = oldIncomeAmount + price;
+            newRestAmount = oldAmount - newIncomeAmount;
+        } else {
+            newIncome = oldIncome;
+            newPayment = oldPayment + price;
+            newRest = oldRest + price;
+            newIncomeAmount = oldIncomeAmount - price;
+            newRestAmount = oldAmount + newIncomeAmount;
+        }
+        newProfit = newIncome - newPayment;
+
+        if (newRest <= 0) {
+            isTick = "1";
+            setDisableViewsInPrice(isTick);
+        }
+        updatePrice.set(userTbl, selectedVision, String.valueOf(newIncomeAmount), String.valueOf(newRestAmount), String.valueOf(newIncome), String.valueOf(newPayment), String.valueOf(newProfit), String.valueOf(newRest), isTick);
+    }
+
+    @Override
+    public void onUpdatePriceListener(String isUpdate) {
+        if (isUpdate.equals("success")) {
+            selectVisionModel.setIncome_amount(String.valueOf(newIncomeAmount));
+            selectVisionModel.setRest_amount(String.valueOf(newRestAmount));
+            selectVisionModel.setIncome(String.valueOf(newIncome));
+            selectVisionModel.setPayment(String.valueOf(newPayment));
+            selectVisionModel.setProfit(String.valueOf(newProfit));
+            selectVisionModel.setRest(String.valueOf(newRest));
+            selectVisionModel.setIs_tick(isTick);
+
+            dao.editVision(selectVisionModel);
+            updatePriceDialog.dismiss();
+            ToastMessage.show(this, getString(R.string.update_price_success_test), true, true);
+            starting();
+        } else {
+            ToastMessage.show(this, getString(R.string.update_price_error), false, true);
+        }
+    }
+
     private void init() {
-        selectVisionModel = new ModelVision();
         inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
         btnAddVisionRoot = findViewById(R.id.btn_add_root);
         btnSelectVisionRoot = findViewById(R.id.btn_select_root);
@@ -646,7 +741,7 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
         isUserSelectVision = shared.getShared().getBoolean(UserItems.IS_USER_SELECT_VISION, false);
         isCheckDayMode = shared.getShared().getBoolean(UserItems.IS_CHECK_DAY_MODE, true);
         userTbl = shared.getShared().getString(UserItems.USER_TBL, "");
-        selected_vision = shared.getShared().getString(UserItems.SELECTED_VISION, "");
+        selectedVision = shared.getShared().getString(UserItems.SELECTED_VISION, "");
         dao = VisionDatabase.getVisionDatabase(this).visionDao();
 
         updateAllVisionsDialog = new UpdateAllVisionsDialog(this);
@@ -656,5 +751,7 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
         addVision = new AddVision(this);
         getAllVisions = new GetAllVisions(this);
         selectVisionDialog = new SelectVisionDialog(this);
+        updatePriceDialog = new UpdatePriceDialog(this);
+        updatePrice = new UpdatePrice(this);
     }
 }

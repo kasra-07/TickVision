@@ -101,4 +101,7 @@
     <string name="income_amount_text">مبلغ دریافتی (حداکثر 9 کاراکتر)</string>
     <string name="save_price_text">ثبت مبلغ</string>
     <string name="payment_amount_text">مبلغ پرداختی (حداکثر 9 کاراکتر)</string>
+    <string name="empty_save_price_field_error">لطفا فیلد مبلغ را تکمیل نمائید</string>
+    <string name="update_price_success_test">ثبت مبلغ با موفقیت انجام شد</string>
+    <string name="update_price_error">ثبت مبلغ با خطا مواجه شد</string>
 </resources>

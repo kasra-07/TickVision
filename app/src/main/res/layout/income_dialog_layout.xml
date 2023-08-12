@@ -47,7 +47,7 @@
                 tools:ignore="ContentDescription,ImageContrastCheck" />
 
             <EditText
-                android:id="@+id/edt_amount"
+                android:id="@+id/edt_price"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/edt_height_size"
                 android:layout_gravity="center"
