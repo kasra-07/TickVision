@@ -34,6 +34,8 @@ import java.text.DecimalFormat;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import ir.mahchegroup.tickvision.classes.Animations;
 import ir.mahchegroup.tickvision.classes.FaNum;
@@ -48,6 +50,7 @@ import ir.mahchegroup.tickvision.date.ChangeDate;
 import ir.mahchegroup.tickvision.date.ShamsiCalendar;
 import ir.mahchegroup.tickvision.message_box.AddVisionDialog;
 import ir.mahchegroup.tickvision.message_box.ClearAllVisionsDialog;
+import ir.mahchegroup.tickvision.message_box.CongratulationDialog;
 import ir.mahchegroup.tickvision.message_box.SelectVisionDialog;
 import ir.mahchegroup.tickvision.message_box.ToastMessage;
 import ir.mahchegroup.tickvision.message_box.UpdateAllVisionsDialog;
@@ -91,6 +94,7 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
     private UpdatePrice updatePrice;
     public static int MILLI_SEC;
     private Intent timerIntent;
+    private Timer timer;
 
     @SuppressLint("RtlHardcoded")
     @Override
@@ -111,17 +115,46 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_home);
+
+        init();
+
+        if (isFirstTime) {
+            GetCountVision getCountVision = new GetCountVision(this);
+            getCountVision.getCount(userTbl);
+        } else {
+            if (!isUserAddVision) {
+                setOnBtnAddClickListener();
+
+            } else if (!isUserSelectVision) {
+                setOnBtnAddClickListener();
+                setOnBtnSelectClickListener();
+                new Handler().postDelayed(() -> selectVisionDialog.show(), 500);
+
+            } else {
+                startNormallyActivity();
+            }
+        }
+    }
+
     private void setMenu() {
         menu.setOnMenuButtonClickListener(view -> {
-            if (isOpenMenu) {
-                closeMenu();
+            if (TimerService.RUNNING) {
+                ToastMessage.show(this, getString(R.string.timer_on_error), false, true);
             } else {
-                Animation animation = AnimationUtils.loadAnimation(this, R.anim.fade_in);
-                dimMenu.startAnimation(animation);
-                dimMenu.setVisibility(View.VISIBLE);
-                menu.open(true);
-                isOpenMenu = true;
-                dimMenu.setOnClickListener(view1 -> closeMenu());
+                if (isOpenMenu) {
+                    closeMenu();
+                } else {
+                    Animation animation = AnimationUtils.loadAnimation(this, R.anim.fade_in);
+                    dimMenu.startAnimation(animation);
+                    dimMenu.setVisibility(View.VISIBLE);
+                    menu.open(true);
+                    isOpenMenu = true;
+                    dimMenu.setOnClickListener(view1 -> closeMenu());
+                }
             }
         });
 
@@ -232,6 +265,18 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
         }
     }
 
+    @SuppressLint("RtlHardcoded")
+    @Override
+    public void onBackPressed() {
+        if (drawer.isDrawerOpen(Gravity.RIGHT)) {
+            drawer.closeDrawer(Gravity.RIGHT);
+        } else if (menu.isOpened()) {
+            closeMenu();
+        } else {
+            finish();
+        }
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
@@ -247,6 +292,12 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
         unregisterReceiver(receiver);
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        timer.cancel();
+    }
+
     private void setOnBtnAddClickListener() {
         btnAddVisionRoot.setVisibility(View.VISIBLE);
         btnAdd.setOnClickListener(v -> addVisionDialog.show());
@@ -255,33 +306,6 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
     private void setOnBtnSelectClickListener() {
         btnSelectVisionRoot.setVisibility(View.VISIBLE);
         btnSelect.setOnClickListener(v -> selectVisionDialog.show());
-    }
-
-    //==============================================================================================
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_home);
-
-        init();
-
-        if (isFirstTime) {
-            GetCountVision getCountVision = new GetCountVision(this);
-            getCountVision.getCount(userTbl);
-        } else {
-            if (!isUserAddVision) {
-                setOnBtnAddClickListener();
-
-            } else if (!isUserSelectVision) {
-                setOnBtnAddClickListener();
-                setOnBtnSelectClickListener();
-                new Handler().postDelayed(() -> selectVisionDialog.show(), 500);
-
-            } else {
-                startNormallyActivity();
-            }
-        }
     }
 
     private void startNormallyActivity() {
@@ -329,7 +353,7 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
         if (TimerService.RUNNING) {
             bindService(timerIntent, serviceConnection, BIND_AUTO_CREATE);
             isTimerOn = true;
-        }else {
+        } else {
             isTimerOn = false;
         }
 
@@ -371,7 +395,7 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
                 updateMilliSec.set(userTbl, selectedVision, String.valueOf(MILLI_SEC));
 
                 unbindService(serviceConnection);
-            }else {
+            } else {
                 timerSwitch.setImageResource(R.drawable.timer_on);
                 isTimerOn = true;
 
@@ -437,8 +461,19 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
     }
 
     private void setTimeValues(String isTick) {
+        timer = new Timer();
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                runOnUiThread(() -> {
+                    tvTime.setText(FaNum.convert(ChangeDate.getCurrentTime()));
+                    tvDate.setText(FaNum.convert(ChangeDate.getCurrentDay() + " / " +  ChangeDate.getCurrentMonth() + " / " + ChangeDate.getCurrentYear()));
+                });
+            }
+        },0,1000);
+
         tvTime.setText(FaNum.convert(ChangeDate.getCurrentTime()));
-        tvDate.setText(FaNum.convert(ChangeDate.getCurrentYear() + " / " + ChangeDate.getCurrentMonth() + " / " + ChangeDate.getCurrentDay()));
+        tvDate.setText(FaNum.convert(ChangeDate.getCurrentDay() + " / " +  ChangeDate.getCurrentMonth() + " / " + ChangeDate.getCurrentYear()));
         long t = Long.parseLong(selectVisionModel.getMilli_sec());
         tvTimer.setText(timeFormat(t));
         tvDay.setText(showDay());
@@ -702,18 +737,6 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
         }
     }
 
-    @SuppressLint("RtlHardcoded")
-    @Override
-    public void onBackPressed() {
-        if (drawer.isDrawerOpen(Gravity.RIGHT)) {
-            drawer.closeDrawer(Gravity.RIGHT);
-        } else if (menu.isOpened()) {
-            closeMenu();
-        } else {
-            finish();
-        }
-    }
-
     @Override
     public void onUpdatePriceDialogListener(int price) {
         this.price = price;
@@ -763,6 +786,11 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
             updatePriceDialog.dismiss();
             ToastMessage.show(this, getString(R.string.update_price_success_test), true, true);
             starting();
+
+            if (isTick.equals("1")) {
+                new Handler().postDelayed(() -> CongratulationDialog.show(this), 500);
+            }
+
         } else {
             ToastMessage.show(this, getString(R.string.update_price_error), false, true);
         }

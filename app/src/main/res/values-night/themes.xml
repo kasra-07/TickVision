@@ -17,4 +17,8 @@
         <item name="android:windowEnterAnimation">@anim/dialog_fade_in</item>
         <item name="android:windowExitAnimation">@anim/dialog_fade_out</item>
     </style>
+    <style name="cong_anim">
+        <item name="android:windowEnterAnimation">@anim/cong_trans_in</item>
+        <item name="android:windowExitAnimation">@anim/cong_trans_out</item>
+    </style>
 </resources>

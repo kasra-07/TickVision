@@ -1,0 +1,85 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_margin="@dimen/margin_layout_dialog"
+    android:layout_height="wrap_content">
+
+    <RelativeLayout
+        android:id="@+id/root"
+        android:layout_width="match_parent"
+        android:layout_height="165dp"
+        android:background="@drawable/dialog_background"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/blue_tv_background"
+            android:gravity="center"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:text="@string/tick____vision"
+            android:textColor="@color/primary_text_color"
+            android:textSize="20sp" />
+
+        <RelativeLayout
+            android:id="@+id/layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:layout_below="@id/title"
+            android:layout_centerHorizontal="true">
+
+            <ImageView
+                android:id="@+id/img"
+                android:layout_width="80dp"
+                android:layout_height="60dp"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true"
+                android:paddingTop="4dp"
+                android:paddingBottom="4dp"
+                android:rotation="8"
+                android:src="@drawable/ok_rv"
+                app:tint="@color/accent_color"
+                tools:ignore="ContentDescription,ImageContrastCheck" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignTop="@id/img"
+                android:layout_alignBottom="@id/img"
+                android:layout_alignParentEnd="true"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="30dp"
+                android:layout_marginBottom="10dp"
+                android:background="@drawable/blue_edt_background"
+                android:gravity="center"
+                android:maxLines="1"
+                android:paddingStart="15dp"
+                android:paddingEnd="15dp"
+                android:text="@string/congratulation_text"
+                android:textColor="@color/accent_dark_color"
+                android:textSize="@dimen/large_text_size"
+                tools:ignore="RelativeOverlap,TextContrastCheck" />
+
+        </RelativeLayout>
+
+    </RelativeLayout>
+
+    <Button
+        android:id="@+id/btn_ok"
+        android:layout_width="200dp"
+        android:layout_height="@dimen/btn_dialog_height"
+        android:layout_marginTop="145dp"
+        android:background="@drawable/blue_btn_background"
+        android:text="@string/ok_text"
+        android:textColor="@color/primary_text_color"
+        android:textSize="18sp"
+        android:layout_centerHorizontal="true" />
+
+</RelativeLayout>

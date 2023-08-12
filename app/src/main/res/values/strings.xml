@@ -106,4 +106,7 @@
     <string name="update_price_error">ثبت مبلغ با خطا مواجه شد</string>
     <string name="tick____vision">تیکـ...ویژن</string>
     <string name="notify_text">تیک ویژن در حال اجراست</string>
+    <string name="timer_on_error">لطفا ابتدا تایمر را خاموش نمائید</string>
+    <string name="congratulation_text">شما با موفقیت هدف امروز را تیک زدید...</string>
+    <string name="ok_text">بسیار خب</string>
 </resources>
