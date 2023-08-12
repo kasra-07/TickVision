@@ -27,6 +27,7 @@ import ir.mahchegroup.tickvision.classes.KeyboardManager;
 import ir.mahchegroup.tickvision.classes.SetInputLayoutColors;
 import ir.mahchegroup.tickvision.classes.Shared;
 import ir.mahchegroup.tickvision.classes.UserItems;
+import ir.mahchegroup.tickvision.message_box.LoadingDialog;
 import ir.mahchegroup.tickvision.message_box.ToastMessage;
 import ir.mahchegroup.tickvision.network.NetworkReceiver;
 import ir.mahchegroup.tickvision.network.UserSignup;
@@ -102,7 +103,7 @@ public class SignupActivity extends AppCompatActivity implements UserSignup.User
             }
         });
         eMail.setOnFocusChangeListener((v, b) -> {
-                edtUnFocus(lUsername, lPass, lCPass, eUsername, ePass, eCPass);
+            edtUnFocus(lUsername, lPass, lCPass, eUsername, ePass, eCPass);
             if (b) {
                 if (isMailError) {
                     SetInputLayoutColors.setColor(this, lMail, eMail, getString(R.string.mail_type_error), 2);
@@ -398,6 +399,7 @@ public class SignupActivity extends AppCompatActivity implements UserSignup.User
     }
 
     private void setOnSignup() {
+        LoadingDialog.show(this, getString(R.string.sending_info_text));
         UserSignup userSignup = new UserSignup(this);
         userSignup.signup(username, mail, pass);
     }
@@ -409,10 +411,15 @@ public class SignupActivity extends AppCompatActivity implements UserSignup.User
         } else if (isSignup.equals("duplicate")) {
             ToastMessage.show(this, getString(R.string.duplicate_error), false, false);
         } else {
-            ToastMessage.show(this, getString(R.string.signup_success), true, true);
-            shared.getEditor().putBoolean(UserItems.IS_USER_SIGNUP, true).apply();
-            Intent intent = new Intent(SignupActivity.this, LoginActivity.class);
-            Animations.AnimActivity(this, intent);
+            new Handler().postDelayed(() -> {
+                LoadingDialog.dismiss();
+                new Handler().postDelayed(() -> {
+                    ToastMessage.show(this, getString(R.string.signup_success), true, true);
+                    shared.getEditor().putBoolean(UserItems.IS_USER_SIGNUP, true).apply();
+                    Intent intent = new Intent(SignupActivity.this, LoginActivity.class);
+                    Animations.AnimActivity(this, intent);
+                }, 400);
+            }, 3400);
         }
     }
 

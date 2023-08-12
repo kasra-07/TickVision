@@ -26,6 +26,7 @@ import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
 import com.github.clans.fab.FloatingActionMenu;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -50,6 +51,7 @@ import ir.mahchegroup.tickvision.date.ShamsiCalendar;
 import ir.mahchegroup.tickvision.message_box.AddVisionDialog;
 import ir.mahchegroup.tickvision.message_box.ClearAllVisionsDialog;
 import ir.mahchegroup.tickvision.message_box.CongratulationDialog;
+import ir.mahchegroup.tickvision.message_box.LoadingDialog;
 import ir.mahchegroup.tickvision.message_box.SelectVisionDialog;
 import ir.mahchegroup.tickvision.message_box.ToastMessage;
 import ir.mahchegroup.tickvision.message_box.UpdateAllVisionsDialog;
@@ -121,6 +123,7 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
         init();
 
         if (isFirstTime) {
+            LoadingDialog.show(this, getString(R.string.please_vait_text));
             GetCountVision getCountVision = new GetCountVision(this);
             getCountVision.getCount(userTbl);
         } else {
@@ -366,21 +369,25 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
         selectVisionModel = dao.getVision(selectedVision);
 
         if (shared.getShared().getBoolean(UserItems.IS_CHANGE_DAY, false)) {
-            String d = selectVisionModel.getDate_vision();
-            long diff = calcTimeDiff(d, date);
+            new Handler().postDelayed(() -> {
 
-            ResetAllVisions resetAllVisions = new ResetAllVisions();
-            resetAllVisions.reset(this, userTbl, String.valueOf(diff));
+                LoadingDialog.show(this, getString(R.string.updating_text));
+                String d = selectVisionModel.getDate_vision();
+                long diff = calcTimeDiff(d, date);
 
-            resetAllVisions.setOnResetAllVisionsCallBack(isReset -> {
-                if (isReset.equals("success")) {
-                    shared.getEditor().putBoolean(UserItems.IS_CHANGE_DAY, false).apply();
-                    getAllVisions.get(userTbl);
-                } else {
-                    Intent intent = new Intent(HomeActivity.this, UpdateErrorActivity.class);
-                    Animations.AnimActivity(this, intent);
-                }
-            });
+                ResetAllVisions resetAllVisions = new ResetAllVisions();
+                resetAllVisions.reset(this, userTbl, String.valueOf(diff));
+
+                resetAllVisions.setOnResetAllVisionsCallBack(isReset -> {
+                    if (isReset.equals("success")) {
+                        shared.getEditor().putBoolean(UserItems.IS_CHANGE_DAY, false).apply();
+                        getAllVisions.get(userTbl);
+                    } else {
+                        Intent intent = new Intent(HomeActivity.this, UpdateErrorActivity.class);
+                        Animations.AnimActivity(this, intent);
+                    }
+                });
+            }, 300);
 
         } else {
             MILLI_SEC = Integer.parseInt(selectVisionModel.getMilli_sec());
@@ -508,6 +515,10 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
                 runOnUiThread(() -> {
                     tvTime.setText(FaNum.convert(ChangeDate.getCurrentTime()));
                     tvDate.setText(FaNum.convert(ChangeDate.getCurrentDay() + " / " + ChangeDate.getCurrentMonth() + " / " + ChangeDate.getCurrentYear()));
+                    if (shared.getShared().getInt(UserItems.G_DAY, 0) != ChangeDate.getCurrentDay()) {
+                        shared.getEditor().putBoolean(UserItems.IS_CHANGE_DAY, true).apply();
+                        starting();
+                    }
                 });
             }
         }, 0, 1000);
@@ -592,17 +603,22 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
 
     @Override
     public void onGetCountListener(int count) {
-        if (count > 0) {
-            int ofLineCount = dao.getCountVision();
+        new Handler().postDelayed(() -> {
+            LoadingDialog.dismiss();
+            new Handler().postDelayed(() -> {
+                if (count > 0) {
+                    int ofLineCount = dao.getCountVision();
 
-            if (count > ofLineCount) {
-                updateAllVisionsDialog.show();
-            } else {
-                selectVisionDialog.show();
-            }
-        } else {
-            setOnBtnAddClickListener();
-        }
+                    if (count > ofLineCount) {
+                        updateAllVisionsDialog.show();
+                    } else {
+                        selectVisionDialog.show();
+                    }
+                } else {
+                    setOnBtnAddClickListener();
+                }
+            }, 400);
+        }, 3400);
     }
 
     @Override
@@ -733,7 +749,10 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
             selectVisionDialog.show();
 
         } else {
-            starting();
+            new Handler().postDelayed(() -> {
+                starting();
+                new Handler().postDelayed(LoadingDialog::dismiss, 600);
+            }, 4000);
         }
     }
 

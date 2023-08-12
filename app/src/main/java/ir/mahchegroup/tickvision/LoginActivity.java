@@ -23,6 +23,7 @@ import ir.mahchegroup.tickvision.classes.KeyboardManager;
 import ir.mahchegroup.tickvision.classes.SetInputLayoutColors;
 import ir.mahchegroup.tickvision.classes.Shared;
 import ir.mahchegroup.tickvision.classes.UserItems;
+import ir.mahchegroup.tickvision.message_box.LoadingDialog;
 import ir.mahchegroup.tickvision.message_box.ToastMessage;
 import ir.mahchegroup.tickvision.network.NetworkReceiver;
 import ir.mahchegroup.tickvision.network.UserLogin;
@@ -91,7 +92,7 @@ public class LoginActivity extends AppCompatActivity implements UserLogin.OnUser
             isChecked = b;
         });
 
-        forgetLink.setOnClickListener(v -> ToastMessage.show(this, getString(R.string.coming_soon), false, false));
+        forgetLink.setOnClickListener(v -> ToastMessage.show(this, getString(R.string.coming_soon_text), false, false));
     }
 
     private void edtFocusChange() {
@@ -183,6 +184,8 @@ public class LoginActivity extends AppCompatActivity implements UserLogin.OnUser
     public void btnOnClick(View view) {
         root.performClick();
 
+        LoadingDialog.show(this, getString(R.string.getting_info_text));
+
         userMail = Objects.requireNonNull(eUserMail.getText()).toString().trim();
         pass = Objects.requireNonNull(ePass.getText()).toString().trim();
 
@@ -230,8 +233,13 @@ public class LoginActivity extends AppCompatActivity implements UserLogin.OnUser
             }
             shared.getEditor().apply();
 
-            Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
-            Animations.AnimActivity(this, intent);
+            new Handler().postDelayed(() -> {
+                LoadingDialog.dismiss();
+                new Handler().postDelayed(() -> {
+                    Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
+                    Animations.AnimActivity(this, intent);
+                },400);
+            },1500);
         }
     }
 

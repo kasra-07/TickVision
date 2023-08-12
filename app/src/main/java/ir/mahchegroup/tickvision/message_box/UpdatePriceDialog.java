@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
 import android.graphics.drawable.ColorDrawable;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -13,6 +14,7 @@ import android.widget.ImageView;
 import java.util.Objects;
 
 import ir.mahchegroup.tickvision.R;
+import ir.mahchegroup.tickvision.classes.KeyboardManager;
 
 public class UpdatePriceDialog {
     private Dialog dialog;
@@ -42,9 +44,14 @@ public class UpdatePriceDialog {
         ImageView btnVoice = view.findViewById(R.id.btn_voice);
         EditText edt = view.findViewById(R.id.edt_price);
 
+        new Handler().postDelayed(() -> {
+            KeyboardManager.showKeyboard(context, edt);
+            edt.requestFocus();
+        },400);
+
         btnCancel.setOnClickListener(v -> dialog.dismiss());
 
-        btnVoice.setOnClickListener(v -> ToastMessage.show(context, context.getString(R.string.coming_soon), false, true));
+        btnVoice.setOnClickListener(v -> ToastMessage.show(context, context.getString(R.string.coming_soon_text), false, true));
 
         btnSave.setOnClickListener(v -> {
             if (edt.length() == 0) {

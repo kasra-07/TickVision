@@ -36,7 +36,7 @@
     <string name="create_new_account_text"><u>ایجاد حساب کاربری جدید</u></string>
     <string name="login_error">نام کاربری یا ایمیل نادرست است</string>
     <string name="login_pass_error">کلمه عبور نادرست است</string>
-    <string name="coming_soon">به زودی اضافه خواهد شد</string>
+    <string name="coming_soon_text">به زودی اضافه خواهد شد</string>
     <string name="add_vision_text">هدف جدید</string>
     <string name="select_check_vision_text">بررسی هدف</string>
     <string name="select_edit_vision_text">ویرایش هدف</string>
@@ -107,7 +107,11 @@
     <string name="tick____vision">تیکـ...ویژن</string>
     <string name="notify_text">تیک ویژن در حال اجراست</string>
     <string name="timer_on_error">لطفا ابتدا تایمر را خاموش نمائید</string>
-    <string name="congratulation_text">شما با موفقیت هدف امروز را تیک زدید...</string>
+    <string name="congratulation_text">شما هدف امروز را تیک زدید...</string>
     <string name="ok_text">بسیار خب</string>
     <string name="update_vision_again_text">بروزرسانی اطلاعات هدف با خطا مواجه شد\nبا کلیک برروی تصویر فوق ، مجددا جهت بروزرسانی تلاش نمائید</string>
+    <string name="updating_text">در حال بروزرسانی...</string>
+    <string name="getting_info_text">در حال دریافت اطلاعات...</string>
+    <string name="sending_info_text">در حال ارسال اطلاعات...</string>
+    <string name="please_vait_text">لطفا چند لحظه صبر نمائید...</string>
 </resources>
