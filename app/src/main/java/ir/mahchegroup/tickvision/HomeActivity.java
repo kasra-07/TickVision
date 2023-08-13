@@ -65,7 +65,7 @@ import ir.mahchegroup.tickvision.network.ResetAllVisions;
 import ir.mahchegroup.tickvision.network.UpdateMilliSec;
 import ir.mahchegroup.tickvision.network.UpdatePrice;
 
-public class HomeActivity extends AppCompatActivity implements GetCountVision.OnGetCountCallBack, UpdateAllVisionsDialog.OnUpdateAllVisionsDialogCallBack, ClearAllVisionsDialog.OnClearAllVisionsDialogCallBack, AddVisionDialog.OnAddVisionDialogCallBack, AddVision.OnAddVisionCallBack, ClearAllVisions.OnClearAllVisionsCallBack, GetAllVisions.OnGetAllVisionsCallBack, SelectVisionDialog.OnSelectVisionDialogCallBack, UpdatePriceDialog.OnUpdatePriceDialogCallBack, UpdatePrice.OnUpdatePriceCallBack {
+public class HomeActivity extends AppCompatActivity implements GetCountVision.OnGetCountCallBack, UpdateAllVisionsDialog.OnUpdateAllVisionsDialogCallBack, ClearAllVisionsDialog.OnClearAllVisionsDialogCallBack, AddVisionDialog.OnAddVisionDialogCallBack, AddVision.OnAddVisionCallBack, ClearAllVisions.OnClearAllVisionsCallBack, GetAllVisions.OnGetAllVisionsCallBack, SelectVisionDialog.OnSelectVisionDialogCallBack, UpdatePriceDialog.OnUpdatePriceDialogCallBack, UpdatePrice.OnUpdatePriceCallBack, ResetAllVisions.OnResetAllVisionsCallBack {
     private NetworkReceiver receiver;
     private RelativeLayout btnAddVisionRoot, btnSelectVisionRoot;
     private Toolbar toolbar;
@@ -79,7 +79,7 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
     private Shared shared;
     private VisionDao dao;
     private int newIncome, newPayment, newProfit, newRest, newIncomeAmount, newRestAmount;
-    private boolean isFirstTime, isUserAddVision, isUserSelectVision, isOpenMenu, isEquals = false, isBackEditActivity, isIncome, isTimerOn;
+    private boolean isFirstTime, isUserAddVision, isUserSelectVision, isOpenMenu, isEquals = false, isBackEditActivity, isIncome, isTimerOn, isChangDay;
     public static boolean isCheckDayMode;
     private LayoutInflater inflater;
     private String userTbl, date, title, amount, day, selectedVision, isTick;
@@ -93,6 +93,7 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
     private SelectVisionDialog selectVisionDialog;
     private UpdatePriceDialog updatePriceDialog;
     private UpdatePrice updatePrice;
+    private ResetAllVisions resetAllVisions;
     public static int MILLI_SEC;
     private Intent timerIntent;
 
@@ -236,7 +237,7 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
 
     @SuppressLint("SimpleDateFormat")
     public long calcTimeDiff(String dateStart, String dateStop) {
-        SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy");
+        SimpleDateFormat format = new SimpleDateFormat("dd/mm/yyyy");
 
         java.util.Date d1;
         java.util.Date d2;
@@ -368,35 +369,35 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
 
         selectVisionModel = dao.getVision(selectedVision);
 
-        if (shared.getShared().getBoolean(UserItems.IS_CHANGE_DAY, false)) {
-            new Handler().postDelayed(() -> {
+        if (isChangDay) {
+            LoadingDialog.show(this, getString(R.string.updating_text));
 
-                LoadingDialog.show(this, getString(R.string.updating_text));
-                String d = selectVisionModel.getDate_vision();
-                long diff = calcTimeDiff(d, date);
+            String d = ChangeDate.getCurrentDay() + "/" + ChangeDate.getCurrentMonth() + "/" + ChangeDate.getCurrentYear();
+            String hDay = selectVisionModel.getDate_vision();
 
-                ResetAllVisions resetAllVisions = new ResetAllVisions();
-                resetAllVisions.reset(this, userTbl, String.valueOf(diff));
+            long diff = calcTimeDiff(hDay, d);
 
-                resetAllVisions.setOnResetAllVisionsCallBack(isReset -> {
-                    if (isReset.equals("success")) {
-                        shared.getEditor().putBoolean(UserItems.IS_CHANGE_DAY, false).apply();
-                        getAllVisions.get(userTbl);
-                    } else {
-                        Intent intent = new Intent(HomeActivity.this, UpdateErrorActivity.class);
-                        Animations.AnimActivity(this, intent);
-                    }
-                });
-            }, 300);
+            resetAllVisions.reset(userTbl, String.valueOf(diff));
 
         } else {
             MILLI_SEC = Integer.parseInt(selectVisionModel.getMilli_sec());
 
-            if (TimerService.RUNNING) {
-                bindService(timerIntent, serviceConnection, BIND_AUTO_CREATE);
-                isTimerOn = true;
+            if (isChangDay) {
+                if (TimerService.RUNNING) {
+                    timerSwitch.setImageResource(R.drawable.timer_off);
+                    timerSwitch.setEnabled(true);
+                    stopService(timerIntent);
+                    unbindService(serviceConnection);
+                    isTimerOn = false;
+                }
+
             } else {
-                isTimerOn = false;
+                if (TimerService.RUNNING) {
+                    bindService(timerIntent, serviceConnection, BIND_AUTO_CREATE);
+                    isTimerOn = true;
+                } else {
+                    isTimerOn = false;
+                }
             }
 
             setSupportActionBar(toolbar);
@@ -437,6 +438,11 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
                 }
             });
         }
+
+        isChangDay = false;
+        shared.getEditor().putInt(UserItems.G_DAY, ChangeDate.getCurrentDay());
+        shared.getEditor().putBoolean(UserItems.IS_GET_DAY, true);
+        shared.getEditor().apply();
     }
 
     private void stopTimer() {
@@ -515,10 +521,12 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
                 runOnUiThread(() -> {
                     tvTime.setText(FaNum.convert(ChangeDate.getCurrentTime()));
                     tvDate.setText(FaNum.convert(ChangeDate.getCurrentDay() + " / " + ChangeDate.getCurrentMonth() + " / " + ChangeDate.getCurrentYear()));
+                    /*String d = ChangeDate.getCurrentDay() + "/" + ChangeDate.getCurrentMonth() + "/" + ChangeDate.getCurrentYear();
                     if (shared.getShared().getInt(UserItems.G_DAY, 0) != ChangeDate.getCurrentDay()) {
-                        shared.getEditor().putBoolean(UserItems.IS_CHANGE_DAY, true).apply();
-                        starting();
-                    }
+                        LoadingDialog.show(HomeActivity.this, getString(R.string.updating_text));
+                        long diff = calcTimeDiff(selectVisionModel.getDate_vision(), d);
+                        resetAllVisions.reset(userTbl, String.valueOf(diff));
+                    }*/
                 });
             }
         }, 0, 1000);
@@ -732,28 +740,18 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
 
     @Override
     public void onGetAllVisionsListener(List<ModelVision> getAllVisionsList) {
-        dao.clearAllVisions();
-
         for (int i = 0; i < getAllVisionsList.size(); i++) {
             dao.addVision(getAllVisionsList.get(i));
         }
 
-        if (!isUserAddVision) {
-            updateAllVisionsDialog.dismiss();
-            ToastMessage.show(this, getString(R.string.update_all_visions_success_text), true, true);
-            setOnBtnAddClickListener();
-            setOnBtnSelectClickListener();
-            shared.getEditor().putBoolean(UserItems.IS_FIRST_TIME, false);
-            shared.getEditor().putBoolean(UserItems.IS_USER_ADD_VISION, true);
-            shared.getEditor().apply();
-            selectVisionDialog.show();
-
-        } else {
-            new Handler().postDelayed(() -> {
-                starting();
-                new Handler().postDelayed(LoadingDialog::dismiss, 600);
-            }, 4000);
-        }
+        updateAllVisionsDialog.dismiss();
+        ToastMessage.show(this, getString(R.string.update_all_visions_success_text), true, true);
+        setOnBtnAddClickListener();
+        setOnBtnSelectClickListener();
+        shared.getEditor().putBoolean(UserItems.IS_FIRST_TIME, false);
+        shared.getEditor().putBoolean(UserItems.IS_USER_ADD_VISION, true);
+        shared.getEditor().apply();
+        selectVisionDialog.show();
     }
 
     @Override
@@ -851,17 +849,31 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
             selectVisionModel.setIs_tick(isTick);
 
             dao.editVision(selectVisionModel);
-            updatePriceDialog.dismiss();
-            ToastMessage.show(this, getString(R.string.update_price_success_test), true, true);
-            starting();
+            new Handler().postDelayed(() -> {
+                updatePriceDialog.dismiss();
+                ToastMessage.show(this, getString(R.string.update_price_success_test), true, true);
+                starting();
 
-            if (isTick.equals("1")) {
-                new Handler().postDelayed(() -> CongratulationDialog.show(this), 300);
-            }
-
+                if (isTick.equals("1")) {
+                    new Handler().postDelayed(() -> CongratulationDialog.show(this), 500);
+                }
+            }, 200);
         } else {
             ToastMessage.show(this, getString(R.string.update_price_error), false, true);
         }
+    }
+
+    @Override
+    public void onResetAllVisionsListener(List<ModelVision> resetAllList) {
+        dao.clearAllVisions();
+
+        for (int i = 0; i < resetAllList.size(); i++) {
+            dao.addVision(resetAllList.get(i));
+        }
+        new Handler().postDelayed(() -> {
+            starting();
+            new Handler().postDelayed(LoadingDialog::dismiss,500);
+        }, 2800);
     }
 
     private void init() {
@@ -886,6 +898,7 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
         isUserAddVision = shared.getShared().getBoolean(UserItems.IS_USER_ADD_VISION, false);
         isUserSelectVision = shared.getShared().getBoolean(UserItems.IS_USER_SELECT_VISION, false);
         isCheckDayMode = shared.getShared().getBoolean(UserItems.IS_CHECK_DAY_MODE, true);
+        isChangDay = shared.getShared().getBoolean(UserItems.IS_CHANGE_DAY, false);
         userTbl = shared.getShared().getString(UserItems.USER_TBL, "");
         selectedVision = shared.getShared().getString(UserItems.SELECTED_VISION, "");
         dao = VisionDatabase.getVisionDatabase(this).visionDao();
@@ -900,5 +913,6 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
         selectVisionDialog = new SelectVisionDialog(this);
         updatePriceDialog = new UpdatePriceDialog(this);
         updatePrice = new UpdatePrice(this);
+        resetAllVisions = new ResetAllVisions(this);
     }
 }

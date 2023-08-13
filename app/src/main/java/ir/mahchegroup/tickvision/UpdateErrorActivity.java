@@ -9,12 +9,16 @@ import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.RotateAnimation;
 import android.widget.ImageView;
+
+import java.util.List;
+
 import ir.mahchegroup.tickvision.classes.Animations;
 import ir.mahchegroup.tickvision.classes.Shared;
 import ir.mahchegroup.tickvision.classes.UserItems;
+import ir.mahchegroup.tickvision.database.ModelVision;
 import ir.mahchegroup.tickvision.network.ResetAllVisions;
 
-public class UpdateErrorActivity extends AppCompatActivity {
+public class UpdateErrorActivity extends AppCompatActivity implements ResetAllVisions.OnResetAllVisionsCallBack {
     private String userTbl, diff;
 
     @Override
@@ -38,20 +42,12 @@ public class UpdateErrorActivity extends AppCompatActivity {
         img.startAnimation(rot);
         view.setEnabled(false);
 
-        reset();
+        ResetAllVisions resetAllVisions = new ResetAllVisions(this);
+        resetAllVisions.reset(userTbl, diff);
     }
 
-    private void reset() {
-        ResetAllVisions resetAllVisions = new ResetAllVisions();
-        resetAllVisions.reset(this, userTbl, diff);
+    @Override
+    public void onResetAllVisionsListener(List<ModelVision> resetAllList) {
 
-        resetAllVisions.setOnResetAllVisionsCallBack(isReset -> {
-            if (isReset.equals("success")) {
-                Intent intent = new Intent(UpdateErrorActivity.this, HomeActivity.class);
-                new Handler().postDelayed(() -> Animations.AnimActivity(this, intent), 1500);
-            } else {
-                resetAllVisions.reset(this, userTbl, diff);
-            }
-        });
     }
 }
