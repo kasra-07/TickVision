@@ -27,7 +27,6 @@ public class AddVisionDialog {
         onAddVisionDialogCallBack = (OnAddVisionDialogCallBack) context;
     }
 
-
     @SuppressLint("InflateParams")
     public void show() {
         dialog = new Dialog(context);
@@ -86,11 +85,10 @@ public class AddVisionDialog {
                     day = edtDay.getText().toString().trim();
 
                     if (!title.isEmpty() && !amount.isEmpty() && !day.isEmpty()) {
-                        level = 0;
                         KeyboardManager.hideKeyboardOnDialog(dialog, context);
                         new Handler().postDelayed(() -> {
-                            LoadingDialog.show(context, context.getString(R.string.sending_info_text));
                             onAddVisionDialogCallBack.onAddVisionDialogSaveListener(title, amount, day);
+                            level = 0;
                         }, 200);
                     } else {
                         ToastMessage.show(dialog.getContext(), context.getString(R.string.add_vision_all_field_error), false, false);

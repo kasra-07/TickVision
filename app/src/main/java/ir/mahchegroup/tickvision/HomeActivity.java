@@ -124,7 +124,9 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
         init();
 
         if (isFirstTime) {
-            LoadingDialog.show(this, getString(R.string.please_vait_text));
+            if (!LoadingDialog.isShow()) {
+                LoadingDialog.show(this, getString(R.string.please_vait_text));
+            }
             GetCountVision getCountVision = new GetCountVision(this);
             getCountVision.getCount(userTbl);
         } else {
@@ -370,7 +372,9 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
         selectVisionModel = dao.getVision(selectedVision);
 
         if (isChangDay) {
-            LoadingDialog.show(this, getString(R.string.updating_text));
+            if (!LoadingDialog.isShow()) {
+                LoadingDialog.show(this, getString(R.string.updating_text));
+            }
 
             String d = ChangeDate.getCurrentDay() + "/" + ChangeDate.getCurrentMonth() + "/" + ChangeDate.getCurrentYear();
             String hDay = selectVisionModel.getDate_vision();
@@ -648,28 +652,37 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
 
     @Override
     public void onAddVisionDialogSaveListener(String title, String amount, String day) {
-        date = ChangeDate.getCurrentDay() + "/" + ChangeDate.getCurrentMonth() + "/" + ChangeDate.getCurrentYear();
-        this.title = title;
-        this.amount = amount;
-        this.day = day;
+        KeyboardManager.hideKeyboardOnActivity(this, this);
+        new Handler().postDelayed(() -> {
+            if (!LoadingDialog.isShow()) {
+                LoadingDialog.show(this, getString(R.string.sending_info_text));
+            }
+            date = ChangeDate.getCurrentDay() + "/" + ChangeDate.getCurrentMonth() + "/" + ChangeDate.getCurrentYear();
+            this.title = title;
+            this.amount = amount;
+            this.day = day;
 
-        addVision.add(userTbl, title, amount, day, date);
+            addVision.add(userTbl, title, amount, day, date);
+        }, 200);
     }
 
     @Override
     public void onAddVisionDialogCancelListener() {
-        addVisionDialog.dismiss();
+        KeyboardManager.hideKeyboardOnActivity(this, this);
+        new Handler().postDelayed(() -> {
+            addVisionDialog.dismiss();
 
-        if (!isUserAddVision) {
-            setOnBtnAddClickListener();
+            if (!isUserAddVision) {
+                setOnBtnAddClickListener();
 
-        } else if (!isUserSelectVision) {
-            setOnBtnAddClickListener();
-            setOnBtnSelectClickListener();
+            } else if (!isUserSelectVision) {
+                setOnBtnAddClickListener();
+                setOnBtnSelectClickListener();
 
-        } else {
-            startNormallyActivity();
-        }
+            } else {
+                startNormallyActivity();
+            }
+        }, 200);
     }
 
     @Override
@@ -694,29 +707,36 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
             model.setIs_tick("0");
 
             dao.addVision(model);
-            KeyboardManager.hideKeyboardOnActivity(this, this);
 
-            new Handler().postDelayed(() -> addVisionDialog.dismiss(), 200);
+            new Handler().postDelayed(() -> {
+                if (!isUserAddVision) {
+                    shared.getEditor().putBoolean(UserItems.IS_FIRST_TIME, false).apply();
+                    shared.getEditor().putBoolean(UserItems.IS_USER_ADD_VISION, true).apply();
+                    selectVisionDialog.show();
 
-            ToastMessage.show(this, getString(R.string.add_vision_success), true, true);
+                } else if (!isUserSelectVision) {
+                    selectVisionDialog.show();
 
-
-            if (!isUserAddVision) {
-                shared.getEditor().putBoolean(UserItems.IS_FIRST_TIME, false).apply();
-                shared.getEditor().putBoolean(UserItems.IS_USER_ADD_VISION, true).apply();
-                selectVisionDialog.show();
-
-            } else if (!isUserSelectVision) {
-                selectVisionDialog.show();
-
-            } else {
-                startNormallyActivity();
-            }
+                } else {
+                    startNormallyActivity();
+                }
+                addVisionDialog.dismiss();
+                new Handler().postDelayed(() -> {
+                    LoadingDialog.dismiss();
+                    ToastMessage.show(this, getString(R.string.add_vision_success), true, true);
+                }, 500);
+            }, 1200);
 
         } else if (isAddVision.equals("duplicate")) {
-            ToastMessage.show(this, getString(R.string.add_vision_duplicate_error), false, true);
+            new Handler().postDelayed(() -> {
+                LoadingDialog.dismiss();
+                ToastMessage.show(this, getString(R.string.add_vision_duplicate_error), false, true);
+            }, 800);
         } else {
-            ToastMessage.show(this, getString(R.string.add_vision_error), false, true);
+            new Handler().postDelayed(() -> {
+                LoadingDialog.dismiss();
+                ToastMessage.show(this, getString(R.string.add_vision_error), false, true);
+            }, 800);
         }
     }
 
@@ -871,17 +891,16 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
         for (int i = 0; i < resetAllList.size(); i++) {
             dao.addVision(resetAllList.get(i));
         }
+        starting();
         new Handler().postDelayed(() -> {
-            starting();
-            new Handler().postDelayed(() -> {
-                isChangDay = false;
-                shared.getEditor().putInt(UserItems.G_DAY, ChangeDate.getCurrentDay());
-                shared.getEditor().putBoolean(UserItems.IS_GET_DAY, true);
-                shared.getEditor().apply();
-
-                LoadingDialog.dismiss();
-            }, 400);
-        }, 2800);
+            isChangDay = false;
+            shared.getEditor().putInt(UserItems.G_DAY, ChangeDate.getCurrentDay());
+            shared.getEditor().putBoolean(UserItems.IS_GET_DAY, true);
+            shared.getEditor().apply();
+            if (LoadingDialog.isShow()) {
+                new Handler().postDelayed(LoadingDialog::dismiss, 2000);
+            }
+        }, 1200);
     }
 
     private void init() {
