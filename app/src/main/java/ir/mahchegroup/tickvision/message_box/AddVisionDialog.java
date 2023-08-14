@@ -48,7 +48,8 @@ public class AddVisionDialog {
 
         btnCancel.setOnClickListener(view1 -> {
             level = 0;
-            onAddVisionDialogCallBack.onAddVisionDialogCancelListener();
+            KeyboardManager.hideKeyboardOnDialog(dialog, context);
+            new Handler().postDelayed(onAddVisionDialogCallBack::onAddVisionDialogCancelListener, 200);
         });
 
         btnSave.setOnClickListener(view1 -> {
@@ -87,7 +88,10 @@ public class AddVisionDialog {
                     if (!title.isEmpty() && !amount.isEmpty() && !day.isEmpty()) {
                         level = 0;
                         KeyboardManager.hideKeyboardOnDialog(dialog, context);
-                        new Handler().postDelayed(() -> onAddVisionDialogCallBack.onAddVisionDialogSaveListener(title, amount, day), 150);
+                        new Handler().postDelayed(() -> {
+                            LoadingDialog.show(context, context.getString(R.string.sending_info_text));
+                            onAddVisionDialogCallBack.onAddVisionDialogSaveListener(title, amount, day);
+                        }, 200);
                     } else {
                         ToastMessage.show(dialog.getContext(), context.getString(R.string.add_vision_all_field_error), false, false);
                     }

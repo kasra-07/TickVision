@@ -438,11 +438,6 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
                 }
             });
         }
-
-        isChangDay = false;
-        shared.getEditor().putInt(UserItems.G_DAY, ChangeDate.getCurrentDay());
-        shared.getEditor().putBoolean(UserItems.IS_GET_DAY, true);
-        shared.getEditor().apply();
     }
 
     private void stopTimer() {
@@ -851,15 +846,21 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
             dao.editVision(selectVisionModel);
             new Handler().postDelayed(() -> {
                 updatePriceDialog.dismiss();
-                ToastMessage.show(this, getString(R.string.update_price_success_test), true, true);
-                starting();
+                new Handler().postDelayed(() -> {
+                    LoadingDialog.dismiss();
+                    ToastMessage.show(this, getString(R.string.update_price_success_test), true, true);
+                    starting();
 
-                if (isTick.equals("1")) {
-                    new Handler().postDelayed(() -> CongratulationDialog.show(this), 500);
-                }
-            }, 200);
+                    if (isTick.equals("1")) {
+                        new Handler().postDelayed(() -> CongratulationDialog.show(this), 500);
+                    }
+                }, 300);
+            }, 1100);
         } else {
-            ToastMessage.show(this, getString(R.string.update_price_error), false, true);
+            new Handler().postDelayed(() -> {
+                LoadingDialog.dismiss();
+                ToastMessage.show(this, getString(R.string.update_price_error), false, true);
+            }, 1200);
         }
     }
 
@@ -872,7 +873,14 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
         }
         new Handler().postDelayed(() -> {
             starting();
-            new Handler().postDelayed(LoadingDialog::dismiss,500);
+            new Handler().postDelayed(() -> {
+                isChangDay = false;
+                shared.getEditor().putInt(UserItems.G_DAY, ChangeDate.getCurrentDay());
+                shared.getEditor().putBoolean(UserItems.IS_GET_DAY, true);
+                shared.getEditor().apply();
+
+                LoadingDialog.dismiss();
+            }, 400);
         }, 2800);
     }
 

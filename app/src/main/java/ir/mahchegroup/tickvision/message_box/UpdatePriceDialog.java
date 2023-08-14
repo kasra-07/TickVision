@@ -49,7 +49,10 @@ public class UpdatePriceDialog {
             edt.requestFocus();
         },400);
 
-        btnCancel.setOnClickListener(v -> dialog.dismiss());
+        btnCancel.setOnClickListener(v -> {
+            KeyboardManager.hideKeyboardOnDialog(dialog, context);
+            new Handler().postDelayed(() -> dialog.dismiss(),200);
+        });
 
         btnVoice.setOnClickListener(v -> ToastMessage.show(context, context.getString(R.string.coming_soon_text), false, true));
 
@@ -57,8 +60,12 @@ public class UpdatePriceDialog {
             if (edt.length() == 0) {
                 ToastMessage.show(context, context.getString(R.string.empty_save_price_field_error), false, true);
             } else {
+                KeyboardManager.hideKeyboardOnDialog(dialog, context);
                 int price = Integer.parseInt(edt.getText().toString().trim());
-                onUpdatePriceDialogCallBack.onUpdatePriceDialogListener(price);
+                new Handler().postDelayed(() -> {
+                    LoadingDialog.show(context, context.getString(R.string.updating_text));
+                    onUpdatePriceDialogCallBack.onUpdatePriceDialogListener(price);
+                },200);
             }
         });
 
