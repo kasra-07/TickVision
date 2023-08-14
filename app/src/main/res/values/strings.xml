@@ -114,4 +114,7 @@
     <string name="getting_info_text">در حال دریافت اطلاعات...</string>
     <string name="sending_info_text">در حال ارسال اطلاعات...</string>
     <string name="please_vait_text">لطفا چند لحظه صبر نمائید...</string>
+    <string name="reset_this_vision_text">آیا از صفر کردن مقادیر هدف فعلی اطمینان دارید ؟</string>
+    <string name="btn_reset_text">ریست</string>
+    <string name="update_vision_success_text">بروزرسانی هدف با موفقیت انجام شد</string>
 </resources>

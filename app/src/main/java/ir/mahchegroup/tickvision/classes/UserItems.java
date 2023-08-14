@@ -47,4 +47,5 @@ public class UserItems {
     public static final String UPDATE_PRICE_URL = "https://mahchegroup.ir/tick_vision/update_price.php";
     public static final String UPDATE_MILLI_SEC_URL = "https://mahchegroup.ir/tick_vision/update_milli_sec.php";
     public static final String RESET_ALL_VISIONS_URL = "https://mahchegroup.ir/tick_vision/reset_all_visions.php";
+    public static final String RESET_VISION_URL = "https://mahchegroup.ir/tick_vision/reset_vision.php";
 }

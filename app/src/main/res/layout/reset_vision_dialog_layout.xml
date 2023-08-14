@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="@dimen/margin_layout_dialog">
+
+    <RelativeLayout
+        android:id="@+id/layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/dialog_background">
+
+        <TextView
+            android:id="@+id/tv_title_drop_dialog"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/tv_background"
+            android:fontFamily="@font/iran_sans"
+            android:padding="10dp"
+            android:text="@string/reset_text"
+            android:textAlignment="center"
+            android:textColor="@color/primary_text_color"
+            android:textSize="@dimen/title_size"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tv_text_reset_dialog"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tv_title_drop_dialog"
+            android:layout_marginStart="@dimen/btn_margin_left_right"
+            android:layout_marginTop="@dimen/margin_top_first_view_dialog"
+            android:layout_marginEnd="@dimen/btn_margin_left_right"
+            android:layout_marginBottom="@dimen/margin_bottom_last_edt_dialog"
+            android:background="@drawable/red_edt_background"
+            android:fontFamily="@font/iran_sans"
+            android:maxLines="2"
+            android:padding="10dp"
+            android:text="@string/reset_this_vision_text"
+            android:textAlignment="center"
+            android:textColor="@color/primary_color"
+            android:textSize="@dimen/normal_text_size"
+            tools:ignore="TextContrastCheck" />
+
+    </RelativeLayout>
+
+    <Button
+        android:id="@+id/btn_back"
+        android:layout_width="@dimen/btn_dialog_width"
+        android:layout_height="@dimen/btn_dialog_height"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="40sp"
+        android:layout_marginTop="125sp"
+        android:layout_marginBottom="30sp"
+        android:background="@drawable/red_btn_background"
+        android:fontFamily="@font/iran_sans"
+        android:gravity="center"
+        android:text="@string/back_text"
+        android:textColor="@color/primary_text_color"
+        android:textSize="@dimen/normal_text_size"
+        tools:ignore="TouchTargetSizeCheck" />
+
+    <Button
+        android:id="@+id/btn_reset"
+        android:layout_width="@dimen/btn_dialog_width"
+        android:layout_height="@dimen/btn_dialog_height"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="125dp"
+        android:layout_marginEnd="40dp"
+        android:layout_marginBottom="30dp"
+        android:background="@drawable/red_btn_background"
+        android:fontFamily="@font/iran_sans"
+        android:gravity="center"
+        android:text="@string/btn_reset_text"
+        android:textColor="@color/primary_text_color"
+        android:textSize="@dimen/normal_text_size"
+        tools:ignore="TouchTargetSizeCheck" />
+
+</RelativeLayout>

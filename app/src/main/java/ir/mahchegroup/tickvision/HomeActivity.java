@@ -26,9 +26,11 @@ import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.github.clans.fab.FloatingActionMenu;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.navigation.NavigationView;
 
 import java.text.DecimalFormat;
 import java.util.List;
@@ -52,20 +54,24 @@ import ir.mahchegroup.tickvision.message_box.AddVisionDialog;
 import ir.mahchegroup.tickvision.message_box.ClearAllVisionsDialog;
 import ir.mahchegroup.tickvision.message_box.CongratulationDialog;
 import ir.mahchegroup.tickvision.message_box.LoadingDialog;
+import ir.mahchegroup.tickvision.message_box.ResetVisionDialog;
 import ir.mahchegroup.tickvision.message_box.SelectVisionDialog;
 import ir.mahchegroup.tickvision.message_box.ToastMessage;
 import ir.mahchegroup.tickvision.message_box.UpdateAllVisionsDialog;
 import ir.mahchegroup.tickvision.message_box.UpdatePriceDialog;
 import ir.mahchegroup.tickvision.network.AddVision;
 import ir.mahchegroup.tickvision.network.ClearAllVisions;
+import ir.mahchegroup.tickvision.network.EditVision;
 import ir.mahchegroup.tickvision.network.GetAllVisions;
 import ir.mahchegroup.tickvision.network.GetCountVision;
 import ir.mahchegroup.tickvision.network.NetworkReceiver;
 import ir.mahchegroup.tickvision.network.ResetAllVisions;
+import ir.mahchegroup.tickvision.network.ResetVision;
 import ir.mahchegroup.tickvision.network.UpdateMilliSec;
 import ir.mahchegroup.tickvision.network.UpdatePrice;
 
-public class HomeActivity extends AppCompatActivity implements GetCountVision.OnGetCountCallBack, UpdateAllVisionsDialog.OnUpdateAllVisionsDialogCallBack, ClearAllVisionsDialog.OnClearAllVisionsDialogCallBack, AddVisionDialog.OnAddVisionDialogCallBack, AddVision.OnAddVisionCallBack, ClearAllVisions.OnClearAllVisionsCallBack, GetAllVisions.OnGetAllVisionsCallBack, SelectVisionDialog.OnSelectVisionDialogCallBack, UpdatePriceDialog.OnUpdatePriceDialogCallBack, UpdatePrice.OnUpdatePriceCallBack, ResetAllVisions.OnResetAllVisionsCallBack {
+public class HomeActivity extends AppCompatActivity implements GetCountVision.OnGetCountCallBack, UpdateAllVisionsDialog.OnUpdateAllVisionsDialogCallBack, ClearAllVisionsDialog.OnClearAllVisionsDialogCallBack, AddVisionDialog.OnAddVisionDialogCallBack, AddVision.OnAddVisionCallBack, ClearAllVisions.OnClearAllVisionsCallBack, GetAllVisions.OnGetAllVisionsCallBack, SelectVisionDialog.OnSelectVisionDialogCallBack, UpdatePriceDialog.OnUpdatePriceDialogCallBack, UpdatePrice.OnUpdatePriceCallBack, ResetAllVisions.OnResetAllVisionsCallBack, ResetVisionDialog.OnResetVisionDialogCallBack, ResetVision.OnResetVisionCallBack {
+    private NavigationView navi;
     private NetworkReceiver receiver;
     private RelativeLayout btnAddVisionRoot, btnSelectVisionRoot;
     private Toolbar toolbar;
@@ -94,6 +100,7 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
     private UpdatePriceDialog updatePriceDialog;
     private UpdatePrice updatePrice;
     private ResetAllVisions resetAllVisions;
+    private ResetVisionDialog resetVisionDialog;
     public static int MILLI_SEC;
     private Intent timerIntent;
 
@@ -442,6 +449,73 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
                 }
             });
         }
+        setOnNaviItemClick();
+    }
+
+    @SuppressLint("RtlHardcoded")
+    private void setOnNaviItemClick() {
+        navi.setNavigationItemSelectedListener(item -> {
+            drawer.closeDrawer(Gravity.RIGHT);
+
+            int id = item.getOrder();
+            switch (id) {
+                case 0: {
+                    new Handler().postDelayed(() -> resetVisionDialog.show(), 350);
+                    break;
+                }
+
+                case 1: {
+                    Toast.makeText(this, Objects.requireNonNull(item.getTitle()).toString(), Toast.LENGTH_SHORT).show();
+                    break;
+                }
+
+                case 2: {
+                    Toast.makeText(this, Objects.requireNonNull(item.getTitle()).toString(), Toast.LENGTH_SHORT).show();
+                    break;
+                }
+
+                case 3: {
+                    Toast.makeText(this, Objects.requireNonNull(item.getTitle()).toString(), Toast.LENGTH_SHORT).show();
+                    break;
+                }
+
+                case 4: {
+                    Toast.makeText(this, Objects.requireNonNull(item.getTitle()).toString(), Toast.LENGTH_SHORT).show();
+                    break;
+                }
+
+                case 5: {
+                    Toast.makeText(this, Objects.requireNonNull(item.getTitle()).toString(), Toast.LENGTH_SHORT).show();
+                    break;
+                }
+
+                case 6: {
+                    Toast.makeText(this, Objects.requireNonNull(item.getTitle()).toString(), Toast.LENGTH_SHORT).show();
+                    break;
+                }
+
+                case 7: {
+                    Toast.makeText(this, Objects.requireNonNull(item.getTitle()).toString(), Toast.LENGTH_SHORT).show();
+                    break;
+                }
+
+                case 8: {
+                    Toast.makeText(this, Objects.requireNonNull(item.getTitle()).toString(), Toast.LENGTH_SHORT).show();
+                    break;
+                }
+
+                case 9: {
+                    Toast.makeText(this, Objects.requireNonNull(item.getTitle()).toString(), Toast.LENGTH_SHORT).show();
+                    break;
+                }
+
+                case 10: {
+                    Toast.makeText(this, Objects.requireNonNull(item.getTitle()).toString(), Toast.LENGTH_SHORT).show();
+                    break;
+                }
+            }
+            return false;
+        });
     }
 
     private void stopTimer() {
@@ -903,6 +977,59 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
         }, 1200);
     }
 
+    @Override
+    public void onResetVisionDialogResetListener() {
+        if (!LoadingDialog.isShow()) {
+            LoadingDialog.show(this, getString(R.string.updating_text));
+        }
+        ResetVision resetVision = new ResetVision(this);
+        resetVision.reset(userTbl, selectedVision);
+    }
+
+    @Override
+    public void onResetVisionListener(String isReset) {
+        if (isReset.equals("success")) {
+            ModelVision model = new ModelVision();
+            model.setTitle(selectVisionModel.getTitle());
+            model.setDate_vision(selectVisionModel.getDate_vision());
+            model.setAmount(selectVisionModel.getAmount());
+            model.setDay_vision(selectVisionModel.getDay_vision());
+            model.setDay_amount(selectVisionModel.getDay_amount());
+            model.setDay_pass(selectVisionModel.getDay_pass());
+            model.setDay_rest(selectVisionModel.getDay_rest());
+            model.setIncome_amount(selectVisionModel.getIncome_amount());
+            model.setRest_amount(selectVisionModel.getRest_amount());
+            model.setIncome("0");
+            model.setPayment("0");
+            model.setProfit("0");
+            model.setRest(selectVisionModel.getRest());
+            model.setMilli_sec("0");
+            model.setIs_tick("0");
+
+            dao.editVision(selectVisionModel);
+
+            new Handler().postDelayed(() -> {
+                resetVisionDialog.dismiss();
+                starting();
+                new Handler().postDelayed(() -> {
+                    if (LoadingDialog.isShow()) {
+                        LoadingDialog.dismiss();
+                        ToastMessage.show(this, getString(R.string.update_vision_success_text), true, true);
+                    }
+                }, 400);
+            }, 800);
+
+        } else {
+            new Handler().postDelayed(() -> {
+                resetVisionDialog.dismiss();
+                starting();
+                new Handler().postDelayed(() -> {
+                    if (LoadingDialog.isShow()) LoadingDialog.dismiss();
+                }, 400);
+            }, 700);
+        }
+    }
+
     private void init() {
         inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
         btnAddVisionRoot = findViewById(R.id.btn_add_root);
@@ -914,6 +1041,7 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
         btnAdd = findViewById(R.id.btn_add);
         btnSelect = findViewById(R.id.btn_select);
         drawer = findViewById(R.id.drawer);
+        navi = findViewById(R.id.navi);
         dimMenu = findViewById(R.id.dim_menu);
         tableLayout = findViewById(R.id.table_layout);
         timeLayout = findViewById(R.id.time_layout);
@@ -941,5 +1069,6 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
         updatePriceDialog = new UpdatePriceDialog(this);
         updatePrice = new UpdatePrice(this);
         resetAllVisions = new ResetAllVisions(this);
+        resetVisionDialog = new ResetVisionDialog(this);
     }
 }

@@ -14,10 +14,13 @@ import android.view.View;
 import android.widget.CheckBox;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
+
 import java.util.List;
 import java.util.Objects;
+
 import ir.mahchegroup.tickvision.classes.Animations;
 import ir.mahchegroup.tickvision.classes.KeyboardManager;
 import ir.mahchegroup.tickvision.classes.SetInputLayoutColors;
@@ -202,7 +205,7 @@ public class LoginActivity extends AppCompatActivity implements UserLogin.OnUser
                 SetInputLayoutColors.setColor(this, lPass, ePass, null, 0);
             }
 
-        }else {
+        } else {
             setOnLogin();
         }
     }
@@ -215,10 +218,20 @@ public class LoginActivity extends AppCompatActivity implements UserLogin.OnUser
     @Override
     public void onUserLoginListener(List<String> loginList) {
         if (loginList.get(0).equals("empty")) {
-            ToastMessage.show(this, getString(R.string.login_error), false, false);
+            new Handler().postDelayed(() -> {
+                if (LoadingDialog.isShow()) {
+                    LoadingDialog.dismiss();
+                    ToastMessage.show(this, getString(R.string.login_error), false, false);
+                }
+            }, 700);
         } else if (loginList.get(0).equals("pass_error")) {
-            ToastMessage.show(this, getString(R.string.login_pass_error), false, false);
-        }else {
+            new Handler().postDelayed(() -> {
+                if (LoadingDialog.isShow()) {
+                    LoadingDialog.dismiss();
+                    ToastMessage.show(this, getString(R.string.login_pass_error), false, false);
+                }
+            }, 700);
+        } else {
             shared.getEditor().putString(UserItems.USERNAME, loginList.get(1));
             shared.getEditor().putString(UserItems.MAIL, loginList.get(2));
             shared.getEditor().putString(UserItems.USER_TBL, loginList.get(3));
@@ -226,7 +239,7 @@ public class LoginActivity extends AppCompatActivity implements UserLogin.OnUser
                 shared.getEditor().putBoolean(UserItems.IS_REMEMBER_CHECKED, true);
                 shared.getEditor().putString(UserItems.USER_MAIL, userMail);
                 shared.getEditor().putString(UserItems.PASS, pass);
-            }else {
+            } else {
                 shared.getEditor().putBoolean(UserItems.IS_REMEMBER_CHECKED, false);
                 shared.getEditor().remove(UserItems.USER_MAIL);
                 shared.getEditor().remove(UserItems.PASS);
@@ -238,8 +251,8 @@ public class LoginActivity extends AppCompatActivity implements UserLogin.OnUser
                 new Handler().postDelayed(() -> {
                     Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
                     Animations.AnimActivity(this, intent);
-                },400);
-            },1500);
+                }, 400);
+            }, 1500);
         }
     }
 
