@@ -14,7 +14,7 @@
         android:id="@+id/setting"
         android:icon="@drawable/ic_setting"
         android:orderInCategory="2"
-        android:title="@string/setting_text" />
+        android:title="@string/setting_app_text" />
     <item
         android:orderInCategory="12"
         android:title="@string/contact_text">

@@ -2,7 +2,7 @@
     <string name="app_name">TickVision</string>
     <string name="reset_text">صفر کردن مقادیر</string>
     <string name="export_text">گرفتن خروجی از مقادیر</string>
-    <string name="setting_text">تنظیمات برنامه</string>
+    <string name="setting_app_text">تنظیمات برنامه</string>
     <string name="contact_text">ارتباط با ما</string>
     <string name="mail_text">ارسال ایمیل</string>
     <string name="whatsapp_text">از طریق واتساپ</string>
@@ -117,4 +117,8 @@
     <string name="reset_this_vision_text">آیا از صفر کردن مقادیر هدف فعلی اطمینان دارید ؟</string>
     <string name="btn_reset_text">ریست</string>
     <string name="update_vision_success_text">بروزرسانی هدف با موفقیت انجام شد</string>
+    <string name="duplicate_signup_error">شما یک بار حساب کاربری ایجاد کرده اید</string>
+    <string name="create_account_title_error">ایجاد حساب کاربری جدید</string>
+    <string name="create_account_text_error">شما یکبار حساب کاربری ایجاد کرده اید ، در صورتی که تمایل به ایجاد حساب کاربری دیگری دارید ابتدا باید وارد تنظیمات برنامه شده و حساب قبلی خود را حذف نمائید !</string>
+    <string name="setting_text">تنظیمات</string>
 </resources>

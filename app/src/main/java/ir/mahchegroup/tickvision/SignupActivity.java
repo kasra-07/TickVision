@@ -27,6 +27,7 @@ import ir.mahchegroup.tickvision.classes.KeyboardManager;
 import ir.mahchegroup.tickvision.classes.SetInputLayoutColors;
 import ir.mahchegroup.tickvision.classes.Shared;
 import ir.mahchegroup.tickvision.classes.UserItems;
+import ir.mahchegroup.tickvision.message_box.DuplicateSignupDialog;
 import ir.mahchegroup.tickvision.message_box.LoadingDialog;
 import ir.mahchegroup.tickvision.message_box.ToastMessage;
 import ir.mahchegroup.tickvision.network.NetworkReceiver;
@@ -332,69 +333,73 @@ public class SignupActivity extends AppCompatActivity implements UserSignup.User
 
     public void btnOnClick(View view) {
         root.performClick();
-        username = Objects.requireNonNull(eUsername.getText()).toString().trim();
-        mail = Objects.requireNonNull(eMail.getText()).toString().trim();
-        pass = Objects.requireNonNull(ePass.getText()).toString().trim();
-        cPass = Objects.requireNonNull(eCPass.getText()).toString().trim();
 
-        if (username.isEmpty() || mail.isEmpty() || pass.isEmpty() || cPass.isEmpty() || isUsernameError || isMailError || isPassError) {
+        if (shared.getShared().getBoolean(UserItems.IS_USER_ADD_VISION, false)) {
+            DuplicateSignupDialog.show(this, this);
+        } else {
+            username = Objects.requireNonNull(eUsername.getText()).toString().trim();
+            mail = Objects.requireNonNull(eMail.getText()).toString().trim();
+            pass = Objects.requireNonNull(ePass.getText()).toString().trim();
+            cPass = Objects.requireNonNull(eCPass.getText()).toString().trim();
 
-            if (username.isEmpty()) {
-                SetInputLayoutColors.setColor(this, lUsername, eUsername, getString(R.string.empty_field_error), 2);
-            } else {
-                if (isUsernameError) {
-                    SetInputLayoutColors.setColor(this, lUsername, eUsername, getString(R.string.username_type_error), 2);
+            if (username.isEmpty() || mail.isEmpty() || pass.isEmpty() || cPass.isEmpty() || isUsernameError || isMailError || isPassError) {
+                if (username.isEmpty()) {
+                    SetInputLayoutColors.setColor(this, lUsername, eUsername, getString(R.string.empty_field_error), 2);
                 } else {
-                    SetInputLayoutColors.setColor(this, lUsername, eUsername, null, 0);
-                    eUsername.setTextColor(getColor(R.color.green));
+                    if (isUsernameError) {
+                        SetInputLayoutColors.setColor(this, lUsername, eUsername, getString(R.string.username_type_error), 2);
+                    } else {
+                        SetInputLayoutColors.setColor(this, lUsername, eUsername, null, 0);
+                        eUsername.setTextColor(getColor(R.color.green));
+                    }
                 }
-            }
 
-            if (mail.isEmpty()) {
-                SetInputLayoutColors.setColor(this, lMail, eMail, getString(R.string.empty_field_error), 2);
-            } else {
-                if (isMailError) {
-                    SetInputLayoutColors.setColor(this, lMail, eMail, getString(R.string.mail_type_error), 2);
+                if (mail.isEmpty()) {
+                    SetInputLayoutColors.setColor(this, lMail, eMail, getString(R.string.empty_field_error), 2);
                 } else {
-                    SetInputLayoutColors.setColor(this, lMail, eMail, null, 0);
-                    eMail.setTextColor(getColor(R.color.green));
+                    if (isMailError) {
+                        SetInputLayoutColors.setColor(this, lMail, eMail, getString(R.string.mail_type_error), 2);
+                    } else {
+                        SetInputLayoutColors.setColor(this, lMail, eMail, null, 0);
+                        eMail.setTextColor(getColor(R.color.green));
+                    }
                 }
-            }
 
-            if (pass.isEmpty()) {
-                SetInputLayoutColors.setColor(this, lPass, ePass, getString(R.string.empty_field_error), 2);
-                eCPass.setTextColor(getColor(R.color.red));
-            } else {
-                if (isPassError) {
-                    SetInputLayoutColors.setColor(this, lPass, ePass, getString(R.string.pass_type_error), 2);
+                if (pass.isEmpty()) {
+                    SetInputLayoutColors.setColor(this, lPass, ePass, getString(R.string.empty_field_error), 2);
                     eCPass.setTextColor(getColor(R.color.red));
                 } else {
-                    SetInputLayoutColors.setColor(this, lPass, ePass, null, 0);
-                    ePass.setTextColor(getColor(R.color.green));
-                    eCPass.setTextColor(getColor(R.color.green));
+                    if (isPassError) {
+                        SetInputLayoutColors.setColor(this, lPass, ePass, getString(R.string.pass_type_error), 2);
+                        eCPass.setTextColor(getColor(R.color.red));
+                    } else {
+                        SetInputLayoutColors.setColor(this, lPass, ePass, null, 0);
+                        ePass.setTextColor(getColor(R.color.green));
+                        eCPass.setTextColor(getColor(R.color.green));
+                    }
                 }
-            }
 
-            if (cPass.isEmpty()) {
-                SetInputLayoutColors.setColor(this, lCPass, eCPass, getString(R.string.empty_field_error), 2);
-                ePass.setTextColor(getColor(R.color.red));
-            } else {
-                if (isPassError) {
-                    SetInputLayoutColors.setColor(this, lCPass, eCPass, getString(R.string.pass_type_error), 2);
+                if (cPass.isEmpty()) {
+                    SetInputLayoutColors.setColor(this, lCPass, eCPass, getString(R.string.empty_field_error), 2);
                     ePass.setTextColor(getColor(R.color.red));
                 } else {
-                    SetInputLayoutColors.setColor(this, lCPass, eCPass, null, 0);
-                    eCPass.setTextColor(getColor(R.color.green));
-                    ePass.setTextColor(getColor(R.color.green));
+                    if (isPassError) {
+                        SetInputLayoutColors.setColor(this, lCPass, eCPass, getString(R.string.pass_type_error), 2);
+                        ePass.setTextColor(getColor(R.color.red));
+                    } else {
+                        SetInputLayoutColors.setColor(this, lCPass, eCPass, null, 0);
+                        eCPass.setTextColor(getColor(R.color.green));
+                        ePass.setTextColor(getColor(R.color.green));
+                    }
                 }
-            }
 
-            eUsername.setBackgroundTintList(ColorStateList.valueOf(getColor(R.color.gray)));
-            eMail.setBackgroundTintList(ColorStateList.valueOf(getColor(R.color.gray)));
-            ePass.setBackgroundTintList(ColorStateList.valueOf(getColor(R.color.gray)));
-            eCPass.setBackgroundTintList(ColorStateList.valueOf(getColor(R.color.gray)));
-        } else {
-            setOnSignup();
+                eUsername.setBackgroundTintList(ColorStateList.valueOf(getColor(R.color.gray)));
+                eMail.setBackgroundTintList(ColorStateList.valueOf(getColor(R.color.gray)));
+                ePass.setBackgroundTintList(ColorStateList.valueOf(getColor(R.color.gray)));
+                eCPass.setBackgroundTintList(ColorStateList.valueOf(getColor(R.color.gray)));
+            } else {
+                setOnSignup();
+            }
         }
     }
 

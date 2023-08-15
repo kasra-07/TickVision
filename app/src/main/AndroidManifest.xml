@@ -20,9 +20,11 @@
         android:theme="@style/Theme.TickVision"
         tools:targetApi="31">
         <activity
+            android:name=".SettingActivity"
+            android:exported="false" />
+        <activity
             android:name=".UpdateErrorActivity"
-            android:exported="false">
-        </activity>
+            android:exported="false"></activity>
 
         <service android:name=".classes.TimerService" />
 
