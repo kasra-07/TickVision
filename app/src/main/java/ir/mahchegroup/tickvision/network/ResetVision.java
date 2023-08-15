@@ -23,7 +23,7 @@ public class ResetVision {
         onResetVisionCallBack = (OnResetVisionCallBack) context;
     }
 
-    public void reset(String userTbl, String title) {
+    public void reset(String userTbl, String title, String dayAmount) {
         StringRequest request = new StringRequest(Request.Method.POST, UserItems.RESET_VISION_URL,
                 onResetVisionCallBack::onResetVisionListener,
                 error -> Log.e(TAG, "reset: " + error))
@@ -34,6 +34,7 @@ public class ResetVision {
                 Map<String,String> params = new HashMap<>();
                 params.put(UserItems.USER_TBL, userTbl);
                 params.put(UserItems.TITLE, title);
+                params.put(UserItems.DAY_AMOUNT, dayAmount);
                 return params;
             }
         };

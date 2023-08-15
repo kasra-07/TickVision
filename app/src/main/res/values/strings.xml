@@ -121,4 +121,5 @@
     <string name="create_account_title_error">ایجاد حساب کاربری جدید</string>
     <string name="create_account_text_error">شما یکبار حساب کاربری ایجاد کرده اید ، در صورتی که تمایل به ایجاد حساب کاربری دیگری دارید ابتدا باید وارد تنظیمات برنامه شده و حساب قبلی خود را حذف نمائید !</string>
     <string name="setting_text">تنظیمات</string>
+    <string name="update_vision_error">بروزرسانی هدف با خطا مواجه شد</string>
 </resources>

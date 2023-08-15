@@ -8,6 +8,7 @@ import androidx.cardview.widget.CardView;
 import androidx.drawerlayout.widget.DrawerLayout;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -35,6 +36,7 @@ import com.google.android.material.navigation.NavigationView;
 import java.text.DecimalFormat;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -760,10 +762,13 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
     }
 
     @Override
-    public void onAddVisionListener(String isAddVision) {
-        if (isAddVision.equals("success")) {
+    public void onAddVisionListener(Map<String, String> addVisionList) {
+        int id = Integer.parseInt(Objects.requireNonNull(addVisionList.get("id")));
+        String status = addVisionList.get("status");
+        if (status != null && status.equals("success")) {
             String dayAmount = String.valueOf(Integer.parseInt(amount) / Integer.parseInt(day));
             ModelVision model = new ModelVision();
+            model.setId(id);
             model.setTitle(title);
             model.setDate_vision(date);
             model.setAmount(amount);
@@ -801,12 +806,12 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
                 }, 500);
             }, 1200);
 
-        } else if (isAddVision.equals("duplicate")) {
+        } else if (status != null && status.equals("duplicate")) {
             new Handler().postDelayed(() -> {
                 LoadingDialog.dismiss();
                 ToastMessage.show(this, getString(R.string.add_vision_duplicate_error), false, true);
             }, 800);
-        } else {
+        } else if (status != null && status.equals("error")) {
             new Handler().postDelayed(() -> {
                 LoadingDialog.dismiss();
                 ToastMessage.show(this, getString(R.string.add_vision_error), false, true);
@@ -983,13 +988,14 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
             LoadingDialog.show(this, getString(R.string.updating_text));
         }
         ResetVision resetVision = new ResetVision(this);
-        resetVision.reset(userTbl, selectedVision);
+        resetVision.reset(userTbl, selectedVision, selectVisionModel.getDay_amount());
     }
 
     @Override
     public void onResetVisionListener(String isReset) {
         if (isReset.equals("success")) {
             ModelVision model = new ModelVision();
+            model.setId(selectVisionModel.getId());
             model.setTitle(selectVisionModel.getTitle());
             model.setDate_vision(selectVisionModel.getDate_vision());
             model.setAmount(selectVisionModel.getAmount());
@@ -1002,11 +1008,20 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
             model.setIncome("0");
             model.setPayment("0");
             model.setProfit("0");
-            model.setRest(selectVisionModel.getRest());
+            model.setRest(selectVisionModel.getDay_amount());
             model.setMilli_sec("0");
             model.setIs_tick("0");
 
-            dao.editVision(selectVisionModel);
+            if (isTimerOn) {
+                timerSwitch.setImageResource(R.drawable.timer_off);
+                isTimerOn = false;
+                stopService(timerIntent);
+                unbindService(serviceConnection);
+            }
+
+            int result = dao.editVision(model);
+
+            Toast.makeText(this, "" + result, Toast.LENGTH_SHORT).show();
 
             new Handler().postDelayed(() -> {
                 resetVisionDialog.dismiss();
@@ -1025,6 +1040,7 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
                 starting();
                 new Handler().postDelayed(() -> {
                     if (LoadingDialog.isShow()) LoadingDialog.dismiss();
+                    ToastMessage.show(this, getString(R.string.update_vision_error), false, true);
                 }, 400);
             }, 700);
         }

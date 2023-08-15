@@ -5,7 +5,7 @@ import androidx.room.PrimaryKey;
 
 @Entity(tableName = "vision_tbl")
 public class ModelVision {
-    @PrimaryKey(autoGenerate = true)
+    @PrimaryKey(autoGenerate = false)
     private int id;
     private String title, date_vision, amount, day_vision, day_amount, day_pass, day_rest, income_amount, rest_amount, income, payment, profit, rest, milli_sec, is_tick;
 
