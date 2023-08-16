@@ -13,7 +13,9 @@ import android.content.ComponentName;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.content.pm.PackageManager;
 import android.icu.text.SimpleDateFormat;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -516,33 +518,64 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
                     }
 
                     case 6: {
-                        Toast.makeText(this, Objects.requireNonNull(item.getTitle()).toString(), Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(Intent.ACTION_SEND);
+                        intent.setType("message/rfc822");
+                        intent.putExtra(Intent.EXTRA_EMAIL, new String[]{"mahche.app@gmail.com"});
+                        intent.putExtra(Intent.EXTRA_SUBJECT, "ایمان ماهوتی");
+                        intent.putExtra(Intent.EXTRA_TEXT, "سلام چتوری؟");
+                        startActivity(intent);
                         break;
                     }
 
                     case 7: {
-                        Toast.makeText(this, Objects.requireNonNull(item.getTitle()).toString(), Toast.LENGTH_SHORT).show();
+                        final String appName = "com.whatsapp";
+                        final boolean isAppInstalled = IsInstallPackManger(appName);
+                        if (isAppInstalled) {
+                            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://api.whatsapp.com/send?phone=+989166403292"));
+                            startActivity(intent);
+                        } else {
+                            Toast.makeText(getApplicationContext(), "واتساپ روی دستگاه اندرویدی شما نصب نیست", Toast.LENGTH_SHORT).show();
+                        }
                         break;
                     }
 
                     case 8: {
-                        Toast.makeText(this, Objects.requireNonNull(item.getTitle()).toString(), Toast.LENGTH_SHORT).show();
+                        Intent call = new Intent(Intent.ACTION_DIAL);
+                        call.setData(Uri.parse("tel:09389680023"));
+                        startActivity(call);
                         break;
                     }
 
                     case 9: {
-                        Toast.makeText(this, Objects.requireNonNull(item.getTitle()).toString(), Toast.LENGTH_SHORT).show();
+                        shared.getEditor().remove(UserItems.USER_MAIL);
+                        shared.getEditor().remove(UserItems.PASS);
+                        shared.getEditor().remove(UserItems.IS_LOGIN_STAY);
+                        shared.getEditor().apply();
+
+                        Intent intent = new Intent(HomeActivity.this, LoginActivity.class);
+                        Animations.AnimActivity(this, intent);
                         break;
                     }
 
                     case 10: {
-                        onBackPressed();
+                        finish();
                         break;
                     }
                 }
             }, 300);
             return false;
         });
+    }
+
+    private boolean IsInstallPackManger(String appName) {
+
+        PackageManager pm = getPackageManager();
+        try {
+            pm.getPackageInfo(appName, PackageManager.GET_ACTIVITIES);
+            return false;
+        } catch (PackageManager.NameNotFoundException e) {
+            return true;
+        }
     }
 
     private void stopTimer() {
