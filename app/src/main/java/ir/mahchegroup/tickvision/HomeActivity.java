@@ -473,6 +473,7 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
                     }
 
                     case 2: {
+                        shared.getEditor().putBoolean(UserItems.IS_FROM_SIGNUP, false).apply();
                         Intent intent = new Intent(HomeActivity.this, SettingActivity.class);
                         Animations.AnimActivity(this, intent);
                         break;

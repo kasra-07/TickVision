@@ -334,8 +334,9 @@ public class SignupActivity extends AppCompatActivity implements UserSignup.User
     public void btnOnClick(View view) {
         root.performClick();
 
-        if (shared.getShared().getBoolean(UserItems.IS_USER_ADD_VISION, false)) {
-            DuplicateSignupDialog.show(this, this);
+        if (!shared.getShared().getString(UserItems.USERNAME, "").isEmpty() || !shared.getShared().getString(UserItems.USER_MAIL, "").isEmpty()) {
+            DuplicateSignupDialog duplicateSignupDialog = new DuplicateSignupDialog(shared);
+            duplicateSignupDialog.show(this, this);
         } else {
             username = Objects.requireNonNull(eUsername.getText()).toString().trim();
             mail = Objects.requireNonNull(eMail.getText()).toString().trim();
@@ -417,14 +418,15 @@ public class SignupActivity extends AppCompatActivity implements UserSignup.User
             ToastMessage.show(this, getString(R.string.duplicate_error), false, false);
         } else {
             new Handler().postDelayed(() -> {
+                shared.getEditor().putBoolean(UserItems.IS_USER_SIGNUP, true);
+                shared.getEditor().apply();
                 LoadingDialog.dismiss();
                 new Handler().postDelayed(() -> {
                     ToastMessage.show(this, getString(R.string.signup_success), true, true);
-                    shared.getEditor().putBoolean(UserItems.IS_USER_SIGNUP, true).apply();
                     Intent intent = new Intent(SignupActivity.this, LoginActivity.class);
                     Animations.AnimActivity(this, intent);
                 }, 400);
-            }, 3400);
+            }, 1700);
         }
     }
 

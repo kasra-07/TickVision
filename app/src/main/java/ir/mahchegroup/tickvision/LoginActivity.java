@@ -187,8 +187,6 @@ public class LoginActivity extends AppCompatActivity implements UserLogin.OnUser
     public void btnOnClick(View view) {
         root.performClick();
 
-        LoadingDialog.show(this, getString(R.string.getting_info_text));
-
         userMail = Objects.requireNonNull(eUserMail.getText()).toString().trim();
         pass = Objects.requireNonNull(ePass.getText()).toString().trim();
 
@@ -211,6 +209,7 @@ public class LoginActivity extends AppCompatActivity implements UserLogin.OnUser
     }
 
     private void setOnLogin() {
+        LoadingDialog.show(this, getString(R.string.getting_info_text));
         UserLogin userLogin = new UserLogin(this);
         userLogin.login(userMail, pass);
     }

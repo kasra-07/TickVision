@@ -125,4 +125,8 @@
     <string name="login_stay_text">ورود بدون نام کاربری و کلمه عبور</string>
     <string name="show_exit_dialog_text">نمایش دیالوگ خروج</string>
     <string name="delete_account_text">حذف حساب کاربری</string>
+    <string name="remove_account_text">حذف حساب کاربری</string>
+    <string name="sure_delete_account_text">آیا از حذف حساب کاربری خود اطمینان دارید ؟</string>
+    <string name="delete_account_success_text">حذف حساب کاربری با موفقیت انجام شد</string>
+    <string name="delete_account_error">حذف حساب کاربری با خطا مواجه شد</string>
 </resources>

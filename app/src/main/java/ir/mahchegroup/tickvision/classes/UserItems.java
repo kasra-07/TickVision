@@ -37,6 +37,7 @@ public class UserItems {
     public static final String IS_TICK = "is_tick";
     public static final String DIFF = "diff";
     public static final String IS_SHOW_EXIT_DIALOG = "is_show_exit_dialog";
+    public static final String IS_FROM_SIGNUP = "is_from_signup";
     public static final String USER_SIGNUP_URL = "https://mahchegroup.ir/tick_vision/user_signup.php";
     public static final String USER_LOGIN_URL = "https://mahchegroup.ir/tick_vision/user_login.php";
     public static final String GET_COUNT_VISION_URL = "https://mahchegroup.ir/tick_vision/get_count_vision.php";
@@ -49,4 +50,5 @@ public class UserItems {
     public static final String UPDATE_MILLI_SEC_URL = "https://mahchegroup.ir/tick_vision/update_milli_sec.php";
     public static final String RESET_ALL_VISIONS_URL = "https://mahchegroup.ir/tick_vision/reset_all_visions.php";
     public static final String RESET_VISION_URL = "https://mahchegroup.ir/tick_vision/reset_vision.php";
+    public static final String DELETE_ACCOUNT_URL = "https://mahchegroup.ir/tick_vision/delete_account.php";
 }
