@@ -129,4 +129,8 @@
     <string name="sure_delete_account_text">آیا از حذف حساب کاربری خود اطمینان دارید ؟</string>
     <string name="delete_account_success_text">حذف حساب کاربری با موفقیت انجام شد</string>
     <string name="delete_account_error">حذف حساب کاربری با خطا مواجه شد</string>
+    <string name="exit_app_text_text">آیا از خروج اطمینان دارید ؟</string>
+    <string name="show_again_text">دوباره نمایش داده نشود</string>
+    <string name="exit">خروج</string>
+    <string name="enter_again_back_text">جهت خروج مجددا کلیک نمائید</string>
 </resources>

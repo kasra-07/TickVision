@@ -15,7 +15,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.Objects;
 
@@ -58,7 +57,7 @@ public class SettingActivity extends AppCompatActivity implements DeleteAccount.
 
         loginStay.setOnCheckedChangeListener((buttonView, isChecked) -> shared.getEditor().putBoolean(UserItems.IS_LOGIN_STAY, isChecked).apply());
 
-        showExitDialog.setOnCheckedChangeListener((buttonView, isChecked) -> shared.getEditor().putBoolean(UserItems.IS_SHOW_EXIT_DIALOG, isChecked));
+        showExitDialog.setOnCheckedChangeListener((buttonView, isChecked) -> shared.getEditor().putBoolean(UserItems.IS_SHOW_EXIT_DIALOG, isChecked).apply());
 
         btnRemove.setOnClickListener(v -> {
             DeleteAccountDialog deleteAccountDialog = new DeleteAccountDialog(this);

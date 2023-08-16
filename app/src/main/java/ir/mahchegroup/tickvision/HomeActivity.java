@@ -55,6 +55,7 @@ import ir.mahchegroup.tickvision.date.ShamsiCalendar;
 import ir.mahchegroup.tickvision.message_box.AddVisionDialog;
 import ir.mahchegroup.tickvision.message_box.ClearAllVisionsDialog;
 import ir.mahchegroup.tickvision.message_box.CongratulationDialog;
+import ir.mahchegroup.tickvision.message_box.ExitDialog;
 import ir.mahchegroup.tickvision.message_box.LoadingDialog;
 import ir.mahchegroup.tickvision.message_box.ResetVisionDialog;
 import ir.mahchegroup.tickvision.message_box.SelectVisionDialog;
@@ -72,7 +73,7 @@ import ir.mahchegroup.tickvision.network.ResetVision;
 import ir.mahchegroup.tickvision.network.UpdateMilliSec;
 import ir.mahchegroup.tickvision.network.UpdatePrice;
 
-public class HomeActivity extends AppCompatActivity implements GetCountVision.OnGetCountCallBack, UpdateAllVisionsDialog.OnUpdateAllVisionsDialogCallBack, ClearAllVisionsDialog.OnClearAllVisionsDialogCallBack, AddVisionDialog.OnAddVisionDialogCallBack, AddVision.OnAddVisionCallBack, ClearAllVisions.OnClearAllVisionsCallBack, GetAllVisions.OnGetAllVisionsCallBack, SelectVisionDialog.OnSelectVisionDialogCallBack, UpdatePriceDialog.OnUpdatePriceDialogCallBack, UpdatePrice.OnUpdatePriceCallBack, ResetAllVisions.OnResetAllVisionsCallBack, ResetVisionDialog.OnResetVisionDialogCallBack, ResetVision.OnResetVisionCallBack {
+public class HomeActivity extends AppCompatActivity implements GetCountVision.OnGetCountCallBack, UpdateAllVisionsDialog.OnUpdateAllVisionsDialogCallBack, ClearAllVisionsDialog.OnClearAllVisionsDialogCallBack, AddVisionDialog.OnAddVisionDialogCallBack, AddVision.OnAddVisionCallBack, ClearAllVisions.OnClearAllVisionsCallBack, GetAllVisions.OnGetAllVisionsCallBack, SelectVisionDialog.OnSelectVisionDialogCallBack, UpdatePriceDialog.OnUpdatePriceDialogCallBack, UpdatePrice.OnUpdatePriceCallBack, ResetAllVisions.OnResetAllVisionsCallBack, ResetVisionDialog.OnResetVisionDialogCallBack, ResetVision.OnResetVisionCallBack, ExitDialog.OnExitDialogCallBack {
     private NavigationView navi;
     private NetworkReceiver receiver;
     private RelativeLayout btnAddVisionRoot, btnSelectVisionRoot;
@@ -86,7 +87,7 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
     private FloatingActionMenu menu;
     private Shared shared;
     private VisionDao dao;
-    private int newIncome, newPayment, newProfit, newRest, newIncomeAmount, newRestAmount;
+    private int newIncome, newPayment, newProfit, newRest, newIncomeAmount, newRestAmount, exitLevel;
     private boolean isFirstTime, isUserAddVision, isUserSelectVision, isOpenMenu, isEquals = false, isBackEditActivity, isIncome, isTimerOn, isChangDay;
     public static boolean isCheckDayMode;
     private LayoutInflater inflater;
@@ -105,6 +106,7 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
     private ResetVisionDialog resetVisionDialog;
     public static int MILLI_SEC;
     private Intent timerIntent;
+    private Timer timer;
 
     @SuppressLint("RtlHardcoded")
     @Override
@@ -310,10 +312,29 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
     public void onBackPressed() {
         if (drawer.isDrawerOpen(Gravity.RIGHT)) {
             drawer.closeDrawer(Gravity.RIGHT);
+
         } else if (menu.isOpened()) {
             closeMenu();
+
         } else {
-            finish();
+            exit();
+        }
+    }
+
+    private void exit() {
+        if (shared.getShared().getBoolean(UserItems.IS_SHOW_EXIT_DIALOG, true)) {
+            ExitDialog exitDialog = new ExitDialog(this);
+            exitDialog.show();
+
+        } else {
+            if (exitLevel == 0) {
+                exitLevel = 1;
+                ToastMessage.show(this, getString(R.string.enter_again_back_text), false, true);
+                new Handler().postDelayed(() -> exitLevel = 0, 800);
+
+            } else {
+                finish();
+            }
         }
     }
 
@@ -515,7 +536,7 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
                     }
 
                     case 10: {
-                        Toast.makeText(this, Objects.requireNonNull(item.getTitle()).toString(), Toast.LENGTH_SHORT).show();
+                        onBackPressed();
                         break;
                     }
                 }
@@ -1050,6 +1071,11 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
         }
     }
 
+    @Override
+    public void onExitDialogListener() {
+        finish();
+    }
+
     private void init() {
         inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
         btnAddVisionRoot = findViewById(R.id.btn_add_root);
@@ -1078,6 +1104,7 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
         selectedVision = shared.getShared().getString(UserItems.SELECTED_VISION, "");
         dao = VisionDatabase.getVisionDatabase(this).visionDao();
         timerIntent = new Intent(HomeActivity.this, TimerService.class);
+        timer = new Timer();
 
         updateAllVisionsDialog = new UpdateAllVisionsDialog(this);
         clearAllVisionsDialog = new ClearAllVisionsDialog(this);
