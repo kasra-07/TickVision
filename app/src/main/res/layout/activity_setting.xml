@@ -1,9 +1,195 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".SettingActivity">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <include
+        android:id="@+id/toolbar_setting"
+        layout="@layout/toolbar_layout" />
+
+    <RelativeLayout
+        android:id="@+id/login_stay_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/toolbar_setting"
+        android:layout_alignParentEnd="true"
+        android:layout_marginStart="@dimen/margin_top_bottom_setting_elements"
+        android:layout_marginTop="5dp"
+        android:layout_marginEnd="@dimen/margin_top_bottom_setting_elements"
+        android:paddingStart="20dp"
+        android:paddingTop="10dp"
+        android:paddingEnd="20dp"
+        android:paddingBottom="5dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@id/s_login_stay"
+            android:layout_alignBottom="@id/s_login_stay"
+            android:layout_alignParentEnd="true"
+            android:gravity="center_vertical"
+            android:text="@string/login_stay_text"
+            android:textColor="@color/gray"
+            android:textSize="@dimen/normal_text_size"
+            tools:ignore="RelativeOverlap,TextContrastCheck" />
+
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/s_login_stay"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:layout_alignStart="@id/btn_login"
+            android:layout_alignEnd="@id/btn_login"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:paddingEnd="23.5dp"
+            android:paddingStart="0dp"
+            android:padding="10dp"
+            tools:ignore="DuplicateSpeakableTextCheck,TouchTargetSizeCheck" />
+
+        <Button
+            android:id="@+id/btn_login"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:background="@null"
+            android:gravity="center"
+            android:visibility="invisible"
+            android:enabled="false"
+            android:textColor="@color/transparent"
+            android:textSize="@dimen/large_text_size"
+            android:textStyle="bold" />
+
+    </RelativeLayout>
+
+    <View
+        android:id="@+id/v1"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/normal_line_size"
+        android:layout_below="@id/login_stay_layout"
+        android:layout_marginStart="@dimen/margin_top_bottom_setting_elements"
+        android:layout_marginTop="@dimen/margin_top_bottom_setting_elements"
+        android:layout_marginEnd="@dimen/margin_top_bottom_setting_elements"
+        android:layout_marginBottom="@dimen/margin_top_bottom_setting_elements"
+        android:background="@color/gray" />
+
+    <RelativeLayout
+        android:id="@+id/exit_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/login_stay_layout"
+        android:layout_alignParentEnd="true"
+        android:layout_marginStart="@dimen/margin_top_bottom_setting_elements"
+        android:layout_marginTop="30dp"
+        android:layout_marginEnd="@dimen/margin_top_bottom_setting_elements"
+        android:padding="15dp"
+        android:paddingStart="20dp"
+        android:paddingTop="10dp"
+        android:paddingEnd="20dp"
+        android:paddingBottom="5dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@id/s_show_exit_dialog"
+            android:layout_alignBottom="@id/s_show_exit_dialog"
+            android:layout_alignParentEnd="true"
+            android:gravity="center_vertical"
+            android:text="@string/show_exit_dialog_text"
+            android:textColor="@color/gray"
+            android:textSize="@dimen/normal_text_size"
+            tools:ignore="RelativeOverlap,TextContrastCheck" />
+
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/s_show_exit_dialog"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_alignStart="@id/btn_exit"
+            android:layout_alignEnd="@id/btn_exit"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:paddingEnd="23.5dp"
+            android:paddingStart="0dp"
+            android:layout_centerInParent="true"
+            tools:ignore="TouchTargetSizeCheck" />
+
+        <Button
+            android:id="@+id/btn_exit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:background="@null"
+            android:gravity="center"
+            android:visibility="invisible"
+            android:enabled="false"
+            android:textColor="@color/transparent"
+            android:textSize="@dimen/large_text_size"
+            android:textStyle="bold" />
+
+    </RelativeLayout>
+
+    <View
+        android:id="@+id/v2"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/normal_line_size"
+        android:layout_below="@id/exit_layout"
+        android:layout_marginStart="@dimen/margin_top_bottom_setting_elements"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="@dimen/margin_top_bottom_setting_elements"
+        android:background="@color/gray" />
+
+    <RelativeLayout
+        android:id="@+id/delete_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/exit_layout"
+        android:layout_alignParentEnd="true"
+        android:layout_marginStart="@dimen/margin_top_bottom_setting_elements"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="@dimen/margin_top_bottom_setting_elements"
+        android:padding="15dp"
+        android:paddingStart="20dp"
+        android:paddingTop="10dp"
+        android:paddingEnd="20dp"
+        android:paddingBottom="5dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@id/btn_delete_account"
+            android:layout_alignBottom="@id/btn_delete_account"
+            android:layout_alignParentEnd="true"
+            android:gravity="center_vertical"
+            android:text="@string/delete_account_text"
+            android:textColor="@color/gray"
+            android:textSize="@dimen/normal_text_size"
+            tools:ignore="RelativeOverlap,TextContrastCheck" />
+
+        <Button
+            android:id="@+id/btn_delete_account"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:background="@drawable/red_btn_background"
+            android:gravity="center"
+            android:text="@string/delete_text"
+            android:textColor="@color/primary_ultra_light_color"
+            android:textSize="@dimen/large_text_size"
+            android:textStyle="bold" />
+
+    </RelativeLayout>
+
+    <View
+        android:id="@+id/v3"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/normal_line_size"
+        android:layout_below="@id/delete_layout"
+        android:layout_marginStart="@dimen/margin_top_bottom_setting_elements"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="@dimen/margin_top_bottom_setting_elements"
+        android:background="@color/gray" />
+
+</RelativeLayout>

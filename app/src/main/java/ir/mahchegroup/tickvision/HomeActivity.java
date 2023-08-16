@@ -458,64 +458,67 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
     private void setOnNaviItemClick() {
         navi.setNavigationItemSelectedListener(item -> {
             drawer.closeDrawer(Gravity.RIGHT);
+            new Handler().postDelayed(() -> {
 
-            int id = item.getOrder();
-            switch (id) {
-                case 0: {
-                    new Handler().postDelayed(() -> resetVisionDialog.show(), 350);
-                    break;
-                }
+                int id = item.getOrder();
+                switch (id) {
+                    case 0: {
+                        resetVisionDialog.show();
+                        break;
+                    }
 
-                case 1: {
-                    Toast.makeText(this, Objects.requireNonNull(item.getTitle()).toString(), Toast.LENGTH_SHORT).show();
-                    break;
-                }
+                    case 1: {
+                        Toast.makeText(this, Objects.requireNonNull(item.getTitle()).toString(), Toast.LENGTH_SHORT).show();
+                        break;
+                    }
 
-                case 2: {
-                    Toast.makeText(this, Objects.requireNonNull(item.getTitle()).toString(), Toast.LENGTH_SHORT).show();
-                    break;
-                }
+                    case 2: {
+                        Intent intent = new Intent(HomeActivity.this, SettingActivity.class);
+                        Animations.AnimActivity(this, intent);
+                        break;
+                    }
 
-                case 3: {
-                    Toast.makeText(this, Objects.requireNonNull(item.getTitle()).toString(), Toast.LENGTH_SHORT).show();
-                    break;
-                }
+                    case 3: {
+                        Toast.makeText(this, Objects.requireNonNull(item.getTitle()).toString(), Toast.LENGTH_SHORT).show();
+                        break;
+                    }
 
-                case 4: {
-                    Toast.makeText(this, Objects.requireNonNull(item.getTitle()).toString(), Toast.LENGTH_SHORT).show();
-                    break;
-                }
+                    case 4: {
+                        Toast.makeText(this, Objects.requireNonNull(item.getTitle()).toString(), Toast.LENGTH_SHORT).show();
+                        break;
+                    }
 
-                case 5: {
-                    Toast.makeText(this, Objects.requireNonNull(item.getTitle()).toString(), Toast.LENGTH_SHORT).show();
-                    break;
-                }
+                    case 5: {
+                        Toast.makeText(this, Objects.requireNonNull(item.getTitle()).toString(), Toast.LENGTH_SHORT).show();
+                        break;
+                    }
 
-                case 6: {
-                    Toast.makeText(this, Objects.requireNonNull(item.getTitle()).toString(), Toast.LENGTH_SHORT).show();
-                    break;
-                }
+                    case 6: {
+                        Toast.makeText(this, Objects.requireNonNull(item.getTitle()).toString(), Toast.LENGTH_SHORT).show();
+                        break;
+                    }
 
-                case 7: {
-                    Toast.makeText(this, Objects.requireNonNull(item.getTitle()).toString(), Toast.LENGTH_SHORT).show();
-                    break;
-                }
+                    case 7: {
+                        Toast.makeText(this, Objects.requireNonNull(item.getTitle()).toString(), Toast.LENGTH_SHORT).show();
+                        break;
+                    }
 
-                case 8: {
-                    Toast.makeText(this, Objects.requireNonNull(item.getTitle()).toString(), Toast.LENGTH_SHORT).show();
-                    break;
-                }
+                    case 8: {
+                        Toast.makeText(this, Objects.requireNonNull(item.getTitle()).toString(), Toast.LENGTH_SHORT).show();
+                        break;
+                    }
 
-                case 9: {
-                    Toast.makeText(this, Objects.requireNonNull(item.getTitle()).toString(), Toast.LENGTH_SHORT).show();
-                    break;
-                }
+                    case 9: {
+                        Toast.makeText(this, Objects.requireNonNull(item.getTitle()).toString(), Toast.LENGTH_SHORT).show();
+                        break;
+                    }
 
-                case 10: {
-                    Toast.makeText(this, Objects.requireNonNull(item.getTitle()).toString(), Toast.LENGTH_SHORT).show();
-                    break;
+                    case 10: {
+                        Toast.makeText(this, Objects.requireNonNull(item.getTitle()).toString(), Toast.LENGTH_SHORT).show();
+                        break;
+                    }
                 }
-            }
+            }, 300);
             return false;
         });
     }

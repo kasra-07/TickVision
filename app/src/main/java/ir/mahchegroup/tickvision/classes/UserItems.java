@@ -36,6 +36,7 @@ public class UserItems {
     public static final String IS_CHANGE_DAY = "is_change_day";
     public static final String IS_TICK = "is_tick";
     public static final String DIFF = "diff";
+    public static final String IS_SHOW_EXIT_DIALOG = "is_show_exit_dialog";
     public static final String USER_SIGNUP_URL = "https://mahchegroup.ir/tick_vision/user_signup.php";
     public static final String USER_LOGIN_URL = "https://mahchegroup.ir/tick_vision/user_login.php";
     public static final String GET_COUNT_VISION_URL = "https://mahchegroup.ir/tick_vision/get_count_vision.php";
