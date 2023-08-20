@@ -13,9 +13,15 @@ import java.util.Objects;
 import ir.mahchegroup.tickvision.R;
 
 public class LoadingDialog {
-    private static Dialog dialog;
+    private final Context context;
+    private Dialog dialog;
+
+    public LoadingDialog(Context context) {
+        this.context = context;
+    }
+
     @SuppressLint("InflateParams")
-    public static void show(Context context, String txt) {
+    public void show(String txt) {
         dialog = new Dialog(context);
         View view = Objects.requireNonNull(LayoutInflater.from(context)).inflate(R.layout.loading_dialog_layout, null);
         TextView tv = view.findViewById(R.id.tv_loading);
@@ -27,11 +33,11 @@ public class LoadingDialog {
         dialog.show();
     }
 
-    public static void dismiss() {
+    public void dismiss() {
         dialog.dismiss();
     }
 
-    public static boolean isShow() {
+    public boolean isShow() {
         return dialog.isShowing();
     }
 }

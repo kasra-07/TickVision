@@ -260,6 +260,8 @@ public class EditActivity extends AppCompatActivity implements RemoveVision.OnRe
         int result = dao.removeVision(model);
 
         if (result == 1) {
+            shared.getEditor().putBoolean(UserItems.IS_LOGIN_STAY, false);
+
             if ((isEquals && dao.getCountVision() == 0) || (dao.getCountVision() == 0)) {
                 shared.getEditor().putBoolean(UserItems.IS_FIRST_TIME, true);
                 shared.getEditor().putBoolean(UserItems.IS_USER_ADD_VISION, false);
@@ -289,6 +291,7 @@ public class EditActivity extends AppCompatActivity implements RemoveVision.OnRe
             shared.getEditor().putBoolean(UserItems.IS_FIRST_TIME, true);
             shared.getEditor().putBoolean(UserItems.IS_USER_ADD_VISION, false);
             shared.getEditor().putBoolean(UserItems.IS_USER_SELECT_VISION, false);
+            shared.getEditor().putBoolean(UserItems.IS_LOGIN_STAY, false);
             shared.getEditor().apply();
 
             thisDialog.dismiss();

@@ -8,18 +8,19 @@ import androidx.cardview.widget.CardView;
 import androidx.drawerlayout.widget.DrawerLayout;
 
 import android.annotation.SuppressLint;
-import android.app.AlertDialog;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.icu.text.SimpleDateFormat;
+import android.icu.util.Calendar;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -34,12 +35,27 @@ import android.widget.Toast;
 import com.github.clans.fab.FloatingActionMenu;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
+import com.itextpdf.text.BaseColor;
+import com.itextpdf.text.Document;
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.Element;
+import com.itextpdf.text.Font;
+import com.itextpdf.text.PageSize;
+import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.Phrase;
+import com.itextpdf.text.pdf.BaseFont;
+import com.itextpdf.text.pdf.PdfPCell;
+import com.itextpdf.text.pdf.PdfPTable;
+import com.itextpdf.text.pdf.PdfWriter;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.text.DecimalFormat;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.StringTokenizer;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -66,7 +82,6 @@ import ir.mahchegroup.tickvision.message_box.UpdateAllVisionsDialog;
 import ir.mahchegroup.tickvision.message_box.UpdatePriceDialog;
 import ir.mahchegroup.tickvision.network.AddVision;
 import ir.mahchegroup.tickvision.network.ClearAllVisions;
-import ir.mahchegroup.tickvision.network.EditVision;
 import ir.mahchegroup.tickvision.network.GetAllVisions;
 import ir.mahchegroup.tickvision.network.GetCountVision;
 import ir.mahchegroup.tickvision.network.NetworkReceiver;
@@ -90,7 +105,7 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
     private Shared shared;
     private VisionDao dao;
     private int newIncome, newPayment, newProfit, newRest, newIncomeAmount, newRestAmount, exitLevel;
-    private boolean isFirstTime, isUserAddVision, isUserSelectVision, isOpenMenu, isEquals = false, isBackEditActivity, isIncome, isTimerOn, isChangDay;
+    private boolean isFirstTime, isUserAddVision, isUserSelectVision, isOpenMenu, isEquals = false, isBackEditActivity, isIncome, isTimerOn, isChangDay, isLoadingShow = false;
     public static boolean isCheckDayMode;
     private LayoutInflater inflater;
     private String userTbl, date, title, amount, day, selectedVision, isTick;
@@ -106,9 +121,13 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
     private UpdatePrice updatePrice;
     private ResetAllVisions resetAllVisions;
     private ResetVisionDialog resetVisionDialog;
-    public static int MILLI_SEC;
+    public static long MILLI_SEC;
     private Intent timerIntent;
-    private Timer timer;
+    private Calendar calendar;
+    private SimpleDateFormat faFormat, enFormat;
+    private Font titleFont, textFont, smallFont, boldFont;
+    private static final String TAG = "HomeActivity";
+    private LoadingDialog loading;
 
     @SuppressLint("RtlHardcoded")
     @Override
@@ -137,9 +156,11 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
         init();
 
         if (isFirstTime) {
-            if (!LoadingDialog.isShow()) {
-                LoadingDialog.show(this, getString(R.string.please_vait_text));
+            if (!isLoadingShow) {
+                loading.show(getString(R.string.please_vait_text));
+                isLoadingShow = true;
             }
+
             GetCountVision getCountVision = new GetCountVision(this);
             getCountVision.getCount(userTbl);
         } else {
@@ -377,7 +398,6 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
 
         } else if (isBackEditActivity) {
             if (dao.getCountVision() == 0) {
-
                 drawer.setVisibility(View.GONE);
                 setOnBtnAddClickListener();
 
@@ -404,11 +424,13 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
         selectVisionModel = dao.getVision(selectedVision);
 
         if (isChangDay) {
-            if (!LoadingDialog.isShow()) {
-                LoadingDialog.show(this, getString(R.string.updating_text));
+            if (!isLoadingShow) {
+                loading.show(getString(R.string.updating_text));
+                isLoadingShow = true;
             }
 
-            String d = ChangeDate.getCurrentDay() + "/" + ChangeDate.getCurrentMonth() + "/" + ChangeDate.getCurrentYear();
+//            String d = ChangeDate.getCurrentDay() + "/" + ChangeDate.getCurrentMonth() + "/" + ChangeDate.getCurrentYear();
+            String d = enFormat.format(calendar.getTime());
             String hDay = selectVisionModel.getDate_vision();
 
             long diff = calcTimeDiff(hDay, d);
@@ -491,7 +513,7 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
                     }
 
                     case 1: {
-                        Toast.makeText(this, Objects.requireNonNull(item.getTitle()).toString(), Toast.LENGTH_SHORT).show();
+                        getExport(selectVisionModel);
                         break;
                     }
 
@@ -529,7 +551,7 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
 
                     case 7: {
                         final String appName = "com.whatsapp";
-                        final boolean isAppInstalled = IsInstallPackManger(appName);
+                        final boolean isAppInstalled = IsInstallPackManger();
                         if (isAppInstalled) {
                             Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://api.whatsapp.com/send?phone=+989166403292"));
                             startActivity(intent);
@@ -567,11 +589,196 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
         });
     }
 
-    private boolean IsInstallPackManger(String appName) {
+    private void getExport(ModelVision model) {
+        File myDir = new File("sdcard/download/TickVision");
+        myDir.mkdirs();
+
+        try {
+            BaseFont font = BaseFont.createFont("assets/font/iran_sans.ttf", BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
+
+            titleFont = new Font(font, 25, Font.BOLD, BaseColor.BLUE);
+            textFont = new Font(font, 14, Font.NORMAL, BaseColor.BLUE);
+            smallFont = new Font(font, 14, Font.NORMAL, BaseColor.BLACK);
+            boldFont = new Font(font, 16, Font.NORMAL, BaseColor.RED);
+
+            Document document = new Document(PageSize.A4);
+            PdfWriter.getInstance(document, new FileOutputStream(new File(android.os.Environment.getExternalStorageDirectory()
+                    + "/download/TickVision/" + model.getTitle() + ".pdf")));
+
+            document.open();
+            writeFile(selectVisionModel, document);
+            document.close();
+            ToastMessage.show(this, getString(R.string.export_fiel_success_text), true, false);
+
+        } catch (Exception e) {
+            Log.e(TAG, "getExport: " + e.getMessage());
+        }
+    }
+
+    private void writeFile(ModelVision model, Document document) throws DocumentException {
+
+        addEmptyLine(document, 1);
+
+        PdfPTable dateTable = new PdfPTable(1);
+        PdfPCell dateCell;
+
+        dateCell = new PdfPCell(new Phrase("تاریخ ثبت خروجی :   " + ChangeDate.getCurrentDay() + "/" + ChangeDate.getCurrentMonth() + "/" + ChangeDate.getCurrentYear(), smallFont));
+        dateCell.setHorizontalAlignment(Element.ALIGN_CENTER);
+        dateCell.setRunDirection(PdfWriter.RUN_DIRECTION_RTL);
+        dateCell.setBorderWidth(0);
+        dateTable.addCell(dateCell);
+
+        document.add(dateTable);
+
+        //==========================================================================================
+
+        addEmptyLine(document, 1);
+
+        PdfPTable titleTable = new PdfPTable(1);
+        PdfPCell titleCell;
+
+        titleCell = new PdfPCell(new Phrase("عنوان هدف :   " + model.getTitle(), titleFont));
+        titleCell.setHorizontalAlignment(Element.ALIGN_CENTER);
+        titleCell.setRunDirection(PdfWriter.RUN_DIRECTION_RTL);
+        titleCell.setBorderWidth(0);
+        titleTable.addCell(titleCell);
+        titleCell.setPaddingTop(50);
+
+        document.add(titleTable);
+
+        //==========================================================================================
+
+        addEmptyLine(document, 8);
+
+        PdfPTable table = new PdfPTable(2);
+        PdfPCell cell;
+
+        String dateVision = getVisionDate(model.getDate_vision());
+        cell = setCellTable(dateVision, textFont);
+        table.addCell(cell);
+
+        cell = setCellTable("تاریخ تعیین هدف : ", boldFont);
+        table.addCell(cell);
+
+        cell = setCellTable(model.getDay_vision() + " روز", textFont);
+        table.addCell(cell);
+
+        cell = setCellTable("تعداد روز مشخص شده : ", boldFont);
+        table.addCell(cell);
+
+        cell = setCellTable(model.getDay_pass() + " روز", textFont);
+        table.addCell(cell);
+
+        cell = setCellTable("تعداد روز سپری شده : ", boldFont);
+        table.addCell(cell);
+
+        cell = setCellTable(model.getDay_rest() + " روز", textFont);
+        table.addCell(cell);
+
+        cell = setCellTable("تعداد روز باقیمانده : ", boldFont);
+        table.addCell(cell);
+
+        String endDateVision = getEndDateVision(model.getDate_vision(), Integer.parseInt(model.getDay_vision()));
+        cell = setCellTable(endDateVision, textFont);
+        table.addCell(cell);
+
+        cell = setCellTable("تاریخ اتمام مهلت هدف : ", boldFont);
+        table.addCell(cell);
+
+        cell = setCellTable(splitDigits(Integer.parseInt(model.getAmount())) + " تومان", textFont);
+        table.addCell(cell);
+
+        cell = setCellTable("کل مبلغ هدف : ", boldFont);
+        table.addCell(cell);
+
+        cell = setCellTable(splitDigits(Integer.parseInt(model.getIncome_amount())) + " تومان", textFont);
+        table.addCell(cell);
+
+        cell = setCellTable("کل مبلغ درآمد تا امروز : ", boldFont);
+        table.addCell(cell);
+
+        cell = setCellTable(splitDigits(Integer.parseInt(model.getRest_amount())) + " تومان", textFont);
+        table.addCell(cell);
+
+        cell = setCellTable("کل مبلغ باقیمانده : ", boldFont);
+        table.addCell(cell);
+
+        String time = timeFormat(MILLI_SEC);
+        cell = setCellTable(time, textFont);
+        table.addCell(cell);
+
+        cell = setCellTable("مدت زمان کارکرد تا امروز : ", boldFont);
+        table.addCell(cell);
+
+        document.add(table);
+
+        //==========================================================================================
+
+        addEmptyLine(document, 8);
+
+        PdfPTable mahcheTable = new PdfPTable(1);
+        PdfPCell mahcheCell;
+
+        mahcheCell = new PdfPCell(new Phrase("گـــروه ماهچـــه", smallFont));
+        mahcheCell.setHorizontalAlignment(Element.ALIGN_CENTER);
+        mahcheCell.setBorderWidth(0);
+        mahcheCell.setRunDirection(PdfWriter.RUN_DIRECTION_RTL);
+        mahcheCell.setPadding(5);
+        mahcheTable.addCell(mahcheCell);
+
+        document.add(mahcheTable);
+    }
+
+    private void addEmptyLine(Document document, int num) throws DocumentException {
+        for (int i = 0; i < num; i++) {
+            document.add(new Paragraph(new Paragraph(" ")));
+        }
+    }
+
+    private String getVisionDate(String dateVision) {
+        StringTokenizer tokenizer = new StringTokenizer(dateVision, "/");
+        int day = Integer.parseInt(tokenizer.nextToken());
+        int month = Integer.parseInt(tokenizer.nextToken());
+        int year = Integer.parseInt(tokenizer.nextToken());
+
+        calendar.set(year, month, day);
+
+        return ChangeDate.changeMiladiToFarsi(faFormat.format(calendar.getTime()));
+    }
+
+    private String getEndDateVision(String date, int deltaDay) {
+        StringTokenizer tokenizer = new StringTokenizer(date, "/");
+        int day = Integer.parseInt(tokenizer.nextToken());
+        int month = Integer.parseInt(tokenizer.nextToken());
+        int year = Integer.parseInt(tokenizer.nextToken());
+
+        calendar.set(year, month, day);
+        long todayMilliSec = calendar.getTimeInMillis();
+        long dd = (long) deltaDay * 24 * 60 * 60 * 1000;
+
+        todayMilliSec += dd;
+
+        calendar.setTimeInMillis(todayMilliSec);
+
+        return ChangeDate.changeMiladiToFarsi(faFormat.format(calendar.getTime()));
+    }
+
+    private PdfPCell setCellTable(String txt, Font font) {
+        PdfPCell cell;
+        cell = new PdfPCell(new Phrase(txt, font));
+        cell.setHorizontalAlignment(Element.ALIGN_LEFT);
+        cell.setPaddingBottom(10);
+        cell.setPaddingTop(10);
+        cell.setBorderWidth(0);
+        cell.setRunDirection(PdfWriter.RUN_DIRECTION_RTL);
+        return cell;
+    }
+
+    private boolean IsInstallPackManger() {
 
         PackageManager pm = getPackageManager();
         try {
-            pm.getPackageInfo(appName, PackageManager.GET_ACTIVITIES);
+            pm.getPackageInfo("com.whatsapp", PackageManager.GET_ACTIVITIES);
             return false;
         } catch (PackageManager.NameNotFoundException e) {
             return true;
@@ -745,7 +952,11 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
     @Override
     public void onGetCountListener(int count) {
         new Handler().postDelayed(() -> {
-            LoadingDialog.dismiss();
+            if (isLoadingShow) {
+                loading.dismiss();
+                isLoadingShow = false;
+            }
+
             new Handler().postDelayed(() -> {
                 if (count > 0) {
                     int ofLineCount = dao.getCountVision();
@@ -788,10 +999,12 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
     public void onAddVisionDialogSaveListener(String title, String amount, String day) {
         KeyboardManager.hideKeyboardOnActivity(this, this);
         new Handler().postDelayed(() -> {
-            if (!LoadingDialog.isShow()) {
-                LoadingDialog.show(this, getString(R.string.sending_info_text));
+            if (!isLoadingShow) {
+                loading.show(getString(R.string.sending_info_text));
+                isLoadingShow = true;
             }
-            date = ChangeDate.getCurrentDay() + "/" + ChangeDate.getCurrentMonth() + "/" + ChangeDate.getCurrentYear();
+
+            date = enFormat.format(calendar.getTime());
             this.title = title;
             this.amount = amount;
             this.day = day;
@@ -859,19 +1072,31 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
                 }
                 addVisionDialog.dismiss();
                 new Handler().postDelayed(() -> {
-                    LoadingDialog.dismiss();
+                    if (isLoadingShow) {
+                        loading.dismiss();
+                        isLoadingShow = false;
+                    }
+
                     ToastMessage.show(this, getString(R.string.add_vision_success), true, true);
                 }, 500);
             }, 1200);
 
         } else if (status != null && status.equals("duplicate")) {
             new Handler().postDelayed(() -> {
-                LoadingDialog.dismiss();
+                if (isLoadingShow) {
+                    loading.dismiss();
+                    isLoadingShow = false;
+                }
+
                 ToastMessage.show(this, getString(R.string.add_vision_duplicate_error), false, true);
             }, 800);
         } else if (status != null && status.equals("error")) {
             new Handler().postDelayed(() -> {
-                LoadingDialog.dismiss();
+                if (isLoadingShow) {
+                    loading.dismiss();
+                    isLoadingShow = false;
+                }
+
                 ToastMessage.show(this, getString(R.string.add_vision_error), false, true);
             }, 800);
         }
@@ -956,6 +1181,11 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
 
     @Override
     public void onUpdatePriceDialogListener(int price) {
+        if (!isLoadingShow) {
+            loading.show(getString(R.string.updating_text));
+            isLoadingShow = true;
+        }
+
         int oldIncomeAmount = Integer.parseInt(selectVisionModel.getIncome_amount());
         int oldIncome = Integer.parseInt(selectVisionModel.getIncome());
         int oldPayment = Integer.parseInt(selectVisionModel.getPayment());
@@ -1004,7 +1234,11 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
             new Handler().postDelayed(() -> {
                 updatePriceDialog.dismiss();
                 new Handler().postDelayed(() -> {
-                    LoadingDialog.dismiss();
+                    if (isLoadingShow) {
+                        loading.dismiss();
+                        isLoadingShow = false;
+                    }
+
                     ToastMessage.show(this, getString(R.string.update_price_success_test), true, true);
                     starting();
 
@@ -1015,7 +1249,11 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
             }, 1100);
         } else {
             new Handler().postDelayed(() -> {
-                LoadingDialog.dismiss();
+                if (isLoadingShow) {
+                    loading.dismiss();
+                    isLoadingShow = false;
+                }
+
                 ToastMessage.show(this, getString(R.string.update_price_error), false, true);
             }, 1200);
         }
@@ -1034,17 +1272,23 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
             shared.getEditor().putInt(UserItems.G_DAY, ChangeDate.getCurrentDay());
             shared.getEditor().putBoolean(UserItems.IS_GET_DAY, true);
             shared.getEditor().apply();
-            if (LoadingDialog.isShow()) {
-                new Handler().postDelayed(LoadingDialog::dismiss, 2000);
+            if (isLoadingShow) {
+                new Handler().postDelayed(() -> {
+                    loading.dismiss();
+                    isLoadingShow = false;
+                }, 2000);
             }
+
         }, 1200);
     }
 
     @Override
     public void onResetVisionDialogResetListener() {
-        if (!LoadingDialog.isShow()) {
-            LoadingDialog.show(this, getString(R.string.updating_text));
+        if (!isLoadingShow) {
+            loading.show(getString(R.string.updating_text));
+            isLoadingShow = true;
         }
+
         ResetVision resetVision = new ResetVision(this);
         resetVision.reset(userTbl, selectedVision, selectVisionModel.getDay_amount());
     }
@@ -1085,10 +1329,12 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
                 resetVisionDialog.dismiss();
                 starting();
                 new Handler().postDelayed(() -> {
-                    if (LoadingDialog.isShow()) {
-                        LoadingDialog.dismiss();
-                        ToastMessage.show(this, getString(R.string.update_vision_success_text), true, true);
+                    if (isLoadingShow) {
+                        loading.dismiss();
+                        isLoadingShow = false;
                     }
+
+                    ToastMessage.show(this, getString(R.string.update_vision_success_text), true, true);
                 }, 400);
             }, 800);
 
@@ -1097,7 +1343,11 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
                 resetVisionDialog.dismiss();
                 starting();
                 new Handler().postDelayed(() -> {
-                    if (LoadingDialog.isShow()) LoadingDialog.dismiss();
+                    if (isLoadingShow) {
+                        loading.dismiss();
+                        isLoadingShow = false;
+                    }
+
                     ToastMessage.show(this, getString(R.string.update_vision_error), false, true);
                 }, 400);
             }, 700);
@@ -1109,6 +1359,7 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
         finish();
     }
 
+    @SuppressLint("SimpleDateFormat")
     private void init() {
         inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
         btnAddVisionRoot = findViewById(R.id.btn_add_root);
@@ -1137,8 +1388,6 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
         selectedVision = shared.getShared().getString(UserItems.SELECTED_VISION, "");
         dao = VisionDatabase.getVisionDatabase(this).visionDao();
         timerIntent = new Intent(HomeActivity.this, TimerService.class);
-        timer = new Timer();
-
         updateAllVisionsDialog = new UpdateAllVisionsDialog(this);
         clearAllVisionsDialog = new ClearAllVisionsDialog(this);
         clearAllVisions = new ClearAllVisions(this);
@@ -1150,5 +1399,11 @@ public class HomeActivity extends AppCompatActivity implements GetCountVision.On
         updatePrice = new UpdatePrice(this);
         resetAllVisions = new ResetAllVisions(this);
         resetVisionDialog = new ResetVisionDialog(this);
+
+        calendar = Calendar.getInstance();
+        faFormat = new SimpleDateFormat("yyyy/MM/dd");
+        enFormat = new SimpleDateFormat("dd/MM/yyyy");
+
+        loading = new LoadingDialog(this);
     }
 }

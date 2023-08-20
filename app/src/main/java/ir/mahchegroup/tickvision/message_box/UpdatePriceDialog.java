@@ -63,9 +63,6 @@ public class UpdatePriceDialog {
                 KeyboardManager.hideKeyboardOnDialog(dialog, context);
                 int price = Integer.parseInt(edt.getText().toString().trim());
                 new Handler().postDelayed(() -> {
-                    if (!LoadingDialog.isShow()) {
-                        LoadingDialog.show(context, context.getString(R.string.updating_text));
-                    }
                     onUpdatePriceDialogCallBack.onUpdatePriceDialogListener(price);
                 },200);
             }

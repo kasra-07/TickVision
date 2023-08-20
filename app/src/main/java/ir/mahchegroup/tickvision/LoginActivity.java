@@ -39,8 +39,9 @@ public class LoginActivity extends AppCompatActivity implements UserLogin.OnUser
     private RelativeLayout root;
     private NetworkReceiver receiver;
     private CheckBox chRemember;
-    private boolean isRememberChecked, isChecked;
+    private boolean isRememberChecked, isChecked, isLoadingShow = false;
     private String userMail, pass;
+    private LoadingDialog loading;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -209,7 +210,10 @@ public class LoginActivity extends AppCompatActivity implements UserLogin.OnUser
     }
 
     private void setOnLogin() {
-        LoadingDialog.show(this, getString(R.string.getting_info_text));
+        if (!isLoadingShow) {
+            loading.show(getString(R.string.getting_info_text));
+            isLoadingShow = true;
+        }
         UserLogin userLogin = new UserLogin(this);
         userLogin.login(userMail, pass);
     }
@@ -218,17 +222,22 @@ public class LoginActivity extends AppCompatActivity implements UserLogin.OnUser
     public void onUserLoginListener(List<String> loginList) {
         if (loginList.get(0).equals("empty")) {
             new Handler().postDelayed(() -> {
-                if (LoadingDialog.isShow()) {
-                    LoadingDialog.dismiss();
-                    ToastMessage.show(this, getString(R.string.login_error), false, false);
+                if (isLoadingShow) {
+                    loading.dismiss();
+                    isLoadingShow = false;
                 }
+
+                ToastMessage.show(this, getString(R.string.login_error), false, false);
+
             }, 700);
         } else if (loginList.get(0).equals("pass_error")) {
             new Handler().postDelayed(() -> {
-                if (LoadingDialog.isShow()) {
-                    LoadingDialog.dismiss();
-                    ToastMessage.show(this, getString(R.string.login_pass_error), false, false);
+                if (isLoadingShow) {
+                    loading.dismiss();
+                    isLoadingShow = false;
                 }
+
+                ToastMessage.show(this, getString(R.string.login_pass_error), false, false);
             }, 700);
         } else {
             shared.getEditor().putString(UserItems.USERNAME, loginList.get(1));
@@ -246,7 +255,11 @@ public class LoginActivity extends AppCompatActivity implements UserLogin.OnUser
             shared.getEditor().apply();
 
             new Handler().postDelayed(() -> {
-                LoadingDialog.dismiss();
+                if (isLoadingShow) {
+                    loading.dismiss();
+                    isLoadingShow = false;
+                }
+
                 new Handler().postDelayed(() -> {
                     Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
                     Animations.AnimActivity(this, intent);
@@ -269,5 +282,6 @@ public class LoginActivity extends AppCompatActivity implements UserLogin.OnUser
         isChecked = shared.getShared().getBoolean(UserItems.IS_REMEMBER_CHECKED, false);
         lUserMail.setDefaultHintTextColor(ColorStateList.valueOf(getColor(R.color.gray)));
         lPass.setDefaultHintTextColor(ColorStateList.valueOf(getColor(R.color.gray)));
+        loading = new LoadingDialog(this);
     }
 }

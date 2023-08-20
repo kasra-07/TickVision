@@ -24,8 +24,8 @@ public class TimerService extends Service {
     public UpdateUiCallBack updateUiCallBack;
     public static boolean RUNNING = false;
     private final TimeBinder timeBinder = new TimeBinder();
-    private int a = HomeActivity.MILLI_SEC;
-    public static int COUNTER;
+    private long a = HomeActivity.MILLI_SEC;
+    public static long COUNTER;
 
     public void setUpdateUiCallBack(UpdateUiCallBack updateUiCallBack) {
         this.updateUiCallBack = updateUiCallBack;

@@ -38,10 +38,11 @@ public class SignupActivity extends AppCompatActivity implements UserSignup.User
     private TextInputLayout lUsername, lMail, lPass, lCPass;
     private TextInputEditText eUsername, eMail, ePass, eCPass;
     private TextView link;
-    private boolean isUsernameError, isMailError, isPassError;
+    private boolean isUsernameError, isMailError, isPassError, isLoadingShow = false;
     private String username, mail, pass, cPass;
     private Shared shared;
     private NetworkReceiver receiver;
+    private LoadingDialog loading;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -405,7 +406,11 @@ public class SignupActivity extends AppCompatActivity implements UserSignup.User
     }
 
     private void setOnSignup() {
-        LoadingDialog.show(this, getString(R.string.sending_info_text));
+        if (!isLoadingShow) {
+            loading.show(getString(R.string.sending_info_text));
+            isLoadingShow = true;
+        }
+
         UserSignup userSignup = new UserSignup(this);
         userSignup.signup(username, mail, pass);
     }
@@ -420,7 +425,11 @@ public class SignupActivity extends AppCompatActivity implements UserSignup.User
             new Handler().postDelayed(() -> {
                 shared.getEditor().putBoolean(UserItems.IS_USER_SIGNUP, true);
                 shared.getEditor().apply();
-                LoadingDialog.dismiss();
+                if (isLoadingShow) {
+                    loading.dismiss();
+                    isLoadingShow = false;
+                }
+
                 new Handler().postDelayed(() -> {
                     ToastMessage.show(this, getString(R.string.signup_success), true, true);
                     Intent intent = new Intent(SignupActivity.this, LoginActivity.class);
@@ -455,5 +464,6 @@ public class SignupActivity extends AppCompatActivity implements UserSignup.User
         lMail.setDefaultHintTextColor(ColorStateList.valueOf(getColor(R.color.gray)));
         lPass.setDefaultHintTextColor(ColorStateList.valueOf(getColor(R.color.gray)));
         lCPass.setDefaultHintTextColor(ColorStateList.valueOf(getColor(R.color.gray)));
+        loading = new LoadingDialog(this);
     }
 }

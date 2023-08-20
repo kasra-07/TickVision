@@ -37,6 +37,8 @@ public class SettingActivity extends AppCompatActivity implements DeleteAccount.
     private NetworkReceiver receiver;
     private String userTbl, userMail;
     private VisionDao dao;
+    private LoadingDialog loading;
+    private boolean isLoadingShow = false;
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
@@ -93,7 +95,11 @@ public class SettingActivity extends AppCompatActivity implements DeleteAccount.
 
     @Override
     public void onDeleteAccountDialogListener() {
-        LoadingDialog.show(this, getString(R.string.please_vait_text));
+        if (!isLoadingShow) {
+            loading.show(getString(R.string.please_vait_text));
+            isLoadingShow = true;
+        }
+
         DeleteAccount deleteAccount = new DeleteAccount(this);
         deleteAccount.delete(userMail, userTbl);
     }
@@ -102,9 +108,11 @@ public class SettingActivity extends AppCompatActivity implements DeleteAccount.
     public void onDeleteAccountListener(String isDelete) {
         if (isDelete.equals("success")) {
             new Handler().postDelayed(() -> {
-                if (LoadingDialog.isShow()) {
-                    LoadingDialog.dismiss();
+                if (isLoadingShow) {
+                    loading.dismiss();
+                    isLoadingShow = false;
                 }
+
                 dao.clearAllVisions();
                 shared.getEditor().clear().apply();
 
@@ -116,9 +124,11 @@ public class SettingActivity extends AppCompatActivity implements DeleteAccount.
 
             }, 900);
         } else {
-            if (LoadingDialog.isShow()) {
-                LoadingDialog.dismiss();
+            if (isLoadingShow) {
+                loading.dismiss();
+                isLoadingShow = false;
             }
+
             ToastMessage.show(this, getString(R.string.delete_account_error), false, false);
         }
     }
@@ -145,5 +155,7 @@ public class SettingActivity extends AppCompatActivity implements DeleteAccount.
         showExitDialog.setChecked(shared.getShared().getBoolean(UserItems.IS_SHOW_EXIT_DIALOG, true));
 
         dao = VisionDatabase.getVisionDatabase(this).visionDao();
+
+        loading = new LoadingDialog(this);
     }
 }
